@@ -1,0 +1,130 @@
+.map-note {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.system-map-scroll {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.system-map {
+  position: relative;
+  min-width: 100%;
+}
+
+.map-category {
+  position: absolute;
+  top: 16px;
+  width: 220px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.map-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.map-edge {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  opacity: .52;
+  transition: opacity .12s ease, stroke-width .12s ease;
+}
+
+.map-edge.focus {
+  stroke: var(--text);
+  stroke-width: 1.4;
+  opacity: 1;
+}
+
+.map-edge.dim { opacity: .08; }
+.map-arrow { fill: var(--line-strong); }
+
+.map-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  transition: opacity .12s ease, border-color .12s ease;
+}
+
+.map-node:hover,
+.map-node:focus,
+.map-node.focus {
+  border-color: var(--text);
+  outline: none;
+}
+
+.map-node.dim { opacity: .18; }
+
+.map-node-meta {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1;
+}
+
+.map-node strong {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.map-node-preview {
+  display: -webkit-box;
+  width: 100%;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: var(--secondary);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.map-empty {
+  padding: 32px 2px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .map-note {
+    display: grid;
+    gap: 3px;
+  }
+
+  .system-map-scroll {
+    max-height: 68vh;
+  }
+}
