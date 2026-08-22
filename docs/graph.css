@@ -16,7 +16,8 @@
 
 .system-map {
   position: relative;
-  min-width: 100%;
+  min-width: 0;
+  flex: none;
   isolation: isolate;
 }
 
