@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "hierarchy": [
+    {
+      "parent": "engraving",
+      "child": "projection-system",
+      "type": "subtype",
+      "note": "사영도는 5대속성과 연관되지만 개념 분류상 각인의 일종으로 둔다."
+    }
+  ]
+}
