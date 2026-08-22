@@ -59,107 +59,143 @@ function buildEdges(systems) {
   return { hierarchy, dependency, all: [...hierarchy, ...dependency] };
 }
 
-function hierarchyDepth(systems, edges) {
-  const ids = systems.map(system => system.id);
-  const depth = new Map(ids.map(id => [id, 0]));
-  const indegree = new Map(ids.map(id => [id, 0]));
-  const children = new Map(ids.map(id => [id, []]));
+function layoutSystems(systems, hierarchy) {
+  const nodeW = 144;
+  const nodeH = 56;
+  const siblingGap = 8;
+  const levelGap = 28;
+  const componentGap = 12;
+  const lanePad = 8;
+  const laneGap = 10;
+  const marginX = 10;
+  const headerH = 36;
+  const bottomPad = 12;
 
-  edges.forEach(edge => {
-    indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
-    children.get(edge.from)?.push(edge.to);
+  const categories = CATEGORY_ORDER.filter(category => systems.some(system => system.category === category));
+  const byId = new Map(systems.map(system => [system.id, system]));
+  const sourceOrder = new Map(systems.map((system, index) => [system.id, index]));
+
+  // Hierarchy layout is intentionally local to each swimlane. Only real siblings
+  // share a horizontal row. Unrelated concepts are separate vertical components.
+  const sameLaneHierarchy = hierarchy.filter(edge => {
+    const parent = byId.get(edge.from);
+    const child = byId.get(edge.to);
+    return parent && child && parent.category === child.category;
   });
 
-  const queue = ids.filter(id => indegree.get(id) === 0);
-  while (queue.length) {
-    const id = queue.shift();
-    for (const child of children.get(id) || []) {
-      depth.set(child, Math.max(depth.get(child) || 0, (depth.get(id) || 0) + 1));
-      indegree.set(child, indegree.get(child) - 1);
-      if (indegree.get(child) === 0) queue.push(child);
+  const childrenByParent = new Map();
+  const parentByChild = new Map();
+  sameLaneHierarchy.forEach(edge => {
+    if (!childrenByParent.has(edge.from)) childrenByParent.set(edge.from, []);
+    childrenByParent.get(edge.from).push(edge.to);
+    parentByChild.set(edge.to, edge.from);
+  });
+  childrenByParent.forEach(list => list.sort((a, b) => sourceOrder.get(a) - sourceOrder.get(b)));
+
+  const subtreeWidthMemo = new Map();
+  function subtreeWidth(id, trail = new Set()) {
+    if (subtreeWidthMemo.has(id)) return subtreeWidthMemo.get(id);
+    if (trail.has(id)) return nodeW;
+    const nextTrail = new Set(trail).add(id);
+    const children = childrenByParent.get(id) || [];
+    if (!children.length) {
+      subtreeWidthMemo.set(id, nodeW);
+      return nodeW;
     }
+    const childrenW = children.reduce((sum, child) => sum + subtreeWidth(child, nextTrail), 0)
+      + Math.max(0, children.length - 1) * siblingGap;
+    const width = Math.max(nodeW, childrenW);
+    subtreeWidthMemo.set(id, width);
+    return width;
   }
 
-  return depth;
-}
-
-function layoutSystems(systems, hierarchy) {
-  const nodeW = 158;
-  const nodeH = 58;
-  const siblingGap = 10;
-  const laneGap = 12;
-  const lanePad = 8;
-  const levelGap = 34;
-  const marginX = 10;
-  const marginY = 38;
-  const categories = CATEGORY_ORDER.filter(category => systems.some(system => system.category === category));
-  const depth = hierarchyDepth(systems, hierarchy);
-  const maxDepth = Math.max(0, ...systems.map(system => depth.get(system.id) || 0));
-
-  const groups = new Map();
-  for (let level = 0; level <= maxDepth; level += 1) {
-    for (const category of categories) {
-      groups.set(`${level}:${category}`, systems.filter(system =>
-        system.category === category && (depth.get(system.id) || 0) === level
-      ));
-    }
+  const subtreeDepthMemo = new Map();
+  function subtreeDepth(id, trail = new Set()) {
+    if (subtreeDepthMemo.has(id)) return subtreeDepthMemo.get(id);
+    if (trail.has(id)) return 0;
+    const nextTrail = new Set(trail).add(id);
+    const children = childrenByParent.get(id) || [];
+    const depth = children.length ? 1 + Math.max(...children.map(child => subtreeDepth(child, nextTrail))) : 0;
+    subtreeDepthMemo.set(id, depth);
+    return depth;
   }
 
-  // A lane grows only as wide as its widest hierarchy level. Nodes on the same
-  // hierarchy level are arranged horizontally, so siblings read as siblings.
-  const laneWidths = new Map();
+  const laneModels = new Map();
   categories.forEach(category => {
-    let maxCount = 1;
-    for (let level = 0; level <= maxDepth; level += 1) {
-      maxCount = Math.max(maxCount, groups.get(`${level}:${category}`).length || 0);
-    }
-    laneWidths.set(category, lanePad * 2 + maxCount * nodeW + Math.max(0, maxCount - 1) * siblingGap);
+    const categorySystems = systems.filter(system => system.category === category);
+    const roots = categorySystems
+      .filter(system => !parentByChild.has(system.id))
+      .sort((a, b) => {
+        const aTree = (childrenByParent.get(a.id) || []).length ? 0 : 1;
+        const bTree = (childrenByParent.get(b.id) || []).length ? 0 : 1;
+        return aTree - bTree || sourceOrder.get(a.id) - sourceOrder.get(b.id);
+      });
+
+    const components = roots.map(root => ({
+      root: root.id,
+      width: subtreeWidth(root.id),
+      height: nodeH + subtreeDepth(root.id) * (nodeH + levelGap)
+    }));
+
+    const width = lanePad * 2 + Math.max(nodeW, ...components.map(component => component.width));
+    const height = headerH + components.reduce((sum, component) => sum + component.height, 0)
+      + Math.max(0, components.length - 1) * componentGap + bottomPad;
+    laneModels.set(category, { roots, components, width, height });
   });
 
   const laneX = new Map();
   let xCursor = marginX;
   categories.forEach(category => {
     laneX.set(category, xCursor);
-    xCursor += laneWidths.get(category) + laneGap;
+    xCursor += laneModels.get(category).width + laneGap;
   });
 
-  const rowY = new Map();
-  let yCursor = marginY;
-  for (let level = 0; level <= maxDepth; level += 1) {
-    rowY.set(level, yCursor);
-    yCursor += nodeH + (level < maxDepth ? levelGap : 0);
+  const nodes = new Map();
+  function placeTree(id, left, top, trail = new Set()) {
+    if (trail.has(id)) return;
+    const nextTrail = new Set(trail).add(id);
+    const width = subtreeWidth(id);
+    nodes.set(id, {
+      x: left + (width - nodeW) / 2,
+      y: top,
+      w: nodeW,
+      h: nodeH,
+      category: byId.get(id)?.category
+    });
+
+    const children = childrenByParent.get(id) || [];
+    if (!children.length) return;
+    const childWidths = children.map(child => subtreeWidth(child));
+    const totalChildrenW = childWidths.reduce((a, b) => a + b, 0) + Math.max(0, children.length - 1) * siblingGap;
+    let childLeft = left + (width - totalChildrenW) / 2;
+    children.forEach((child, index) => {
+      placeTree(child, childLeft, top + nodeH + levelGap, nextTrail);
+      childLeft += childWidths[index] + siblingGap;
+    });
   }
 
-  const nodes = new Map();
-  for (let level = 0; level <= maxDepth; level += 1) {
-    for (const category of categories) {
-      const items = groups.get(`${level}:${category}`);
-      if (!items.length) continue;
-      const laneW = laneWidths.get(category);
-      const blockW = items.length * nodeW + Math.max(0, items.length - 1) * siblingGap;
-      const startX = laneX.get(category) + (laneW - blockW) / 2;
-      items.forEach((system, index) => {
-        nodes.set(system.id, {
-          x: startX + index * (nodeW + siblingGap),
-          y: rowY.get(level),
-          w: nodeW,
-          h: nodeH,
-          depth: level,
-          category
-        });
-      });
-    }
-  }
+  categories.forEach(category => {
+    const model = laneModels.get(category);
+    let yCursor = headerH;
+    model.components.forEach(component => {
+      const left = laneX.get(category) + lanePad + (model.width - lanePad * 2 - component.width) / 2;
+      placeTree(component.root, left, yCursor);
+      yCursor += component.height + componentGap;
+    });
+  });
+
+  const graphWidth = Math.max(600, xCursor - laneGap + marginX);
+  const graphHeight = Math.max(220, ...categories.map(category => laneModels.get(category).height));
 
   return {
     nodes,
     categories,
     laneX,
-    laneWidths,
+    laneModels,
     nodeW,
     nodeH,
-    width: Math.max(600, xCursor - laneGap + marginX),
-    height: Math.max(220, yCursor + 12)
+    width: graphWidth,
+    height: graphHeight
   };
 }
 
@@ -189,8 +225,6 @@ function renderHierarchyEdges(edges, layout) {
       return `<path class="compact-edge hierarchy" data-from="${parentId}" data-to="${child.edge.to}" d="${d}" marker-end="url(#hierarchyArrow)" />`;
     }
 
-    // Draw one shared family trunk. This makes same-level children visually
-    // read as siblings instead of looking like a vertical parent/child chain.
     const centers = children.map(child => child.node.x + child.node.w / 2);
     const childTop = Math.min(...children.map(child => child.node.y));
     const branchY = Math.round((sy + childTop) / 2);
@@ -211,8 +245,6 @@ function dependencyPath(edge, layout, index) {
   const b = layout.nodes.get(edge.to);
   if (!a || !b) return '';
 
-  // Functional dependencies stay lateral whenever possible. They are secondary
-  // to the hierarchy and should not visually suggest parent/child structure.
   const aCenter = a.x + a.w / 2;
   const bCenter = b.x + b.w / 2;
   const right = bCenter >= aCenter;
@@ -220,7 +252,17 @@ function dependencyPath(edge, layout, index) {
   const sy = a.y + a.h / 2;
   const ex = right ? b.x : b.x + b.w;
   const ey = b.y + b.h / 2;
-  const midX = Math.round((sx + ex) / 2) + (a.category === b.category ? 8 + index * 2 : 0);
+
+  // Same-lane dependencies use a shallow side gutter so they do not cut through
+  // the hierarchy tree. Cross-lane dependencies use the midpoint between lanes.
+  let midX;
+  if (a.category === b.category) {
+    const model = layout.laneModels.get(a.category);
+    const laneRight = layout.laneX.get(a.category) + model.width;
+    midX = laneRight - 3 + (index % 3) * 3;
+  } else {
+    midX = Math.round((sx + ex) / 2);
+  }
   const d = `M ${sx} ${sy} H ${midX} V ${ey} H ${ex}`;
   return `<path class="compact-edge dependency" data-from="${edge.from}" data-to="${edge.to}" d="${d}" marker-end="url(#dependencyArrow)" />`;
 }
@@ -237,12 +279,13 @@ function renderCompactMap(host, legacyScroll) {
 
   const lanes = layout.categories.map(category => {
     const x = layout.laneX.get(category);
-    const width = layout.laneWidths.get(category);
-    return `<div class="compact-lane" style="left:${x}px;width:${width}px;height:${layout.height}px"><span>${CATEGORY_LABEL[category] || category}</span></div>`;
+    const model = layout.laneModels.get(category);
+    return `<div class="compact-lane" style="left:${x}px;width:${model.width}px;height:${layout.height}px"><span>${CATEGORY_LABEL[category] || category}</span></div>`;
   }).join('');
 
   const nodeHtml = systems.map(system => {
     const p = layout.nodes.get(system.id);
+    if (!p) return '';
     const parent = byId.get(parentByChild.get(system.id));
     return `<button class="compact-node${parent ? ' has-parent' : ''}" data-id="${system.id}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
       <span class="compact-node-kicker"><span>${esc(system.statusText)}</span>${parent ? `<em>↳ ${esc(parent.name)}</em>` : ''}</span>
