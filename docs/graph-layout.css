@@ -63,26 +63,26 @@
 
 .compact-edge {
   fill: none;
-  stroke: var(--line-strong);
+  stroke: color-mix(in srgb, var(--line-strong) 68%, transparent);
   stroke-width: 1;
-  opacity: .22;
+  opacity: 1;
   vector-effect: non-scaling-stroke;
-  transition: opacity .1s ease, stroke-width .1s ease;
+  transition: opacity .1s ease, stroke-width .1s ease, stroke .1s ease;
 }
 
 .compact-edge.back {
+  stroke: color-mix(in srgb, var(--line-strong) 44%, transparent);
   stroke-dasharray: 4 4;
-  opacity: .13;
 }
 
 .compact-edge.focus {
   stroke: var(--text);
-  stroke-width: 1.35;
-  opacity: .95;
+  stroke-width: 1.4;
+  opacity: 1;
 }
 
-.compact-edge.dim { opacity: .025; }
-.compact-arrow { fill: var(--line-strong); }
+.compact-edge.dim { opacity: .07; }
+.compact-arrow { fill: var(--text); }
 
 .compact-node {
   position: absolute;
