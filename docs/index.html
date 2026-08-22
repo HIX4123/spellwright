@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spellwright — Live Design Dashboard</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◌</div>
+        <div>
+          <strong>SPELLWRIGHT</strong>
+          <span>DESIGN DB</span>
+        </div>
+      </div>
+      <nav id="nav"></nav>
+      <div class="sidebar-footer">
+        <button class="ghost" id="exportBtn">Export JSON</button>
+        <label class="ghost file-label">Import JSON<input id="importInput" type="file" accept="application/json" /></label>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">LIVE PROJECT DASHBOARD</div>
+          <h1 id="projectName"></h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="version-pill" id="version"></span>
+          <button id="saveBtn">Save local draft</button>
+        </div>
+      </header>
+
+      <section id="view"></section>
+    </main>
+  </div>
+
+  <dialog id="editorDialog">
+    <form method="dialog" id="editorForm">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">SYSTEM EDITOR</div>
+          <h2 id="editorTitle"></h2>
+        </div>
+        <button class="icon-btn" value="cancel" aria-label="닫기">×</button>
+      </div>
+      <input type="hidden" id="editId" />
+      <label>상태<select id="editStatus"></select></label>
+      <label>정의<textarea id="editDefinition" rows="6"></textarea></label>
+      <label>카테고리<input id="editCategory" /></label>
+      <label>마지막 변경 버전<input id="editVersion" /></label>
+      <div class="dialog-actions">
+        <button class="ghost" value="cancel">Cancel</button>
+        <button type="submit" value="default" id="applyEdit">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
