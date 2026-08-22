@@ -11,6 +11,8 @@ const navItems = [
   ['mvp','MVP'], ['decisions','Decisions'], ['graveyard','Graveyard'], ['questions','Open Questions']
 ];
 
+const graphCategoryOrder = ['attribute', 'magic', 'character', 'combat', 'roguelite'];
+
 async function load() {
   const res = await fetch('./data/project.json', { cache: 'no-store' });
   const remote = await res.json();
@@ -122,7 +124,7 @@ function renderOverview() {
       <p class="core-statement">${data.project.coreStatement}</p>
       <p class="muted" style="margin:16px 0 0">MVP question · ${data.project.mvpQuestion}</p>
     </div>
-    ${section('Current priorities','세부 시스템은 카드를 클릭해 확인')}
+    ${section('Current priorities','세부 시스템은 Systems 관계 맵에서 확인')}
     <div class="grid cols-2">${data.priorities.map(priorityCard).join('')}</div>
     ${section('Recent decisions')}
     <div class="card timeline">${data.decisions.slice(0,4).map(decisionRow).join('')}</div>
@@ -137,30 +139,160 @@ function decisionRow(d) {
   return `<div class="decision"><div class="date">${d.date}<br>${d.version}</div><div class="type">${d.type}</div><div><h3>${d.title}</h3><p>${d.reason}</p></div></div>`;
 }
 
+function activeSystems() {
+  return data.systems.filter(x => x.category !== 'legacy' && x.status !== 'rejected');
+}
+
 function renderSystems() {
   view.innerHTML = `
     <div class="toolbar">
       <input id="search" placeholder="시스템 검색…" />
-      <select id="statusFilter"><option value="">모든 상태</option>${data.statuses.map(s=>`<option value="${s.id}">${s.icon} ${s.label}</option>`).join('')}</select>
-      <select id="categoryFilter"><option value="">모든 카테고리</option>${[...new Set(data.systems.map(x=>x.category))].map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
+      <select id="statusFilter"><option value="">모든 상태</option>${data.statuses.filter(s=>s.id!=='rejected').map(s=>`<option value="${s.id}">${s.icon} ${s.label}</option>`).join('')}</select>
+      <select id="categoryFilter"><option value="">모든 카테고리</option>${graphCategoryOrder.map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
     </div>
-    <div class="system-grid" id="systemGrid"></div>`;
+    <div class="map-note"><span>선택한 개념과 직접 연결된 관계를 강조한다.</span><span>A → B : A가 B에 의존</span></div>
+    <div id="systemMap"></div>`;
 
   const refresh = () => {
     const q = $('#search').value.trim().toLowerCase();
     const st = $('#statusFilter').value;
     const cat = $('#categoryFilter').value;
-    const list = data.systems.filter(x => {
+    const list = activeSystems().filter(x => {
       const haystack = `${x.name} ${x.definition || ''} ${x.details || ''}`.toLowerCase();
       return (!q || haystack.includes(q)) && (!st || x.status===st) && (!cat || x.category===cat);
     });
-
-    $('#systemGrid').innerHTML = list.map(systemCard).join('') || '<div class="card muted">일치하는 항목이 없다.</div>';
-    bindSystemCards();
+    renderSystemMap($('#systemMap'), list);
   };
 
   ['search','statusFilter','categoryFilter'].forEach(id => $(`#${id}`).oninput = refresh);
   refresh();
+}
+
+function graphLayout(systems) {
+  const nodeW = 220;
+  const nodeH = 76;
+  const colGap = 72;
+  const rowGap = 26;
+  const marginX = 32;
+  const marginY = 48;
+  const categories = graphCategoryOrder.filter(c => systems.some(s => s.category === c));
+  const byCategory = Object.fromEntries(categories.map(c => [c, systems.filter(s => s.category === c)]));
+  const maxRows = Math.max(1, ...categories.map(c => byCategory[c].length));
+  const width = Math.max(760, marginX * 2 + categories.length * nodeW + Math.max(0, categories.length - 1) * colGap);
+  const height = Math.max(360, marginY * 2 + maxRows * nodeH + Math.max(0, maxRows - 1) * rowGap);
+  const nodes = new Map();
+
+  categories.forEach((category, col) => {
+    const items = byCategory[category];
+    const blockHeight = items.length * nodeH + Math.max(0, items.length - 1) * rowGap;
+    const startY = Math.max(marginY, (height - blockHeight) / 2);
+    items.forEach((item, row) => {
+      nodes.set(item.id, {
+        x: marginX + col * (nodeW + colGap),
+        y: startY + row * (nodeH + rowGap),
+        w: nodeW,
+        h: nodeH
+      });
+    });
+  });
+
+  return { width, height, nodes, categories, nodeW, nodeH };
+}
+
+function renderSystemMap(container, systems) {
+  if (!systems.length) {
+    container.innerHTML = '<div class="map-empty">일치하는 시스템이 없다.</div>';
+    return;
+  }
+
+  const layout = graphLayout(systems);
+  const visibleIds = new Set(systems.map(s => s.id));
+  const edges = [];
+
+  systems.forEach(from => {
+    (from.dependencies || []).forEach(toId => {
+      if (visibleIds.has(toId) && layout.nodes.has(from.id) && layout.nodes.has(toId)) {
+        edges.push({ from: from.id, to: toId });
+      }
+    });
+  });
+
+  const headers = layout.categories.map(category => {
+    const first = [...layout.nodes.entries()].find(([id]) => systems.find(s => s.id === id)?.category === category);
+    if (!first) return '';
+    return `<div class="map-category" style="left:${first[1].x}px">${categoryLabel(category)}</div>`;
+  }).join('');
+
+  const edgeSvg = edges.map(edge => {
+    const a = layout.nodes.get(edge.from);
+    const b = layout.nodes.get(edge.to);
+    const ax = a.x + a.w / 2;
+    const ay = a.y + a.h / 2;
+    const bx = b.x + b.w / 2;
+    const by = b.y + b.h / 2;
+    const dx = bx - ax;
+    const startX = dx >= 0 ? a.x + a.w : a.x;
+    const endX = dx >= 0 ? b.x : b.x + b.w;
+    const c1x = startX + dx * .38;
+    const c2x = endX - dx * .38;
+    return `<path class="map-edge" data-from="${edge.from}" data-to="${edge.to}" d="M ${startX} ${ay} C ${c1x} ${ay}, ${c2x} ${by}, ${endX} ${by}" marker-end="url(#mapArrow)" />`;
+  }).join('');
+
+  const nodeHtml = systems.map(system => {
+    const p = layout.nodes.get(system.id);
+    const status = statusMeta(system.status);
+    return `<button class="map-node" data-id="${system.id}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
+      <span class="map-node-meta">${escapeHtml(status.icon)} ${escapeHtml(status.label)}</span>
+      <strong>${escapeHtml(system.name)}</strong>
+      <span class="map-node-preview">${escapeHtml(system.definition || '')}</span>
+    </button>`;
+  }).join('');
+
+  container.innerHTML = `<div class="system-map-scroll">
+    <div class="system-map" style="width:${layout.width}px;height:${layout.height}px">
+      ${headers}
+      <svg class="map-lines" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
+        <defs><marker id="mapArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" class="map-arrow" /></marker></defs>
+        ${edgeSvg}
+      </svg>
+      ${nodeHtml}
+    </div>
+  </div>`;
+
+  bindMapInteractions(container, systems, edges);
+}
+
+function bindMapInteractions(container, systems, edges) {
+  const nodes = [...container.querySelectorAll('.map-node')];
+  const edgeEls = [...container.querySelectorAll('.map-edge')];
+
+  const clear = () => {
+    nodes.forEach(n => n.classList.remove('focus', 'dim'));
+    edgeEls.forEach(e => e.classList.remove('focus', 'dim'));
+  };
+
+  const focus = id => {
+    const related = new Set([id]);
+    edges.forEach(e => {
+      if (e.from === id) related.add(e.to);
+      if (e.to === id) related.add(e.from);
+    });
+    nodes.forEach(n => n.classList.toggle('dim', !related.has(n.dataset.id)));
+    nodes.forEach(n => n.classList.toggle('focus', related.has(n.dataset.id)));
+    edgeEls.forEach(e => {
+      const direct = e.dataset.from === id || e.dataset.to === id;
+      e.classList.toggle('focus', direct);
+      e.classList.toggle('dim', !direct);
+    });
+  };
+
+  nodes.forEach(node => {
+    node.addEventListener('mouseenter', () => focus(node.dataset.id));
+    node.addEventListener('mouseleave', clear);
+    node.addEventListener('focus', () => focus(node.dataset.id));
+    node.addEventListener('blur', clear);
+    node.addEventListener('click', () => openEditor(node.dataset.id));
+  });
 }
 
 function systemCard(s) {
@@ -184,16 +316,16 @@ function bindSystemCards() {
 }
 
 function renderCombat() {
-  const combat = data.systems.filter(
-    x => x.category==='combat' || ['karma','engraving','circle','engraving-capacity'].includes(x.id)
-  );
+  const combatIds = new Set(['karma','engraving','circle','engraving-capacity']);
+  const combat = activeSystems().filter(x => x.category === 'combat' || combatIds.has(x.id));
 
-  view.innerHTML = `${section('Combat core','전투와 직접 연결된 시스템')}
-    <div class="system-grid">${combat.map(systemCard).join('')}</div>
+  view.innerHTML = `${section('Combat core','전투 핵심 개념과 직접 의존 관계')}
+    <div class="map-note"><span>노드에 마우스를 올리면 직접 연결된 개념만 남는다.</span><span>클릭하면 세부 속성</span></div>
+    <div id="combatMap"></div>
     ${section('Design order')}
     <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>`;
 
-  bindSystemCards();
+  renderSystemMap($('#combatMap'), combat);
 }
 
 function renderAttributes() {
@@ -262,6 +394,10 @@ function renderEditorExtra(item) {
     .filter(Boolean)
     .map(s => s.name);
 
+  const dependents = data.systems
+    .filter(s => (s.dependencies || []).includes(item.id) && s.category !== 'legacy')
+    .map(s => s.name);
+
   const senses = item.senses?.length
     ? `<div class="detail-block">
         <h3>용례</h3>
@@ -275,9 +411,13 @@ function renderEditorExtra(item) {
 
   return `
     <div class="detail-block">
+      <h3>관계</h3>
+      <div class="detail-row"><span>의존함</span><strong>${dependencies.length ? dependencies.map(escapeHtml).join(' · ') : '없음'}</strong></div>
+      <div class="detail-row"><span>참조됨</span><strong>${dependents.length ? dependents.map(escapeHtml).join(' · ') : '없음'}</strong></div>
+    </div>
+    <div class="detail-block">
       <h3>속성</h3>
       <div class="detail-row"><span>도입</span><strong>${escapeHtml(item.introduced || '-')}</strong></div>
-      <div class="detail-row"><span>의존 시스템</span><strong>${dependencies.length ? dependencies.map(escapeHtml).join(' · ') : '없음'}</strong></div>
       ${previousTerms}
     </div>
     ${senses}
