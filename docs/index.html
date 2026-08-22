@@ -6,6 +6,13 @@
   <meta name="description" content="Spellwright 로그라이트 프로젝트의 Live Design Dashboard" />
   <title>Spellwright — Design Dashboard</title>
   <link rel="canonical" href="https://hix4123.github.io/spellwright/" />
+  <script>
+    (() => {
+      const saved = localStorage.getItem('spellwright-theme');
+      const preferred = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = saved || preferred;
+    })();
+  </script>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -27,6 +34,7 @@
         <h1 id="projectName"></h1>
         <div class="topbar-actions">
           <span class="version-pill" id="version"></span>
+          <button class="ghost" id="themeToggle" type="button">Theme</button>
           <button id="saveBtn">Save local draft</button>
         </div>
       </header>
@@ -54,5 +62,20 @@
   </dialog>
 
   <script type="module" src="./app.js"></script>
+  <script>
+    (() => {
+      const button = document.getElementById('themeToggle');
+      const updateLabel = () => {
+        button.textContent = document.documentElement.dataset.theme === 'light' ? 'Dark' : 'Light';
+      };
+      button.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('spellwright-theme', next);
+        updateLabel();
+      });
+      updateLabel();
+    })();
+  </script>
 </body>
 </html>
