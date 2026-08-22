@@ -231,7 +231,8 @@ button:hover, .ghost:hover, .file-label:hover { border-color: var(--line-strong)
 }
 
 dialog {
-  width: min(620px, calc(100vw - 28px));
+  width: min(720px, calc(100vw - 28px));
+  max-height: calc(100vh - 28px);
   padding: 0;
   border: 1px solid var(--line-strong);
   border-radius: 0;
@@ -240,11 +241,76 @@ dialog {
 }
 dialog::backdrop { background: var(--backdrop); }
 #editorForm { padding: 18px; }
-.dialog-head { display: flex; justify-content: space-between; gap: 20px; }
-.dialog-head h2 { margin: 0 0 16px; font-size: 16px; }
+.dialog-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.dialog-head h2 { margin: 4px 0 0; font-size: 18px; }
+.detail-kicker {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .12em;
+}
 .icon-btn { padding: 0; border: 0; font-size: 20px; color: var(--muted); }
-#editorForm label { display: grid; gap: 6px; margin: 12px 0; font-size: 11px; color: var(--muted); }
-#editorForm input, #editorForm textarea, #editorForm select { width: 100%; min-width: 0; resize: vertical; }
+#editorForm label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+#editorForm input, #editorForm textarea, #editorForm select {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+}
+.editor-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.editor-extra {
+  margin: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.detail-block {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.detail-block h3 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.detail-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 11px;
+}
+.detail-row span { color: var(--muted); }
+.detail-row strong { font-weight: 400; }
+.detail-sense {
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.detail-sense:first-of-type { border-top: 0; }
+.detail-sense strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+}
+.detail-sense p {
+  margin: 4px 0 0;
+  color: var(--secondary);
+  font-size: 11px;
+  line-height: 1.55;
+}
 .dialog-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 16px; }
 
 .toast {
@@ -269,7 +335,13 @@ dialog::backdrop { background: var(--backdrop); }
   }
   .brand { margin-bottom: 12px; }
   nav { grid-template-columns: repeat(4, 1fr); }
-  .nav-btn { border-left: 0; border-bottom: 1px solid transparent; padding: 7px 4px; text-align: center; font-size: 11px; }
+  .nav-btn {
+    border-left: 0;
+    border-bottom: 1px solid transparent;
+    padding: 7px 4px;
+    text-align: center;
+    font-size: 11px;
+  }
   .nav-btn.active { border-bottom-color: var(--text); }
   .sidebar-footer { grid-template-columns: repeat(3, 1fr); margin-top: 12px; }
   .topbar { padding: 16px; align-items: flex-start; flex-direction: column; }
@@ -279,4 +351,6 @@ dialog::backdrop { background: var(--backdrop); }
   .decision { grid-template-columns: 1fr; gap: 4px; }
   .priority { grid-template-columns: 28px 1fr; }
   .priority > .status { grid-column: 2; }
+  .editor-meta-grid { grid-template-columns: 1fr; gap: 0; }
+  .detail-row { grid-template-columns: 1fr; gap: 2px; }
 }
