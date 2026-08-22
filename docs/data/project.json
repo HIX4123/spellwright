@@ -1,0 +1,90 @@
+{
+  "project": {
+    "name": "마법진 조립형 로그라이트",
+    "version": "v0.2",
+    "phase": "Core System Design",
+    "updatedAt": "2026-08-22",
+    "coreStatement": "마법은 주어지는 능력이 아니라 작성되는 구조다.",
+    "mvpQuestion": "마법진을 직접 조립하는 행위가 실제 전투 게임으로 재미있는가?"
+  },
+  "statuses": [
+    {"id":"confirmed","label":"확정","icon":"✅"},
+    {"id":"review","label":"검토 중","icon":"🟡"},
+    {"id":"undecided","label":"미정","icon":"🔴"},
+    {"id":"paused","label":"보류","icon":"⏸️"},
+    {"id":"rejected","label":"폐기","icon":"❌"}
+  ],
+  "systems": [
+    {"id":"magic-circle","name":"마법진","category":"magic","status":"confirmed","definition":"플레이어가 구성하고 영창하는 전체 구조","introduced":"v0.1","lastModified":"v0.2","dependencies":["circle","engraving","karma"]},
+    {"id":"circle","name":"원","category":"magic","status":"confirmed","definition":"마법진을 이루는 독립적인 기본 운용 단위","introduced":"v0.1","lastModified":"v0.1","dependencies":[]},
+    {"id":"circle-count","name":"서클","category":"character","status":"confirmed","definition":"동시에 영창·유지할 수 있는 원의 수. 출력 증가가 아니라 병렬성과 조합 공간을 증가시킨다.","introduced":"v0.1","lastModified":"v0.2","dependencies":["circle"]},
+    {"id":"engraving","name":"각인","category":"magic","status":"confirmed","definition":"마법진에 새겨 효과와 구조를 변화시키는 최소 기능 단위","introduced":"v0.2","lastModified":"v0.2","dependencies":["engraving-capacity","karma"]},
+    {"id":"engraving-capacity","name":"각인력","category":"character","status":"confirmed","definition":"하나의 원에 수용할 수 있는 각인의 총 복잡도","introduced":"v0.1","lastModified":"v0.2","dependencies":["engraving"]},
+    {"id":"karma","name":"카르마","category":"magic","status":"confirmed","definition":"각인과 구조가 만들어내는 요구·양보·대가·인과적 불균형을 통합하는 핵심 시스템. 기본값은 0이며 선악도가 아니다.","introduced":"v0.2","lastModified":"v0.2","dependencies":["engraving","miscast"]},
+    {"id":"casting","name":"영창","category":"combat","status":"confirmed","definition":"완성된 마법진을 실제 효과로 발동하는 행위","introduced":"v0.1","lastModified":"v0.2","dependencies":["magic-circle"]},
+    {"id":"proper-form","name":"정식","category":"combat","status":"confirmed","definition":"카르마가 안정된 균형 상태에 도달한 마법진","introduced":"v0.1","lastModified":"v0.2","dependencies":["karma"]},
+    {"id":"miscast","name":"오식","category":"combat","status":"confirmed","definition":"카르마가 안정된 상태에 이르지 못한 마법진을 강제로 발동하는 것","introduced":"v0.1","lastModified":"v0.2","dependencies":["karma","mental-strength"]},
+    {"id":"overcast","name":"과잉식","category":"combat","status":"confirmed","definition":"카르마가 요구 방향으로 과도하게 기울어진 오식. 폭주·과출력·역류 성향.","introduced":"v0.1","lastModified":"v0.2","dependencies":["miscast"]},
+    {"id":"deficient-cast","name":"결손식","category":"combat","status":"confirmed","definition":"카르마가 양보 방향으로 과도하게 기울어진 오식. 누락·불완전 구현·왜곡 성향.","introduced":"v0.1","lastModified":"v0.2","dependencies":["miscast"]},
+    {"id":"mental-strength","name":"정신력","category":"character","status":"confirmed","definition":"소모 자원이 아니라 위험 상황에서 나쁜 결과의 확률분포를 유리하게 이동시키는 불변 능력치","introduced":"v0.1","lastModified":"v0.2","dependencies":["miscast"]},
+    {"id":"health","name":"체력","category":"character","status":"confirmed","definition":"육체적 손상을 나타낸다. 0 이하가 반드시 즉사와 동일하지는 않는다.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"action-economy","name":"행동경제","category":"combat","status":"undecided","definition":"한 턴에서 원 생성·각인 조작·수정·영창에 어떤 비용을 부여할지 결정하는 전투 핵심 규칙","introduced":"v0.2","lastModified":"v0.2","dependencies":["casting","engraving"]},
+    {"id":"engraving-supply","name":"각인 공급 방식","category":"roguelite","status":"undecided","definition":"전투 중 각인을 덱/팔레트/쿨다운/소지 제한/혼합형 중 어떤 방식으로 제공할지 결정","introduced":"v0.2","lastModified":"v0.2","dependencies":["action-economy","engraving"]},
+    {"id":"projection-system","name":"사영도","category":"attribute","status":"confirmed","definition":"정다면체의 투영 위상 클래스를 속성의 하위 발현 형태로 사용하는 구조","introduced":"v0.1","lastModified":"v0.2","dependencies":["five-elements"]},
+    {"id":"five-elements","name":"5대속성","category":"attribute","status":"confirmed","definition":"화=정사면체, 토=정육면체, 금=정팔면체, 목=정십이면체, 수=정이십면체","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"projection-abilities","name":"43개 사영 클래스 세부 능력","category":"attribute","status":"undecided","definition":"43개 사영 위상 클래스 각각에 실제 플레이 능력·카르마·오식 성향을 배정","introduced":"v0.1","lastModified":"v0.2","dependencies":["projection-system","karma"]},
+    {"id":"engraving-speed","name":"각인속도","category":"character","status":"paused","definition":"도입 여부 보류 중인 후보 스탯","introduced":"v0.1","lastModified":"v0.2","dependencies":["action-economy"]},
+    {"id":"insight","name":"통찰력","category":"character","status":"review","definition":"후보 스탯. 구체 역할 미정.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"resonance","name":"공명력","category":"character","status":"review","definition":"후보 스탯. 구체 역할 미정.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"attack-stat","name":"공격력","category":"character","status":"rejected","definition":"별도 성장 스탯으로 사용하지 않음. 실제 공격 성능은 마법진 구조가 결정.","introduced":"v0.1","lastModified":"v0.1","dependencies":[]},
+    {"id":"defense-stat","name":"방어력","category":"character","status":"rejected","definition":"별도 성장 스탯으로 사용하지 않음. 실제 방어 성능은 마법진 구조가 결정.","introduced":"v0.1","lastModified":"v0.1","dependencies":[]},
+    {"id":"micro-mana","name":"미소마나 μ","category":"legacy","status":"rejected","definition":"별도 단위로 폐기. 요구·양보 정보는 카르마로 통합.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"quota-q","name":"기준 정량 Q","category":"legacy","status":"rejected","definition":"독립 핵심 규칙에서 제거. 카르마 균형 개념으로 대체.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"delta-m","name":"편차 ΔM","category":"legacy","status":"rejected","definition":"독립 핵심 규칙에서 제거. 카르마 불균형 개념으로 대체.","introduced":"v0.1","lastModified":"v0.2","dependencies":[]},
+    {"id":"stroke","name":"법획","category":"legacy","status":"rejected","definition":"각인으로 통합되어 폐기된 이전 명칭","introduced":"v0.1","lastModified":"v0.2","dependencies":[]}
+  ],
+  "elements": [
+    {"name":"화(火)","solid":"정사면체","traits":"집속·방사·폭렬","projectionClasses":4},
+    {"name":"토(土)","solid":"정육면체","traits":"성채·속박·영역","projectionClasses":6},
+    {"name":"금(金)","solid":"정팔면체","traits":"절단·관통·정밀","projectionClasses":6},
+    {"name":"목(木)","solid":"정십이면체","traits":"생장·공명·소환","projectionClasses":14},
+    {"name":"수(水)","solid":"정이십면체","traits":"파동·연쇄·역류","projectionClasses":13}
+  ],
+  "priorities": [
+    {"rank":1,"title":"행동경제","status":"undecided","description":"한 턴의 조작 횟수, 원 생성 비용, 수정 비용, 영창 비용을 확정한다."},
+    {"rank":2,"title":"각인 1차 사전","status":"undecided","description":"기본 각인 12~20종의 기능·복잡도·요구·양보·조합 규칙을 정의한다."},
+    {"rank":3,"title":"카르마 및 오식 테이블","status":"undecided","description":"불균형 방향·각인·사영·정신력에 따른 결과 규칙을 설계한다."},
+    {"rank":4,"title":"사영도 1차 배정","status":"undecided","description":"화·토 각각 2개의 사영도에 실제 플레이 차이와 카르마/오식 성향을 부여한다."},
+    {"rank":5,"title":"로그라이트 보상","status":"paused","description":"전투 코어 검증 뒤 보상·성장 구조를 붙인다."}
+  ],
+  "openQuestions": [
+    "카르마의 구체적인 내부 표현은 무엇인가?",
+    "카르마 균형 판정 방식은 무엇인가?",
+    "카르마 불균형을 수치화할 것인가?",
+    "각인은 런 중 어떻게 획득하는가?",
+    "전투 중 각인은 어떻게 공급되는가?",
+    "마법진은 턴 사이에 유지되는가?",
+    "행동경제는 어떻게 구성되는가?",
+    "43개 사영 클래스에는 어떤 능력을 배정하는가?",
+    "과잉/결손 이상현상의 확률표는 어떻게 구성하는가?",
+    "정신력 계산식은 어떻게 확정하는가?",
+    "카르마를 이벤트·거래·NPC에 연결할 것인가?",
+    "동양/서양식 세계관 양식은 어느 방향으로 갈 것인가?"
+  ],
+  "mvp": [
+    {"item":"속성","value":"화 / 토 2종"},
+    {"item":"사영도","value":"속성별 2종, 총 4종"},
+    {"item":"각인","value":"약 12~16종"},
+    {"item":"서클","value":"1~2서클"},
+    {"item":"카르마","value":"요구·양보·균형/불균형 구현"},
+    {"item":"오식","value":"정식 / 과잉식 / 결손식"},
+    {"item":"정신력","value":"치명상 및 오식 통제"},
+    {"item":"공격력/방어력","value":"사용하지 않음"}
+  ],
+  "decisions": [
+    {"date":"2026-08-22","version":"v0.2","title":"법획을 각인으로 통합","type":"rename","reason":"획이라는 글씨 요소에서 벗어나 더 넓은 기능 단위를 표현하기 위해 명칭과 정의를 통합했다."},
+    {"date":"2026-08-22","version":"v0.2","title":"정량·미소마나를 카르마로 통합","type":"system-change","reason":"작은 수치 체계를 여러 층으로 분리하지 않고 요구·양보·대가·불균형을 하나의 인과 시스템으로 묶기 위해 변경했다."},
+    {"date":"2026-08-22","version":"v0.2","title":"카르마 기본값 0 확정","type":"rule","reason":"0은 선악이 아니라 요구와 양보가 안정적으로 상쇄된 상태를 의미한다."},
+    {"date":"2026-08-22","version":"v0.2","title":"공격력·방어력 중심 성장 배제","type":"principle","reason":"캐릭터 수치가 마법진 설계를 대신하지 않도록 하기 위함이다."}
+  ]
+}
