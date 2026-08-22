@@ -1,12 +1,24 @@
 :root {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #e6e6e6;
-  background: #0d0d0d;
+  color-scheme: dark;
   --bg: #0d0d0d;
   --line: #2a2a2a;
   --line-strong: #444;
   --muted: #8a8a8a;
   --text: #e6e6e6;
+  --secondary: #bdbdbd;
+  --backdrop: rgba(0, 0, 0, .72);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fff;
+  --line: #ddd;
+  --line-strong: #aaa;
+  --muted: #777;
+  --text: #111;
+  --secondary: #444;
+  --backdrop: rgba(0, 0, 0, .28);
 }
 
 * { box-sizing: border-box; }
@@ -164,7 +176,7 @@ button:hover, .ghost:hover, .file-label:hover { border-color: var(--line-strong)
 .system-card { cursor: pointer; }
 .system-card:hover { border-color: var(--line-strong); }
 .system-card h3 { margin: 12px 0 7px; font-size: 14px; font-weight: 600; }
-.system-card p { margin-bottom: 12px; font-size: 12px; line-height: 1.6; color: #bdbdbd; }
+.system-card p { margin-bottom: 12px; font-size: 12px; line-height: 1.6; color: var(--secondary); }
 .meta { display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: 10px; }
 
 .status {
@@ -198,7 +210,7 @@ button:hover, .ghost:hover, .file-label:hover { border-color: var(--line-strong)
 .decision:last-child { border-bottom: 0; }
 .decision .date, .decision .type { font-size: 10px; color: var(--muted); }
 .decision h3 { margin: 0 0 5px; font-size: 12px; font-weight: 600; }
-.decision p { margin: 0; color: #bdbdbd; font-size: 11px; line-height: 1.5; }
+.decision p { margin: 0; color: var(--secondary); font-size: 11px; line-height: 1.5; }
 
 .table { width: 100%; border-collapse: collapse; }
 .table th, .table td {
@@ -226,7 +238,7 @@ dialog {
   background: var(--bg);
   color: var(--text);
 }
-dialog::backdrop { background: rgba(0,0,0,.72); }
+dialog::backdrop { background: var(--backdrop); }
 #editorForm { padding: 18px; }
 .dialog-head { display: flex; justify-content: space-between; gap: 20px; }
 .dialog-head h2 { margin: 0 0 16px; font-size: 16px; }
@@ -261,6 +273,7 @@ dialog::backdrop { background: rgba(0,0,0,.72); }
   .nav-btn.active { border-bottom-color: var(--text); }
   .sidebar-footer { grid-template-columns: repeat(3, 1fr); margin-top: 12px; }
   .topbar { padding: 16px; align-items: flex-start; flex-direction: column; }
+  .topbar-actions { flex-wrap: wrap; }
   #view { padding: 20px 16px 44px; }
   .grid.cols-4, .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
   .decision { grid-template-columns: 1fr; gap: 4px; }
