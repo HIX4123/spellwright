@@ -1,10 +1,67 @@
 .compact-legacy { display: none !important; }
 
-.compact-map-root { width: 100%; }
+.compact-map-root {
+  width: 100%;
+  --cat-magic: #9b86f2;
+  --cat-attribute: #5aa7d8;
+  --cat-combat: #d87777;
+  --cat-character: #c7a251;
+  --cat-roguelite: #58a979;
+}
+
+.compact-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 2px 10px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.relation-legend,
+.category-legends {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.relation-legend span,
+.category-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.solid-sample::before,
+.dash-sample::before {
+  content: "";
+  width: 24px;
+  flex: 0 0 24px;
+}
+
+.solid-sample::before { border-top: 2px solid var(--text); }
+.dash-sample::before { border-top: 1px dashed var(--muted); }
+
+.category-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cat);
+}
+
+.category-legend.magic { --cat: var(--cat-magic); }
+.category-legend.attribute { --cat: var(--cat-attribute); }
+.category-legend.combat { --cat: var(--cat-combat); }
+.category-legend.character { --cat: var(--cat-character); }
+.category-legend.roguelite { --cat: var(--cat-roguelite); }
 
 .compact-map-scroll {
   width: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid var(--line);
   background: var(--bg);
 }
@@ -12,25 +69,7 @@
 .compact-map {
   position: relative;
   isolation: isolate;
-}
-
-.compact-lane {
-  position: absolute;
-  top: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.compact-lane > span {
-  display: block;
-  height: 30px;
-  margin: 0 8px;
-  padding: 8px 1px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
-  color: var(--muted);
-  font-size: 9px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  min-width: 0;
 }
 
 .compact-lines {
@@ -53,33 +92,27 @@
 
 .compact-edge.hierarchy {
   stroke: var(--text);
-  stroke-width: 2;
-  opacity: .88;
+  stroke-width: 1.9;
+  opacity: .86;
 }
 
 .compact-edge.dependency {
   stroke: var(--muted);
   stroke-width: 1;
-  stroke-dasharray: 2 5;
-  opacity: .22;
+  stroke-dasharray: 3 5;
+  opacity: .24;
 }
 
-.compact-edge.hierarchy.focus {
-  stroke-width: 2.4;
-  opacity: 1;
-}
-
-.compact-edge.dependency.focus {
-  stroke: var(--secondary);
-  stroke-width: 1.35;
-  opacity: .9;
-}
-
+.compact-edge.dependency.mutual { opacity: .31; }
+.compact-edge.hierarchy.focus { stroke-width: 2.35; opacity: 1; }
+.compact-edge.dependency.focus { stroke: var(--secondary); stroke-width: 1.3; opacity: .88; }
 .compact-edge.dim { opacity: .025; }
+
 .hierarchy-arrow { fill: var(--text); }
-.dependency-arrow { fill: var(--secondary); opacity: .72; }
+.dependency-arrow { fill: var(--secondary); opacity: .76; }
 
 .compact-node {
+  --cat: var(--line);
   position: absolute;
   z-index: 2;
   display: flex;
@@ -87,8 +120,9 @@
   align-items: flex-start;
   justify-content: center;
   gap: 3px;
-  padding: 7px 9px;
+  padding: 7px 9px 6px;
   border: 1px solid var(--line);
+  border-top: 3px solid var(--cat);
   border-radius: 0;
   background: var(--bg);
   color: var(--text);
@@ -97,25 +131,28 @@
   transition: opacity .1s ease, border-color .1s ease;
 }
 
-.compact-node.has-parent {
-  border-left: 2px solid var(--text);
-}
+.compact-node[data-category="magic"] { --cat: var(--cat-magic); }
+.compact-node[data-category="attribute"] { --cat: var(--cat-attribute); }
+.compact-node[data-category="combat"] { --cat: var(--cat-combat); }
+.compact-node[data-category="character"] { --cat: var(--cat-character); }
+.compact-node[data-category="roguelite"] { --cat: var(--cat-roguelite); }
 
 .compact-node:hover,
 .compact-node:focus,
 .compact-node.focus {
-  border-color: var(--text);
+  border-left-color: var(--text);
+  border-right-color: var(--text);
+  border-bottom-color: var(--text);
   outline: none;
 }
 
-.compact-node.dim { opacity: .14; }
-.compact-node.cycle { border-style: dashed; }
+.compact-node.dim { opacity: .13; }
 
 .compact-node-kicker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 7px;
   width: 100%;
   color: var(--muted);
   font-size: 8px;
@@ -123,16 +160,15 @@
   white-space: nowrap;
 }
 
-.compact-node-kicker > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.compact-category {
+  color: var(--cat);
+  font-weight: 650;
+  letter-spacing: .03em;
 }
 
-.compact-node-kicker > em {
-  flex: 0 0 auto;
-  color: var(--secondary);
-  font-style: normal;
-  font-weight: 600;
+.compact-status {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .compact-node > strong {
@@ -142,7 +178,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .compact-node > small {
@@ -151,10 +187,31 @@
   overflow: hidden;
   color: var(--secondary);
   font-size: 8px;
-  font-weight: 400;
-  line-height: 1.3;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.compact-parent {
+  position: absolute;
+  right: 7px;
+  bottom: 4px;
+  color: var(--muted);
+  font-size: 7px;
+  font-style: normal;
+  opacity: .78;
+}
+
+.isolated-label {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  z-index: 0;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .04em;
 }
 
 .map-note {
@@ -163,35 +220,12 @@
   gap: 18px;
 }
 
-.map-note span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-}
-
-.map-note span:first-child {
-  color: var(--text);
-}
-
-.map-note span:first-child::before,
-.map-note span:last-child::before {
-  content: "";
-  display: inline-block;
-  width: 26px;
-  flex: 0 0 26px;
-}
-
-.map-note span:first-child::before {
-  border-top: 2px solid var(--text);
-}
-
-.map-note span:last-child::before {
-  border-top: 1px dashed var(--muted);
-}
+.map-note span { white-space: nowrap; }
+.map-note span:first-child { color: var(--text); }
 
 @media (max-width: 900px) {
-  .compact-map-scroll { max-height: 72vh; }
+  .compact-legend { align-items: flex-start; flex-direction: column; }
+  .compact-map-scroll { max-height: 72vh; overflow-x: auto; }
   .map-note { align-items: flex-start; }
   .map-note span { white-space: normal; }
 }
