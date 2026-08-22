@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,11 +9,11 @@
   <script>
     (() => {
       const saved = localStorage.getItem('spellwright-theme');
-      const preferred = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.dataset.theme = saved || preferred;
+      const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', saved || preferred);
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=theme-20260822-2" />
 </head>
 <body>
   <div class="app-shell">
@@ -61,16 +61,17 @@
     </form>
   </dialog>
 
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=theme-20260822-2"></script>
   <script>
     (() => {
       const button = document.getElementById('themeToggle');
+      const getTheme = () => document.documentElement.getAttribute('data-theme') || 'dark';
       const updateLabel = () => {
-        button.textContent = document.documentElement.dataset.theme === 'light' ? 'Dark' : 'Light';
+        button.textContent = getTheme() === 'light' ? 'Dark' : 'Light';
       };
       button.addEventListener('click', () => {
-        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-        document.documentElement.dataset.theme = next;
+        const next = getTheme() === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('spellwright-theme', next);
         updateLabel();
       });
