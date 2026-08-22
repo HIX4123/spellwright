@@ -1,0 +1,136 @@
+.compact-legacy { display: none !important; }
+
+.compact-map-root { width: 100%; }
+
+.compact-map-scroll {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.compact-map {
+  position: relative;
+  isolation: isolate;
+}
+
+.compact-lane {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.compact-lane > span {
+  display: block;
+  height: 28px;
+  padding: 8px 9px 0;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.compact-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  border-top: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.compact-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.compact-edge {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  opacity: .22;
+  vector-effect: non-scaling-stroke;
+  transition: opacity .1s ease, stroke-width .1s ease;
+}
+
+.compact-edge.back {
+  stroke-dasharray: 4 4;
+  opacity: .13;
+}
+
+.compact-edge.focus {
+  stroke: var(--text);
+  stroke-width: 1.35;
+  opacity: .95;
+}
+
+.compact-edge.dim { opacity: .025; }
+.compact-arrow { fill: var(--line-strong); }
+
+.compact-node {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  transition: opacity .1s ease, border-color .1s ease;
+}
+
+.compact-node:hover,
+.compact-node:focus,
+.compact-node.focus {
+  border-color: var(--text);
+  outline: none;
+}
+
+.compact-node.dim { opacity: .15; }
+.compact-node.cycle { border-style: dashed; }
+
+.compact-node > span {
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1;
+}
+
+.compact-node > strong {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.compact-node > small {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: var(--secondary);
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .compact-map-scroll { max-height: 72vh; }
+}
