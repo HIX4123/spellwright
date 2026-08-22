@@ -150,7 +150,7 @@ function renderSystems() {
       <select id="statusFilter"><option value="">모든 상태</option>${data.statuses.filter(s=>s.id!=='rejected').map(s=>`<option value="${s.id}">${s.icon} ${s.label}</option>`).join('')}</select>
       <select id="categoryFilter"><option value="">모든 카테고리</option>${graphCategoryOrder.map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
     </div>
-    <div class="map-note"><span>선택한 개념과 직접 연결된 관계를 강조한다.</span><span>A → B : A가 B에 의존</span></div>
+    <div class="map-note"><span>가로 방향은 현재 dependencies로 계산한 임시 DAG 깊이다.</span><span>A → B : B가 A에 의존</span></div>
     <div id="systemMap"></div>`;
 
   const refresh = () => {
@@ -168,35 +168,182 @@ function renderSystems() {
   refresh();
 }
 
-function graphLayout(systems) {
-  const nodeW = 220;
-  const nodeH = 76;
-  const colGap = 72;
-  const rowGap = 26;
-  const marginX = 32;
-  const marginY = 48;
-  const categories = graphCategoryOrder.filter(c => systems.some(s => s.category === c));
-  const byCategory = Object.fromEntries(categories.map(c => [c, systems.filter(s => s.category === c)]));
-  const maxRows = Math.max(1, ...categories.map(c => byCategory[c].length));
-  const width = Math.max(760, marginX * 2 + categories.length * nodeW + Math.max(0, categories.length - 1) * colGap);
-  const height = Math.max(360, marginY * 2 + maxRows * nodeH + Math.max(0, maxRows - 1) * rowGap);
-  const nodes = new Map();
+function buildGraphEdges(systems) {
+  const visibleIds = new Set(systems.map(s => s.id));
+  const edges = [];
 
-  categories.forEach((category, col) => {
-    const items = byCategory[category];
-    const blockHeight = items.length * nodeH + Math.max(0, items.length - 1) * rowGap;
-    const startY = Math.max(marginY, (height - blockHeight) / 2);
-    items.forEach((item, row) => {
-      nodes.set(item.id, {
-        x: marginX + col * (nodeW + colGap),
-        y: startY + row * (nodeH + rowGap),
-        w: nodeW,
-        h: nodeH
-      });
+  systems.forEach(dependent => {
+    (dependent.dependencies || []).forEach(dependencyId => {
+      if (visibleIds.has(dependencyId)) {
+        edges.push({ from: dependencyId, to: dependent.id });
+      }
     });
   });
 
-  return { width, height, nodes, categories, nodeW, nodeH };
+  return edges;
+}
+
+function graphRanks(systems, edges) {
+  const ids = systems.map(s => s.id);
+  const indegree = new Map(ids.map(id => [id, 0]));
+  const children = new Map(ids.map(id => [id, []]));
+  const ranks = new Map(ids.map(id => [id, 0]));
+
+  edges.forEach(edge => {
+    indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
+    children.get(edge.from)?.push(edge.to);
+  });
+
+  const orderIndex = new Map(systems.map((s, i) => [s.id, i]));
+  const queue = ids
+    .filter(id => indegree.get(id) === 0)
+    .sort((a, b) => orderIndex.get(a) - orderIndex.get(b));
+  const processed = new Set();
+
+  while (queue.length) {
+    const id = queue.shift();
+    processed.add(id);
+    for (const child of children.get(id) || []) {
+      ranks.set(child, Math.max(ranks.get(child) || 0, (ranks.get(id) || 0) + 1));
+      indegree.set(child, indegree.get(child) - 1);
+      if (indegree.get(child) === 0) {
+        queue.push(child);
+        queue.sort((a, b) => orderIndex.get(a) - orderIndex.get(b));
+      }
+    }
+  }
+
+  const cyclic = new Set(ids.filter(id => !processed.has(id)));
+  if (cyclic.size) {
+    const stableMax = Math.max(0, ...[...ranks.values()]);
+    cyclic.forEach(id => ranks.set(id, Math.max(ranks.get(id) || 0, stableMax + 1)));
+  }
+
+  return { ranks, cyclic };
+}
+
+function graphLayout(systems, edges) {
+  const nodeW = 200;
+  const nodeH = 70;
+  const rankGap = 92;
+  const stackGap = 12;
+  const laneLabelW = 108;
+  const marginX = 28;
+  const marginY = 34;
+  const lanePadY = 18;
+  const minLaneH = 108;
+  const rightMargin = 38;
+  const categories = graphCategoryOrder.filter(c => systems.some(s => s.category === c));
+  const { ranks, cyclic } = graphRanks(systems, edges);
+  const maxRank = Math.max(0, ...systems.map(s => ranks.get(s.id) || 0));
+  const groups = new Map();
+
+  categories.forEach(category => {
+    for (let rank = 0; rank <= maxRank; rank += 1) {
+      groups.set(`${category}:${rank}`, systems.filter(s => s.category === category && (ranks.get(s.id) || 0) === rank));
+    }
+  });
+
+  const laneHeights = new Map();
+  categories.forEach(category => {
+    const maxStack = Math.max(1, ...Array.from({length:maxRank + 1}, (_, rank) => groups.get(`${category}:${rank}`)?.length || 0));
+    laneHeights.set(category, Math.max(minLaneH, lanePadY * 2 + maxStack * nodeH + Math.max(0, maxStack - 1) * stackGap));
+  });
+
+  const laneTops = new Map();
+  let cursorY = marginY;
+  categories.forEach(category => {
+    laneTops.set(category, cursorY);
+    cursorY += laneHeights.get(category);
+  });
+
+  const backEdges = edges.filter(edge => (ranks.get(edge.to) || 0) <= (ranks.get(edge.from) || 0));
+  const nodeAreaRight = laneLabelW + marginX + maxRank * (nodeW + rankGap) + nodeW;
+  const routeGutterStart = nodeAreaRight + 46;
+  const width = Math.max(860, routeGutterStart + rightMargin + Math.max(0, backEdges.length - 1) * 12);
+  const height = Math.max(360, cursorY + marginY);
+  const nodes = new Map();
+
+  categories.forEach(category => {
+    for (let rank = 0; rank <= maxRank; rank += 1) {
+      const items = groups.get(`${category}:${rank}`) || [];
+      const laneTop = laneTops.get(category);
+      const laneH = laneHeights.get(category);
+      const blockH = items.length * nodeH + Math.max(0, items.length - 1) * stackGap;
+      const startY = laneTop + Math.max(lanePadY, (laneH - blockH) / 2);
+
+      items.forEach((item, index) => {
+        nodes.set(item.id, {
+          x: laneLabelW + marginX + rank * (nodeW + rankGap),
+          y: startY + index * (nodeH + stackGap),
+          w: nodeW,
+          h: nodeH,
+          rank,
+          category
+        });
+      });
+    }
+  });
+
+  return {
+    width,
+    height,
+    nodes,
+    categories,
+    ranks,
+    cyclic,
+    laneTops,
+    laneHeights,
+    laneLabelW,
+    marginX,
+    nodeW,
+    nodeH,
+    rankGap,
+    maxRank,
+    routeGutterStart
+  };
+}
+
+function distributedPortOffset(index, total, nodeH) {
+  if (total <= 1) return 0;
+  const span = Math.min(nodeH - 22, (total - 1) * 10);
+  return -span / 2 + span * (index / (total - 1));
+}
+
+function buildPortOffsets(edges, layout) {
+  const outgoing = new Map();
+  const incoming = new Map();
+
+  edges.forEach(edge => {
+    if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
+    if (!incoming.has(edge.to)) incoming.set(edge.to, []);
+    outgoing.get(edge.from).push(edge);
+    incoming.get(edge.to).push(edge);
+  });
+
+  const outOffsets = new Map();
+  const inOffsets = new Map();
+  const key = edge => `${edge.from}::${edge.to}`;
+
+  outgoing.forEach(list => {
+    list.sort((a, b) => {
+      const ay = layout.nodes.get(a.to)?.y || 0;
+      const by = layout.nodes.get(b.to)?.y || 0;
+      return ay - by;
+    });
+    list.forEach((edge, index) => outOffsets.set(key(edge), distributedPortOffset(index, list.length, layout.nodeH)));
+  });
+
+  incoming.forEach(list => {
+    list.sort((a, b) => {
+      const ay = layout.nodes.get(a.from)?.y || 0;
+      const by = layout.nodes.get(b.from)?.y || 0;
+      return ay - by;
+    });
+    list.forEach((edge, index) => inOffsets.set(key(edge), distributedPortOffset(index, list.length, layout.nodeH)));
+  });
+
+  return { outOffsets, inOffsets };
 }
 
 function renderSystemMap(container, systems) {
@@ -205,43 +352,57 @@ function renderSystemMap(container, systems) {
     return;
   }
 
-  const layout = graphLayout(systems);
-  const visibleIds = new Set(systems.map(s => s.id));
-  const edges = [];
+  const edges = buildGraphEdges(systems);
+  const layout = graphLayout(systems, edges);
+  const { outOffsets, inOffsets } = buildPortOffsets(edges, layout);
+  const edgeKey = edge => `${edge.from}::${edge.to}`;
+  let backIndex = 0;
 
-  systems.forEach(from => {
-    (from.dependencies || []).forEach(toId => {
-      if (visibleIds.has(toId) && layout.nodes.has(from.id) && layout.nodes.has(toId)) {
-        edges.push({ from: from.id, to: toId });
-      }
-    });
-  });
+  const lanes = layout.categories.map(category => {
+    const top = layout.laneTops.get(category);
+    const height = layout.laneHeights.get(category);
+    return `<div class="map-lane" style="top:${top}px;height:${height}px">
+      <span class="map-lane-label">${categoryLabel(category)}</span>
+    </div>`;
+  }).join('');
 
-  const headers = layout.categories.map(category => {
-    const first = [...layout.nodes.entries()].find(([id]) => systems.find(s => s.id === id)?.category === category);
-    if (!first) return '';
-    return `<div class="map-category" style="left:${first[1].x}px">${categoryLabel(category)}</div>`;
+  const rankGuides = Array.from({length: layout.maxRank + 1}, (_, rank) => {
+    const x = layout.laneLabelW + layout.marginX + rank * (layout.nodeW + layout.rankGap);
+    return `<div class="map-rank-guide" style="left:${x}px"><span>${rank}</span></div>`;
   }).join('');
 
   const edgeSvg = edges.map(edge => {
     const a = layout.nodes.get(edge.from);
     const b = layout.nodes.get(edge.to);
-    const ax = a.x + a.w / 2;
-    const ay = a.y + a.h / 2;
-    const bx = b.x + b.w / 2;
-    const by = b.y + b.h / 2;
-    const dx = bx - ax;
-    const startX = dx >= 0 ? a.x + a.w : a.x;
-    const endX = dx >= 0 ? b.x : b.x + b.w;
-    const c1x = startX + dx * .38;
-    const c2x = endX - dx * .38;
-    return `<path class="map-edge" data-from="${edge.from}" data-to="${edge.to}" d="M ${startX} ${ay} C ${c1x} ${ay}, ${c2x} ${by}, ${endX} ${by}" marker-end="url(#mapArrow)" />`;
+    if (!a || !b) return '';
+
+    const key = edgeKey(edge);
+    const startX = a.x + a.w;
+    const startY = a.y + a.h / 2 + (outOffsets.get(key) || 0);
+    const endX = b.x;
+    const endY = b.y + b.h / 2 + (inOffsets.get(key) || 0);
+    const forward = b.rank > a.rank;
+    let d;
+    let extraClass = '';
+
+    if (forward) {
+      const midX = Math.round((startX + endX) / 2);
+      d = `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`;
+    } else {
+      const gutterX = layout.routeGutterStart + backIndex * 12;
+      backIndex += 1;
+      d = `M ${startX} ${startY} H ${gutterX} V ${endY} H ${endX}`;
+      extraClass = ' back';
+    }
+
+    return `<path class="map-edge${extraClass}" data-from="${edge.from}" data-to="${edge.to}" d="${d}" marker-end="url(#mapArrow)" />`;
   }).join('');
 
   const nodeHtml = systems.map(system => {
     const p = layout.nodes.get(system.id);
     const status = statusMeta(system.status);
-    return `<button class="map-node" data-id="${system.id}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
+    const cycleClass = layout.cyclic.has(system.id) ? ' cycle' : '';
+    return `<button class="map-node${cycleClass}" data-id="${system.id}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
       <span class="map-node-meta">${escapeHtml(status.icon)} ${escapeHtml(status.label)}</span>
       <strong>${escapeHtml(system.name)}</strong>
       <span class="map-node-preview">${escapeHtml(system.definition || '')}</span>
@@ -250,7 +411,8 @@ function renderSystemMap(container, systems) {
 
   container.innerHTML = `<div class="system-map-scroll">
     <div class="system-map" style="width:${layout.width}px;height:${layout.height}px">
-      ${headers}
+      ${lanes}
+      ${rankGuides}
       <svg class="map-lines" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
         <defs><marker id="mapArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" class="map-arrow" /></marker></defs>
         ${edgeSvg}
@@ -319,8 +481,8 @@ function renderCombat() {
   const combatIds = new Set(['karma','engraving','circle','engraving-capacity']);
   const combat = activeSystems().filter(x => x.category === 'combat' || combatIds.has(x.id));
 
-  view.innerHTML = `${section('Combat core','전투 핵심 개념과 직접 의존 관계')}
-    <div class="map-note"><span>노드에 마우스를 올리면 직접 연결된 개념만 남는다.</span><span>클릭하면 세부 속성</span></div>
+  view.innerHTML = `${section('Combat core','Swimlane + DAG · 현재 의존 관계를 임시 계층으로 사용')}
+    <div class="map-note"><span>행은 시스템 영역, 열은 dependency depth다.</span><span>A → B : B가 A에 의존</span></div>
     <div id="combatMap"></div>
     ${section('Design order')}
     <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>`;
