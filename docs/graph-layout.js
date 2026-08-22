@@ -1,4 +1,4 @@
-const CATEGORY_ORDER = ['attribute', 'magic', 'character', 'combat', 'roguelite'];
+const CATEGORY_ORDER = ['magic', 'attribute', 'combat', 'character', 'roguelite'];
 const CATEGORY_LABEL = {
   attribute: 'Attribute',
   magic: 'Magic',
@@ -37,11 +37,24 @@ function visibleSystemsFromLegacy(legacyScroll) {
 function buildEdges(systems) {
   const ids = new Set(systems.map(system => system.id));
   const edges = [];
+  const seen = new Set();
+  const add = (from, to) => {
+    if (!ids.has(from) || !ids.has(to)) return;
+    const key = `${from}::${to}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    edges.push({ from, to });
+  };
+
   systems.forEach(system => {
-    (system.dependencies || []).forEach(dependency => {
-      if (ids.has(dependency)) edges.push({ from: dependency, to: system.id });
-    });
+    (system.dependencies || []).forEach(dependency => add(dependency, system.id));
   });
+
+  // Interim semantic hierarchy until the project-wide parent/child model is redefined.
+  // Projection is an engraving subtype while still being constrained by the five attributes.
+  add('engraving', 'projection-system');
+  add('five-elements', 'projection-system');
+
   return edges;
 }
 
@@ -80,6 +93,23 @@ function rankGraph(systems, edges) {
     cyclic.forEach(id => rank.set(id, last));
   }
 
+  // A projection is visually subordinate to engraving even while the current dependency
+  // graph still contains cycles that will be cleaned up in the next design pass.
+  if (rank.has('projection-system')) {
+    const parentDepth = Math.max(rank.get('engraving') || 0, rank.get('five-elements') || 0);
+    rank.set('projection-system', parentDepth + 1);
+    cyclic.delete('projection-system');
+  }
+  if (rank.has('projection-abilities')) {
+    const parentDepth = Math.max(rank.get('projection-system') || 0, rank.get('karma') || 0);
+    rank.set('projection-abilities', parentDepth + 1);
+  }
+
+  // Compress raw DAG ranks so an unused depth never renders as a blank horizontal tier.
+  const usedDepths = [...new Set(ids.map(id => rank.get(id) || 0))].sort((a, b) => a - b);
+  const depthMap = new Map(usedDepths.map((depth, index) => [depth, index]));
+  ids.forEach(id => rank.set(id, depthMap.get(rank.get(id) || 0) || 0));
+
   return { rank, cyclic };
 }
 
@@ -93,12 +123,12 @@ function makeLayout(systems, edges) {
   const nodeW = 166;
   const nodeH = 54;
   const lanePad = 9;
-  const laneGap = 10;
+  const laneGap = 8;
   const stackGap = 7;
-  const rowPad = 12;
-  const rowGap = 22;
+  const rowPad = 10;
+  const rowGap = 14;
   const headerH = 32;
-  const margin = 12;
+  const margin = 10;
   const categories = CATEGORY_ORDER.filter(category => systems.some(system => system.category === category));
   const laneW = nodeW + lanePad * 2;
   const { rank, cyclic } = rankGraph(systems, edges);
@@ -243,7 +273,7 @@ function renderCompactMap(host, legacyScroll) {
     <div class="compact-map" style="width:${layout.width}px;height:${layout.height}px">
       ${laneHtml}${rowHtml}
       <svg class="compact-lines" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
-        <defs><marker id="compactArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" class="compact-arrow" /></marker></defs>
+        <defs><marker id="compactArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" class="compact-arrow" /></marker></defs>
         ${edgeHtml}
       </svg>
       ${nodeHtml}
