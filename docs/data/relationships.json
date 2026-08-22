@@ -1,11 +1,30 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "hierarchy": [
     {
-      "parent": "engraving",
+      "parent": "circle",
+      "child": "engraving",
+      "type": "subtype",
+      "note": "각인은 서클을 구성하는 하위 개념으로 둔다."
+    },
+    {
+      "parent": "circle",
+      "child": "karma",
+      "type": "subtype",
+      "note": "카르마는 서클 내부의 균형과 인과를 다루는 하위 개념으로 둔다."
+    },
+    {
+      "parent": "five-elements",
       "child": "projection-system",
       "type": "subtype",
-      "note": "사영도는 5대속성과 연관되지만 개념 분류상 각인의 일종으로 둔다."
+      "note": "사영도는 5대속성의 하위 개념으로 둔다."
     }
+  ],
+  "hiddenSystems": [
+    "projection-abilities"
+  ],
+  "suppressedDependencies": [
+    {"from": "karma", "to": "projection-abilities"},
+    {"from": "projection-system", "to": "projection-abilities"}
   ]
 }
