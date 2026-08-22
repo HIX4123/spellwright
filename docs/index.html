@@ -13,7 +13,7 @@
       document.documentElement.setAttribute('data-theme', saved || preferred);
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css?v=theme-20260822-2" />
+  <link rel="stylesheet" href="./styles.css?v=details-20260822-1" />
 </head>
 <body>
   <div class="app-shell">
@@ -46,14 +46,27 @@
   <dialog id="editorDialog">
     <form method="dialog" id="editorForm">
       <div class="dialog-head">
-        <h2 id="editorTitle"></h2>
+        <div>
+          <span class="detail-kicker">SYSTEM DETAILS</span>
+          <h2 id="editorTitle"></h2>
+        </div>
         <button class="icon-btn" value="cancel" aria-label="닫기">×</button>
       </div>
+
       <input type="hidden" id="editId" />
-      <label>상태<select id="editStatus"></select></label>
-      <label>정의<textarea id="editDefinition" rows="6"></textarea></label>
-      <label>카테고리<input id="editCategory" /></label>
+
+      <div class="editor-meta-grid">
+        <label>상태<select id="editStatus"></select></label>
+        <label>카테고리<input id="editCategory" /></label>
+      </div>
+
+      <label>미리보기 설명<textarea id="editDefinition" rows="3"></textarea></label>
+      <label>상세 설명<textarea id="editDetails" rows="10"></textarea></label>
+
+      <div id="editorExtra" class="editor-extra"></div>
+
       <label>마지막 변경 버전<input id="editVersion" /></label>
+
       <div class="dialog-actions">
         <button class="ghost" value="cancel">Cancel</button>
         <button type="submit" value="default" id="applyEdit">Apply</button>
@@ -61,7 +74,7 @@
     </form>
   </dialog>
 
-  <script type="module" src="./app.js?v=theme-20260822-2"></script>
+  <script type="module" src="./app.js?v=details-20260822-1"></script>
   <script>
     (() => {
       const button = document.getElementById('themeToggle');
