@@ -105,7 +105,7 @@ function systemCard(s) {
 }
 
 function renderCombat() {
-  const combat = data.systems.filter(x => x.category==='combat' || ['karma','engraving','circle-count','engraving-capacity'].includes(x.id));
+  const combat = data.systems.filter(x => x.category==='combat' || ['karma','engraving','circle','engraving-capacity'].includes(x.id));
   view.innerHTML = `${section('Combat core','전투와 직접 연결된 시스템')}
     <div class="system-grid">${combat.map(systemCard).join('')}</div>
     ${section('Design order')}
