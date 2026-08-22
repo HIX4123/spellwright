@@ -4,20 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Spellwright 로그라이트 프로젝트의 Live Design Dashboard" />
-  <title>Spellwright — Live Design Dashboard</title>
+  <title>Spellwright — Design Dashboard</title>
   <link rel="canonical" href="https://hix4123.github.io/spellwright/" />
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-mark">◌</div>
-        <div>
-          <strong>SPELLWRIGHT</strong>
-          <span>DESIGN DB</span>
-        </div>
+        <strong>SPELLWRIGHT</strong>
+        <span>DESIGN DB</span>
       </div>
       <nav id="nav"></nav>
       <div class="sidebar-footer">
@@ -28,10 +24,7 @@
 
     <main>
       <header class="topbar">
-        <div>
-          <div class="eyebrow">LIVE PROJECT DASHBOARD</div>
-          <h1 id="projectName"></h1>
-        </div>
+        <h1 id="projectName"></h1>
         <div class="topbar-actions">
           <span class="version-pill" id="version"></span>
           <button id="saveBtn">Save local draft</button>
@@ -45,10 +38,7 @@
   <dialog id="editorDialog">
     <form method="dialog" id="editorForm">
       <div class="dialog-head">
-        <div>
-          <div class="eyebrow">SYSTEM EDITOR</div>
-          <h2 id="editorTitle"></h2>
-        </div>
+        <h2 id="editorTitle"></h2>
         <button class="icon-btn" value="cancel" aria-label="닫기">×</button>
       </div>
       <input type="hidden" id="editId" />
