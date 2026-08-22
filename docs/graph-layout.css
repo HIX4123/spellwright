@@ -26,7 +26,7 @@
   height: 30px;
   margin: 0 8px;
   padding: 8px 1px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   color: var(--muted);
   font-size: 9px;
   letter-spacing: .08em;
@@ -53,31 +53,31 @@
 
 .compact-edge.hierarchy {
   stroke: var(--text);
-  stroke-width: 1.7;
-  opacity: .76;
+  stroke-width: 2;
+  opacity: .88;
 }
 
 .compact-edge.dependency {
   stroke: var(--muted);
   stroke-width: 1;
-  stroke-dasharray: 3 5;
-  opacity: .42;
+  stroke-dasharray: 2 5;
+  opacity: .22;
 }
 
 .compact-edge.hierarchy.focus {
-  stroke-width: 2.2;
+  stroke-width: 2.4;
   opacity: 1;
 }
 
 .compact-edge.dependency.focus {
   stroke: var(--secondary);
   stroke-width: 1.35;
-  opacity: .92;
+  opacity: .9;
 }
 
-.compact-edge.dim { opacity: .035; }
+.compact-edge.dim { opacity: .025; }
 .hierarchy-arrow { fill: var(--text); }
-.dependency-arrow { fill: var(--secondary); }
+.dependency-arrow { fill: var(--secondary); opacity: .72; }
 
 .compact-node {
   position: absolute;
@@ -159,12 +159,39 @@
 
 .map-note {
   align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+}
+
+.map-note span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
 }
 
 .map-note span:first-child {
   color: var(--text);
 }
 
+.map-note span:first-child::before,
+.map-note span:last-child::before {
+  content: "";
+  display: inline-block;
+  width: 26px;
+  flex: 0 0 26px;
+}
+
+.map-note span:first-child::before {
+  border-top: 2px solid var(--text);
+}
+
+.map-note span:last-child::before {
+  border-top: 1px dashed var(--muted);
+}
+
 @media (max-width: 900px) {
   .compact-map-scroll { max-height: 72vh; }
+  .map-note { align-items: flex-start; }
+  .map-note span { white-space: normal; }
 }
