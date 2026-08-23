@@ -60,7 +60,7 @@
 
 .compact-map-scroll {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   border: 1px solid var(--line);
   background: var(--bg);
@@ -70,6 +70,7 @@
   position: relative;
   isolation: isolate;
   min-width: 0;
+  flex: none;
 }
 
 .compact-lines {
@@ -107,6 +108,10 @@
 .compact-edge.hierarchy.focus { stroke-width: 2.35; opacity: 1; }
 .compact-edge.dependency.focus { stroke: var(--secondary); stroke-width: 1.3; opacity: .88; }
 .compact-edge.dim { opacity: .025; }
+
+.compact-edge.dependency.focus-only { opacity: 0; }
+.compact-edge.dependency.focus-only.focus { opacity: .9; }
+.compact-edge.dependency.focus-only.dim { opacity: 0; }
 
 .hierarchy-arrow { fill: var(--text); }
 .dependency-arrow { fill: var(--secondary); opacity: .76; }
