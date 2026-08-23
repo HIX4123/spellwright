@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "hierarchy": [
     {
       "parent": "circle",
@@ -10,14 +10,38 @@
     {
       "parent": "circle",
       "child": "karma",
-      "type": "subtype",
-      "note": "카르마는 서클 내부의 균형과 인과를 다루는 하위 개념으로 둔다."
+      "type": "crosscutting",
+      "note": "카르마는 특정 각인 단계가 아니라 서클 전체를 아우르는 전역 요소로 둔다."
     },
     {
       "parent": "engraving",
+      "child": "initiation",
+      "type": "stage",
+      "note": "개시는 각인의 첫 단계다."
+    },
+    {
+      "parent": "engraving",
+      "child": "development",
+      "type": "stage",
+      "note": "전개는 각인의 중간 단계다."
+    },
+    {
+      "parent": "engraving",
+      "child": "completion",
+      "type": "stage",
+      "note": "완결은 각인의 마지막 단계다."
+    },
+    {
+      "parent": "initiation",
       "child": "projection-system",
       "type": "subtype",
-      "note": "사영도는 각인의 하위 개념으로 둔다."
+      "note": "사영도는 개시 단계에서 속성과 출발 위상을 정하는 각인 요소다."
+    },
+    {
+      "parent": "completion",
+      "child": "casting-form",
+      "type": "subtype",
+      "note": "시전 형식은 완결 단계의 외곽 도형으로 결정한다."
     }
   ],
   "hiddenSystems": [
