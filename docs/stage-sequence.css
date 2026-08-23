@@ -1,32 +1,55 @@
-.compact-edge.stage-sequence {
-  stroke: var(--secondary);
-  stroke-width: 1.25;
-  stroke-dasharray: 4 5;
-  opacity: .62;
-  vector-effect: non-scaling-stroke;
-  transition: opacity .12s ease, stroke-width .12s ease, stroke .12s ease;
+.compact-node.stage-node {
+  overflow: visible;
 }
 
-.compact-edge.stage-sequence.focus {
-  stroke: var(--primary);
-  stroke-width: 1.8;
+.compact-node.stage-has-next::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: var(--stage-sequence-gap, 0px);
+  border-top: 1.25px dashed var(--secondary);
+  opacity: .58;
+  pointer-events: none;
+}
+
+.compact-node.stage-has-next::before {
+  content: "";
+  position: absolute;
+  left: calc(100% + var(--stage-sequence-gap, 0px) - 6px);
+  top: calc(50% - 4px);
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--secondary);
+  opacity: .82;
+  pointer-events: none;
+}
+
+.compact-node.stage-has-next.stage-sequence-focus::after {
+  border-top-width: 2px;
+  border-top-color: var(--primary);
   opacity: 1;
 }
 
-.compact-edge.stage-sequence.dim {
-  opacity: .035;
-}
-
-.stage-sequence-arrow {
-  fill: var(--secondary);
-  opacity: .9;
-}
-
-.compact-edge.stage-sequence.focus .stage-sequence-arrow {
-  fill: var(--primary);
+.compact-node.stage-has-next.stage-sequence-focus::before {
+  border-left-color: var(--primary);
   opacity: 1;
+}
+
+.relation-focus-active .compact-node.stage-has-next.stage-sequence-dim::after,
+.relation-focus-active .compact-node.stage-has-next.stage-sequence-dim::before {
+  opacity: .05;
 }
 
 .compact-map-root.relation-focus-active .compact-node.focus {
   box-shadow: var(--shadow-2), 0 0 0 2px color-mix(in srgb, var(--cat) 30%, transparent);
+}
+
+/* Material emphasis should not physically move graph nodes. */
+.compact-node:hover,
+.compact-node:focus,
+.compact-node.focus {
+  transform: none !important;
 }
