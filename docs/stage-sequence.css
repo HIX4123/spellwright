@@ -2,11 +2,31 @@
   stroke: var(--secondary);
   stroke-width: 1.25;
   stroke-dasharray: 4 5;
-  opacity: .72;
+  opacity: .62;
   vector-effect: non-scaling-stroke;
+  transition: opacity .12s ease, stroke-width .12s ease, stroke .12s ease;
+}
+
+.compact-edge.stage-sequence.focus {
+  stroke: var(--primary);
+  stroke-width: 1.8;
+  opacity: 1;
+}
+
+.compact-edge.stage-sequence.dim {
+  opacity: .035;
 }
 
 .stage-sequence-arrow {
   fill: var(--secondary);
   opacity: .9;
+}
+
+.compact-edge.stage-sequence.focus .stage-sequence-arrow {
+  fill: var(--primary);
+  opacity: 1;
+}
+
+.compact-map-root.relation-focus-active .compact-node.focus {
+  box-shadow: var(--shadow-2), 0 0 0 2px color-mix(in srgb, var(--cat) 30%, transparent);
 }
