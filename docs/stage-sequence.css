@@ -1,0 +1,12 @@
+.compact-edge.stage-sequence {
+  stroke: var(--secondary);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 5;
+  opacity: .72;
+  vector-effect: non-scaling-stroke;
+}
+
+.stage-sequence-arrow {
+  fill: var(--secondary);
+  opacity: .9;
+}
