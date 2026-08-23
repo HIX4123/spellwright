@@ -1,4 +1,4 @@
-import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs';
+import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=routing-20260823-1';
 
 let data;
 let relationships;
