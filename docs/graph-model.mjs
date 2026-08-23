@@ -187,6 +187,7 @@ function orderLayers(systems, ranks, edges, hierarchy) {
   }
 
   const stageGroups = new Map();
+  const fixedGroups = new Map();
   hierarchy.filter(edge => edge.relationType === 'stage').forEach(edge => {
     if (!stageGroups.has(edge.from)) stageGroups.set(edge.from, []);
     stageGroups.get(edge.from).push(edge);
@@ -203,9 +204,121 @@ function orderLayers(systems, ranks, edges, hierarchy) {
     const rest = layer.filter(id => !orderedIds.includes(id));
     rest.splice(Math.min(insertion, rest.length), 0, ...orderedIds);
     layers.set(rank, rest);
+    fixedGroups.set(rank, { ids: orderedIds, insertion });
+  });
+
+  const positions = new Map();
+  layers.forEach(ids => ids.forEach((id, index) => positions.set(id, index)));
+  [...layers.keys()].sort((a, b) => a - b).forEach(rank => {
+    const fixed = fixedGroups.get(rank);
+    const sortable = fixed
+      ? layers.get(rank).filter(id => !fixed.ids.includes(id))
+      : layers.get(rank);
+    sortable.sort((a, b) => {
+      const center = id => {
+        const parents = (neighbors.get(id) || [])
+          .filter(other => ranks.get(other) === rank - 1)
+          .map(other => positions.get(other));
+        return parents.length
+          ? parents.reduce((sum, value) => sum + value, 0) / parents.length
+          : sourceOrder.get(id);
+      };
+      return center(a) - center(b) || sourceOrder.get(a) - sourceOrder.get(b);
+    });
+    if (fixed) sortable.splice(Math.min(fixed.insertion, sortable.length), 0, ...fixed.ids);
+    layers.set(rank, sortable);
+    layers.get(rank).forEach((id, index) => positions.set(id, index));
   });
 
   return layers;
+}
+
+function hierarchyCenters(hierarchy, step, firstCenter) {
+  const children = new Map();
+  const childIds = new Set();
+  hierarchy.forEach(edge => {
+    if (!children.has(edge.from)) children.set(edge.from, []);
+    children.get(edge.from).push(edge);
+    childIds.add(edge.to);
+  });
+  children.forEach(edges => edges.sort((a, b) => a.order - b.order));
+
+  const widths = new Map();
+  const width = id => {
+    if (widths.has(id)) return widths.get(id);
+    const value = (children.get(id) || []).reduce((sum, edge) => sum + width(edge.to), 0) || 1;
+    widths.set(id, value);
+    return value;
+  };
+  const centers = new Map();
+  const place = (id, start) => {
+    const edges = children.get(id) || [];
+    if (!edges.length) {
+      centers.set(id, firstCenter + start * step);
+      return;
+    }
+    let cursor = start;
+    edges.forEach(edge => {
+      place(edge.to, cursor);
+      cursor += width(edge.to);
+    });
+    centers.set(id, (centers.get(edges[0].to) + centers.get(edges.at(-1).to)) / 2);
+  };
+
+  let cursor = 0;
+  [...children.keys()].filter(id => !childIds.has(id)).forEach(root => {
+    place(root, cursor);
+    cursor += width(root) + 1;
+  });
+  return centers;
+}
+
+function routeEdges(model, nodes, contentWidth) {
+  const routes = new Map();
+  const gaps = new Map();
+  const longEdges = [];
+
+  model.edges.forEach(edge => {
+    if (edge.kind === 'sequence') return;
+    const from = nodes.get(edge.from);
+    const to = nodes.get(edge.to);
+    if (!from || !to) return;
+    const span = Math.abs((from.rank || 0) - (to.rank || 0));
+    if (edge.kind === 'dependency' && span > 1) {
+      longEdges.push(edge);
+      return;
+    }
+    const gap = Math.min(from.rank, to.rank);
+    if (!gaps.has(gap)) gaps.set(gap, []);
+    gaps.get(gap).push(edge);
+  });
+
+  gaps.forEach((edges, rank) => {
+    const row = [...nodes.values()].filter(node => node.rank === rank);
+    const next = [...nodes.values()].filter(node => node.rank !== null && node.rank > rank);
+    const top = Math.max(...row.map(node => node.y + node.h));
+    const bottom = next.length ? Math.min(...next.map(node => node.y)) : top + 78;
+    edges.sort((a, b) => {
+      const aFrom = nodes.get(a.from);
+      const bFrom = nodes.get(b.from);
+      const aTo = nodes.get(a.to);
+      const bTo = nodes.get(b.to);
+      return Number(aFrom.rank !== aTo.rank) - Number(bFrom.rank !== bTo.rank)
+        || (a.from === b.from
+          ? Math.abs(bTo.x - bFrom.x) - Math.abs(aTo.x - aFrom.x)
+          : 0)
+        || bFrom.x - aFrom.x
+        || aTo.x - bTo.x;
+    });
+    edges.forEach((edge, index) => {
+      routes.set(edge, { trackY: top + (bottom - top) * (index + 1) / (edges.length + 1) });
+    });
+  });
+
+  longEdges.forEach((edge, index) => {
+    routes.set(edge, { channelX: contentWidth + 18 + index * 8 });
+  });
+  return routes;
 }
 
 export function layoutGraph(model) {
@@ -227,26 +340,45 @@ export function layoutGraph(model) {
   const rankEdges = model.rankEdges.filter(edge => incident.has(edge.from) && incident.has(edge.to));
   const ranks = rankSystems(connectedIds, rankEdges);
   const layers = orderLayers(connected, ranks, rankEdges, model.hierarchy);
-  const maxCount = Math.max(1, ...[...layers.values()].map(layer => layer.length));
   const longEdges = model.dependency.filter(edge =>
     Math.abs((ranks.get(edge.from) || 0) - (ranks.get(edge.to) || 0)) > 1).length;
-  const contentWidth = Math.max(620,
-    MARGIN_X * 2 + maxCount * NODE_W + Math.max(0, maxCount - 1) * GAP_X);
-  const routeWidth = longEdges ? 34 + Math.min(5, longEdges) * 8 : 0;
-  const width = contentWidth + routeWidth;
   const nodes = new Map();
+  const step = NODE_W + GAP_X;
+  const firstCenter = MARGIN_X + NODE_W / 2;
+  const treeCenters = hierarchyCenters(model.hierarchy, step, firstCenter);
+  const centers = new Map();
   let y = MARGIN_Y;
 
   [...layers.keys()].sort((a, b) => a - b).forEach(rank => {
     const layer = layers.get(rank);
-    const rowWidth = layer.length * NODE_W + Math.max(0, layer.length - 1) * GAP_X;
-    let x = (contentWidth - rowWidth) / 2;
-    layer.forEach(id => {
-      nodes.set(id, { x, y, w: NODE_W, h: NODE_H, rank });
-      x += NODE_W + GAP_X;
+    layer.forEach((id, index) => {
+      const related = new Set();
+      rankEdges.forEach(edge => {
+        if (edge.from === id && centers.has(edge.to)) related.add(edge.to);
+        if (edge.to === id && centers.has(edge.from)) related.add(edge.from);
+      });
+      const relatedCenters = [...related].map(other => centers.get(other));
+      const preferred = treeCenters.get(id)
+        ?? (relatedCenters.length
+          ? relatedCenters.reduce((sum, value) => sum + value, 0) / relatedCenters.length
+          : firstCenter + index * step);
+      const previous = centers.get(layer[index - 1]);
+      let center = Math.max(firstCenter, preferred, previous === undefined ? firstCenter : previous + step);
+      if (!treeCenters.has(id)) {
+        const blocksUnrelatedTrunk = [...nodes].some(([other, node]) =>
+          node.rank === rank - 1
+          && !related.has(other)
+          && Math.abs(node.x + node.w / 2 - center) < 1);
+        if (blocksUnrelatedTrunk) center += GAP_X / 2;
+      }
+      centers.set(id, center);
+      nodes.set(id, { x: center - NODE_W / 2, y, w: NODE_W, h: NODE_H, rank });
     });
     y += NODE_H + GAP_Y;
   });
+
+  let contentWidth = Math.max(620,
+    ...[...nodes.values()].map(node => node.x + node.w + MARGIN_X));
 
   let isolatedTop = null;
   if (isolated.length) {
@@ -264,14 +396,20 @@ export function layoutGraph(model) {
     y += Math.ceil(isolated.length / columns) * (NODE_H + 12);
   }
 
+  contentWidth = Math.max(contentWidth,
+    ...[...nodes.values()].map(node => node.x + node.w + MARGIN_X));
+  const routeWidth = longEdges ? 34 + longEdges * 8 : 0;
+  const routes = routeEdges(model, nodes, contentWidth);
+
   return {
     nodes,
     ranks,
     layers,
-    width,
+    width: contentWidth + routeWidth,
     contentWidth,
     height: Math.max(230, y + 22),
-    isolatedTop
+    isolatedTop,
+    routes
   };
 }
 
@@ -288,11 +426,7 @@ export function edgePath(edge, layout, index = 0) {
   }
 
   if (from.rank === to.rank) {
-    const left = from.x <= to.x ? from : to;
-    const right = from.x <= to.x ? to : from;
-    const direct = Math.abs(left.x + left.w - right.x) < 40;
-    if (direct) return `M ${left.x + left.w} ${left.y + left.h / 2} H ${right.x}`;
-    const trackY = left.y + left.h + 18 + (index % 5) * 8;
+    const trackY = layout.routes.get(edge)?.trackY ?? from.y + from.h + 18 + (index % 5) * 8;
     return `M ${from.x + from.w / 2} ${from.y + from.h} V ${trackY} H ${to.x + to.w / 2} V ${to.y + to.h}`;
   }
 
@@ -304,12 +438,12 @@ export function edgePath(edge, layout, index = 0) {
   const rankSpan = Math.abs((from.rank || 0) - (to.rank || 0));
 
   if (edge.kind === 'dependency' && rankSpan > 1) {
-    const channelX = layout.contentWidth + 18 + (index % 5) * 8;
+    const channelX = layout.routes.get(edge)?.channelX ?? layout.contentWidth + 18 + index * 8;
     const turnStart = startY + (above ? 18 : -18);
     const turnEnd = endY + (above ? -18 : 18);
     return `M ${startX} ${startY} V ${turnStart} H ${channelX} V ${turnEnd} H ${endX} V ${endY}`;
   }
 
-  const middleY = Math.round((startY + endY) / 2);
+  const middleY = layout.routes.get(edge)?.trackY ?? Math.round((startY + endY) / 2);
   return `M ${startX} ${startY} V ${middleY} H ${endX} V ${endY}`;
 }
