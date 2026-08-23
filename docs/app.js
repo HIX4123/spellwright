@@ -1,4 +1,8 @@
+import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs';
+
 let data;
+let relationships;
+let repositoryRevision;
 let currentView = 'overview';
 let dirty = false;
 
@@ -11,20 +15,57 @@ const navItems = [
   ['mvp','MVP'], ['decisions','Decisions'], ['graveyard','Graveyard'], ['questions','Open Questions']
 ];
 
-const graphCategoryOrder = ['attribute', 'magic', 'character', 'combat', 'roguelite'];
+const DRAFT_KEY = 'spellwright-project-draft';
+const STALE_DRAFT_KEY = 'spellwright-project-draft-stale-backup';
+
+async function contentRevision(content) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content));
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function isProjectData(value) {
+  return Boolean(value?.project
+    && ['statuses', 'systems', 'elements', 'priorities', 'openQuestions', 'mvp', 'decisions']
+      .every(key => Array.isArray(value[key]))
+    && value.systems.every(system => typeof system?.id === 'string'
+      && typeof system.name === 'string'
+      && Array.isArray(system.dependencies)));
+}
+
+function isRelationshipData(value) {
+  return Boolean(value
+    && ['hierarchy', 'sequence', 'hiddenSystems', 'suppressedDependencies']
+      .every(key => Array.isArray(value[key]))
+    && value.hierarchy.every(edge => typeof edge?.parent === 'string' && typeof edge.child === 'string')
+    && value.sequence.every(edge => typeof edge?.from === 'string' && typeof edge.to === 'string'));
+}
 
 async function load() {
-  const res = await fetch('./data/project.json', { cache: 'no-store' });
-  const remote = await res.json();
-  const draft = localStorage.getItem('spellwright-project-draft');
+  const [projectResponse, relationshipResponse] = await Promise.all([
+    fetch('./data/project.json', { cache: 'no-store' }),
+    fetch('./data/relationships.json', { cache: 'no-store' })
+  ]);
+  if (!projectResponse.ok || !relationshipResponse.ok) throw new Error('Failed to load dashboard data');
+  const projectSource = await projectResponse.text();
+  const remote = JSON.parse(projectSource);
+  relationships = await relationshipResponse.json();
+  if (!isProjectData(remote) || !isRelationshipData(relationships)) {
+    throw new Error('Invalid dashboard data');
+  }
+  repositoryRevision = await contentRevision(projectSource);
+  const draft = localStorage.getItem(DRAFT_KEY);
 
   if (draft) {
     try {
       const parsed = JSON.parse(draft);
-      data = parsed?.project?.schemaVersion === remote?.project?.schemaVersion ? parsed : remote;
-      if (data === remote) localStorage.removeItem('spellwright-project-draft');
+      data = parsed.revision === repositoryRevision && isProjectData(parsed.data) ? parsed.data : remote;
+      if (data === remote) {
+        localStorage.setItem(STALE_DRAFT_KEY, JSON.stringify(parsed.data || parsed));
+        localStorage.removeItem(DRAFT_KEY);
+      }
     } catch {
       data = remote;
+      localStorage.removeItem(DRAFT_KEY);
     }
   } else {
     data = remote;
@@ -41,7 +82,7 @@ async function load() {
     btn.className = 'ghost';
     btn.textContent = 'Use repository data';
     btn.onclick = () => {
-      localStorage.removeItem('spellwright-project-draft');
+      localStorage.removeItem(DRAFT_KEY);
       location.reload();
     };
     document.querySelector('.sidebar-footer').prepend(btn);
@@ -66,7 +107,7 @@ function statusMeta(id) {
 
 function statusBadge(id) {
   const s = statusMeta(id);
-  return `<span class="status ${id}">${s.icon} ${s.label}</span>`;
+  return `<span class="status ${escapeHtml(id)}">${escapeHtml(s.icon)} ${escapeHtml(s.label)}</span>`;
 }
 
 function categoryLabel(id) {
@@ -81,7 +122,7 @@ function categoryLabel(id) {
 }
 
 function section(title, subtitle='') {
-  return `<div class="section-head"><h2>${title}</h2><p>${subtitle}</p></div>`;
+  return `<div class="section-head"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(subtitle)}</p></div>`;
 }
 
 function escapeHtml(value='') {
@@ -121,8 +162,8 @@ function renderOverview() {
     </div>
     ${section('Core identity', data.project.updatedAt)}
     <div class="card">
-      <p class="core-statement">${data.project.coreStatement}</p>
-      <p class="muted" style="margin:16px 0 0">MVP question · ${data.project.mvpQuestion}</p>
+      <p class="core-statement">${escapeHtml(data.project.coreStatement)}</p>
+      <p class="muted" style="margin:16px 0 0">MVP question · ${escapeHtml(data.project.mvpQuestion)}</p>
     </div>
     ${section('Current priorities','세부 시스템은 Systems 관계 맵에서 확인')}
     <div class="grid cols-2">${data.priorities.map(priorityCard).join('')}</div>
@@ -132,11 +173,11 @@ function renderOverview() {
 }
 
 function priorityCard(p) {
-  return `<div class="card priority"><div class="rank">${p.rank}</div><div><h3>${p.title}</h3><p>${p.description}</p></div>${statusBadge(p.status)}</div>`;
+  return `<div class="card priority"><div class="rank">${escapeHtml(p.rank)}</div><div><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></div>${statusBadge(p.status)}</div>`;
 }
 
 function decisionRow(d) {
-  return `<div class="decision"><div class="date">${d.date}<br>${d.version}</div><div class="type">${d.type}</div><div><h3>${d.title}</h3><p>${d.reason}</p></div></div>`;
+  return `<div class="decision"><div class="date">${escapeHtml(d.date)}<br>${escapeHtml(d.version)}</div><div class="type">${escapeHtml(d.type)}</div><div><h3>${escapeHtml(d.title)}</h3><p>${escapeHtml(d.reason)}</p></div></div>`;
 }
 
 function activeSystems() {
@@ -147,10 +188,10 @@ function renderSystems() {
   view.innerHTML = `
     <div class="toolbar">
       <input id="search" placeholder="시스템 검색…" />
-      <select id="statusFilter"><option value="">모든 상태</option>${data.statuses.filter(s=>s.id!=='rejected').map(s=>`<option value="${s.id}">${s.icon} ${s.label}</option>`).join('')}</select>
-      <select id="categoryFilter"><option value="">모든 카테고리</option>${graphCategoryOrder.map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
+      <select id="statusFilter"><option value="">모든 상태</option>${data.statuses.filter(s=>s.id!=='rejected').map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.icon)} ${escapeHtml(s.label)}</option>`).join('')}</select>
+      <select id="categoryFilter"><option value="">모든 카테고리</option>${CATEGORY_ORDER.map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
     </div>
-    <div class="map-note"><span>가로 방향은 현재 dependencies로 계산한 임시 DAG 깊이다.</span><span>A → B : B가 A에 의존</span></div>
+    <div class="map-note"><span>위 → 아래 = 관계 흐름</span><span>실선 = 상하위 · 점선 = 기능 의존 · 파선 = 단계 순서</span></div>
     <div id="systemMap"></div>`;
 
   const refresh = () => {
@@ -168,283 +209,111 @@ function renderSystems() {
   refresh();
 }
 
-function buildGraphEdges(systems) {
-  const visibleIds = new Set(systems.map(s => s.id));
-  const edges = [];
-
-  systems.forEach(dependent => {
-    (dependent.dependencies || []).forEach(dependencyId => {
-      if (visibleIds.has(dependencyId)) {
-        edges.push({ from: dependencyId, to: dependent.id });
-      }
-    });
-  });
-
-  return edges;
-}
-
-function graphRanks(systems, edges) {
-  const ids = systems.map(s => s.id);
-  const indegree = new Map(ids.map(id => [id, 0]));
-  const children = new Map(ids.map(id => [id, []]));
-  const ranks = new Map(ids.map(id => [id, 0]));
-
-  edges.forEach(edge => {
-    indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
-    children.get(edge.from)?.push(edge.to);
-  });
-
-  const orderIndex = new Map(systems.map((s, i) => [s.id, i]));
-  const queue = ids
-    .filter(id => indegree.get(id) === 0)
-    .sort((a, b) => orderIndex.get(a) - orderIndex.get(b));
-  const processed = new Set();
-
-  while (queue.length) {
-    const id = queue.shift();
-    processed.add(id);
-    for (const child of children.get(id) || []) {
-      ranks.set(child, Math.max(ranks.get(child) || 0, (ranks.get(id) || 0) + 1));
-      indegree.set(child, indegree.get(child) - 1);
-      if (indegree.get(child) === 0) {
-        queue.push(child);
-        queue.sort((a, b) => orderIndex.get(a) - orderIndex.get(b));
-      }
-    }
-  }
-
-  const cyclic = new Set(ids.filter(id => !processed.has(id)));
-  if (cyclic.size) {
-    const stableMax = Math.max(0, ...[...ranks.values()]);
-    cyclic.forEach(id => ranks.set(id, Math.max(ranks.get(id) || 0, stableMax + 1)));
-  }
-
-  return { ranks, cyclic };
-}
-
-function graphLayout(systems, edges) {
-  const nodeW = 200;
-  const nodeH = 70;
-  const rankGap = 92;
-  const stackGap = 12;
-  const laneLabelW = 108;
-  const marginX = 28;
-  const marginY = 34;
-  const lanePadY = 18;
-  const minLaneH = 108;
-  const rightMargin = 38;
-  const categories = graphCategoryOrder.filter(c => systems.some(s => s.category === c));
-  const { ranks, cyclic } = graphRanks(systems, edges);
-  const maxRank = Math.max(0, ...systems.map(s => ranks.get(s.id) || 0));
-  const groups = new Map();
-
-  categories.forEach(category => {
-    for (let rank = 0; rank <= maxRank; rank += 1) {
-      groups.set(`${category}:${rank}`, systems.filter(s => s.category === category && (ranks.get(s.id) || 0) === rank));
-    }
-  });
-
-  const laneHeights = new Map();
-  categories.forEach(category => {
-    const maxStack = Math.max(1, ...Array.from({length:maxRank + 1}, (_, rank) => groups.get(`${category}:${rank}`)?.length || 0));
-    laneHeights.set(category, Math.max(minLaneH, lanePadY * 2 + maxStack * nodeH + Math.max(0, maxStack - 1) * stackGap));
-  });
-
-  const laneTops = new Map();
-  let cursorY = marginY;
-  categories.forEach(category => {
-    laneTops.set(category, cursorY);
-    cursorY += laneHeights.get(category);
-  });
-
-  const backEdges = edges.filter(edge => (ranks.get(edge.to) || 0) <= (ranks.get(edge.from) || 0));
-  const nodeAreaRight = laneLabelW + marginX + maxRank * (nodeW + rankGap) + nodeW;
-  const routeGutterStart = nodeAreaRight + 46;
-  const width = Math.max(860, routeGutterStart + rightMargin + Math.max(0, backEdges.length - 1) * 12);
-  const height = Math.max(360, cursorY + marginY);
-  const nodes = new Map();
-
-  categories.forEach(category => {
-    for (let rank = 0; rank <= maxRank; rank += 1) {
-      const items = groups.get(`${category}:${rank}`) || [];
-      const laneTop = laneTops.get(category);
-      const laneH = laneHeights.get(category);
-      const blockH = items.length * nodeH + Math.max(0, items.length - 1) * stackGap;
-      const startY = laneTop + Math.max(lanePadY, (laneH - blockH) / 2);
-
-      items.forEach((item, index) => {
-        nodes.set(item.id, {
-          x: laneLabelW + marginX + rank * (nodeW + rankGap),
-          y: startY + index * (nodeH + stackGap),
-          w: nodeW,
-          h: nodeH,
-          rank,
-          category
-        });
-      });
-    }
-  });
-
-  return {
-    width,
-    height,
-    nodes,
-    categories,
-    ranks,
-    cyclic,
-    laneTops,
-    laneHeights,
-    laneLabelW,
-    marginX,
-    nodeW,
-    nodeH,
-    rankGap,
-    maxRank,
-    routeGutterStart
-  };
-}
-
-function distributedPortOffset(index, total, nodeH) {
-  if (total <= 1) return 0;
-  const span = Math.min(nodeH - 22, (total - 1) * 10);
-  return -span / 2 + span * (index / (total - 1));
-}
-
-function buildPortOffsets(edges, layout) {
-  const outgoing = new Map();
-  const incoming = new Map();
-
-  edges.forEach(edge => {
-    if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
-    if (!incoming.has(edge.to)) incoming.set(edge.to, []);
-    outgoing.get(edge.from).push(edge);
-    incoming.get(edge.to).push(edge);
-  });
-
-  const outOffsets = new Map();
-  const inOffsets = new Map();
-  const key = edge => `${edge.from}::${edge.to}`;
-
-  outgoing.forEach(list => {
-    list.sort((a, b) => {
-      const ay = layout.nodes.get(a.to)?.y || 0;
-      const by = layout.nodes.get(b.to)?.y || 0;
-      return ay - by;
-    });
-    list.forEach((edge, index) => outOffsets.set(key(edge), distributedPortOffset(index, list.length, layout.nodeH)));
-  });
-
-  incoming.forEach(list => {
-    list.sort((a, b) => {
-      const ay = layout.nodes.get(a.from)?.y || 0;
-      const by = layout.nodes.get(b.from)?.y || 0;
-      return ay - by;
-    });
-    list.forEach((edge, index) => inOffsets.set(key(edge), distributedPortOffset(index, list.length, layout.nodeH)));
-  });
-
-  return { outOffsets, inOffsets };
+function categoryLegend(systems) {
+  const categories = new Set(systems.map(system => system.category));
+  return CATEGORY_ORDER
+    .filter(category => categories.has(category))
+    .map(category => `<span class="category-legend ${category}"><i></i>${categoryLabel(category)}</span>`)
+    .join('');
 }
 
 function renderSystemMap(container, systems) {
-  if (!systems.length) {
+  const model = buildGraphModel(systems, relationships);
+  if (!model.systems.length) {
     container.innerHTML = '<div class="map-empty">일치하는 시스템이 없다.</div>';
     return;
   }
 
-  const edges = buildGraphEdges(systems);
-  const layout = graphLayout(systems, edges);
-  const { outOffsets, inOffsets } = buildPortOffsets(edges, layout);
-  const edgeKey = edge => `${edge.from}::${edge.to}`;
-  let backIndex = 0;
-
-  const lanes = layout.categories.map(category => {
-    const top = layout.laneTops.get(category);
-    const height = layout.laneHeights.get(category);
-    return `<div class="map-lane" style="top:${top}px;height:${height}px">
-      <span class="map-lane-label">${categoryLabel(category)}</span>
-    </div>`;
+  const layout = layoutGraph(model);
+  const prefix = container.id || 'systemMap';
+  const edgeHtml = model.edges.map((edge, index) => {
+    const marker = edge.kind === 'hierarchy'
+      ? `url(#${prefix}-hierarchy-arrow)`
+      : edge.kind === 'sequence'
+        ? `url(#${prefix}-sequence-arrow)`
+        : `url(#${prefix}-dependency-arrow)`;
+    const markerStart = edge.mutual ? ` marker-start="${marker}"` : '';
+    return `<path class="compact-edge ${edge.kind}${edge.mutual ? ' mutual' : ''}"
+      data-from="${escapeHtml(edge.from)}" data-to="${escapeHtml(edge.to)}"
+      d="${edgePath(edge, layout, index)}"${markerStart} marker-end="${marker}" />`;
   }).join('');
 
-  const rankGuides = Array.from({length: layout.maxRank + 1}, (_, rank) => {
-    const x = layout.laneLabelW + layout.marginX + rank * (layout.nodeW + layout.rankGap);
-    return `<div class="map-rank-guide" style="left:${x}px"><span>${rank}</span></div>`;
-  }).join('');
-
-  const edgeSvg = edges.map(edge => {
-    const a = layout.nodes.get(edge.from);
-    const b = layout.nodes.get(edge.to);
-    if (!a || !b) return '';
-
-    const key = edgeKey(edge);
-    const startX = a.x + a.w;
-    const startY = a.y + a.h / 2 + (outOffsets.get(key) || 0);
-    const endX = b.x;
-    const endY = b.y + b.h / 2 + (inOffsets.get(key) || 0);
-    const forward = b.rank > a.rank;
-    let d;
-    let extraClass = '';
-
-    if (forward) {
-      const midX = Math.round((startX + endX) / 2);
-      d = `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`;
-    } else {
-      const gutterX = layout.routeGutterStart + backIndex * 12;
-      backIndex += 1;
-      d = `M ${startX} ${startY} H ${gutterX} V ${endY} H ${endX}`;
-      extraClass = ' back';
-    }
-
-    return `<path class="map-edge${extraClass}" data-from="${edge.from}" data-to="${edge.to}" d="${d}" marker-end="url(#mapArrow)" />`;
-  }).join('');
-
-  const nodeHtml = systems.map(system => {
-    const p = layout.nodes.get(system.id);
+  const nodeHtml = model.systems.map(system => {
+    const position = layout.nodes.get(system.id);
     const status = statusMeta(system.status);
-    const cycleClass = layout.cyclic.has(system.id) ? ' cycle' : '';
-    return `<button class="map-node${cycleClass}" data-id="${system.id}" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
-      <span class="map-node-meta">${escapeHtml(status.icon)} ${escapeHtml(status.label)}</span>
+    return `<button class="compact-node" data-id="${escapeHtml(system.id)}"
+      data-category="${escapeHtml(system.category)}"
+      style="left:${position.x}px;top:${position.y}px;width:${position.w}px;height:${position.h}px">
+      <span class="compact-node-kicker">
+        <span class="compact-category">${escapeHtml(categoryLabel(system.category))}</span>
+        <span class="compact-status">${escapeHtml(status.icon)} ${escapeHtml(status.label)}</span>
+      </span>
       <strong>${escapeHtml(system.name)}</strong>
-      <span class="map-node-preview">${escapeHtml(system.definition || '')}</span>
+      <small>${escapeHtml(system.definition || '')}</small>
     </button>`;
   }).join('');
 
-  container.innerHTML = `<div class="system-map-scroll">
-    <div class="system-map" style="width:${layout.width}px;height:${layout.height}px">
-      ${lanes}
-      ${rankGuides}
-      <svg class="map-lines" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
-        <defs><marker id="mapArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L8,4 L0,8 Z" class="map-arrow" /></marker></defs>
-        ${edgeSvg}
-      </svg>
-      ${nodeHtml}
-    </div>
-  </div>`;
+  container.innerHTML = `
+    <div class="compact-map-root">
+      <div class="compact-legend">
+        <div class="relation-legend">
+          <span class="solid-sample">상하위</span>
+          <span class="dash-sample">기능 의존</span>
+          <span class="sequence-sample">단계 순서</span>
+        </div>
+        <div class="category-legends">${categoryLegend(model.systems)}</div>
+      </div>
+      <div class="compact-map-scroll">
+        <div class="compact-map" style="width:${layout.width}px;height:${layout.height}px">
+          ${layout.isolatedTop === null ? '' : `<div class="isolated-label" style="top:${layout.isolatedTop}px">현재 관계선 없음</div>`}
+          <svg class="compact-lines" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
+            <defs>
+              <marker id="${prefix}-hierarchy-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" class="hierarchy-arrow" />
+              </marker>
+              <marker id="${prefix}-dependency-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,1 L9,5 L0,9 Z" class="dependency-arrow" />
+              </marker>
+              <marker id="${prefix}-sequence-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,1 L9,5 L0,9 Z" class="sequence-arrow" />
+              </marker>
+            </defs>
+            ${edgeHtml}
+          </svg>
+          ${nodeHtml}
+        </div>
+      </div>
+    </div>`;
 
-  bindMapInteractions(container, systems, edges);
+  bindMapInteractions(container.querySelector('.compact-map-root'), model.edges);
 }
 
-function bindMapInteractions(container, systems, edges) {
-  const nodes = [...container.querySelectorAll('.map-node')];
-  const edgeEls = [...container.querySelectorAll('.map-edge')];
+function bindMapInteractions(root, edges) {
+  const nodes = [...root.querySelectorAll('.compact-node')];
+  const edgeElements = [...root.querySelectorAll('.compact-edge')];
 
   const clear = () => {
-    nodes.forEach(n => n.classList.remove('focus', 'dim'));
-    edgeEls.forEach(e => e.classList.remove('focus', 'dim'));
+    root.classList.remove('relation-focus-active');
+    nodes.forEach(node => node.classList.remove('focus', 'dim'));
+    edgeElements.forEach(edge => edge.classList.remove('focus', 'dim'));
   };
 
   const focus = id => {
     const related = new Set([id]);
-    edges.forEach(e => {
-      if (e.from === id) related.add(e.to);
-      if (e.to === id) related.add(e.from);
+    edges.forEach(edge => {
+      if (edge.from === id) related.add(edge.to);
+      if (edge.to === id) related.add(edge.from);
     });
-    nodes.forEach(n => n.classList.toggle('dim', !related.has(n.dataset.id)));
-    nodes.forEach(n => n.classList.toggle('focus', related.has(n.dataset.id)));
-    edgeEls.forEach(e => {
-      const direct = e.dataset.from === id || e.dataset.to === id;
-      e.classList.toggle('focus', direct);
-      e.classList.toggle('dim', !direct);
+    root.classList.add('relation-focus-active');
+    nodes.forEach(node => {
+      const active = related.has(node.dataset.id);
+      node.classList.toggle('focus', active);
+      node.classList.toggle('dim', !active);
+    });
+    edgeElements.forEach(edge => {
+      const direct = edge.dataset.from === id || edge.dataset.to === id;
+      edge.classList.toggle('focus', direct);
+      edge.classList.toggle('dim', !direct);
     });
   };
 
@@ -452,21 +321,24 @@ function bindMapInteractions(container, systems, edges) {
     node.addEventListener('mouseenter', () => focus(node.dataset.id));
     node.addEventListener('mouseleave', clear);
     node.addEventListener('focus', () => focus(node.dataset.id));
-    node.addEventListener('blur', clear);
+    node.addEventListener('blur', event => {
+      const next = event.relatedTarget?.closest?.('.compact-node[data-id]');
+      if (next && root.contains(next)) focus(next.dataset.id);
+      else clear();
+    });
     node.addEventListener('click', () => openEditor(node.dataset.id));
   });
 }
-
 function systemCard(s) {
-  return `<article class="card system-card" data-id="${s.id}">
+  return `<article class="card system-card" data-id="${escapeHtml(s.id)}">
     ${statusBadge(s.status)}
-    <h3>${s.name}</h3>
-    <p>${s.definition}</p>
+    <h3>${escapeHtml(s.name)}</h3>
+    <p>${escapeHtml(s.definition)}</p>
     <div class="meta">
-      <span>${categoryLabel(s.category)}</span>
+      <span>${escapeHtml(categoryLabel(s.category))}</span>
       <span>·</span>
-      <span>${s.lastModified}</span>
-      ${s.dependencies?.length ? `<span>· ${s.dependencies.length} deps</span>` : ''}
+      <span>${escapeHtml(s.lastModified)}</span>
+      ${s.dependencies?.length ? `<span>· ${escapeHtml(s.dependencies.length)} deps</span>` : ''}
     </div>
   </article>`;
 }
@@ -481,8 +353,8 @@ function renderCombat() {
   const combatIds = new Set(['karma','engraving','circle','engraving-capacity']);
   const combat = activeSystems().filter(x => x.category === 'combat' || combatIds.has(x.id));
 
-  view.innerHTML = `${section('Combat core','Swimlane + DAG · 현재 의존 관계를 임시 계층으로 사용')}
-    <div class="map-note"><span>행은 시스템 영역, 열은 dependency depth다.</span><span>A → B : B가 A에 의존</span></div>
+  view.innerHTML = `${section('Combat core','계층과 기능 의존 관계')}
+    <div class="map-note"><span>위 → 아래 = 관계 흐름</span><span>실선 = 상하위 · 점선 = 기능 의존</span></div>
     <div id="combatMap"></div>
     ${section('Design order')}
     <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>`;
@@ -495,7 +367,7 @@ function renderAttributes() {
     <div class="card">
       <table class="table">
         <thead><tr><th>속성</th><th>정다면체</th><th>기본 성향</th><th>사영 클래스</th></tr></thead>
-        <tbody>${data.elements.map(e=>`<tr><td>${e.name}</td><td>${e.solid}</td><td>${e.traits}</td><td>${e.projectionClasses}</td></tr>`).join('')}</tbody>
+        <tbody>${data.elements.map(e=>`<tr><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.traits)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
     ${section('Related systems')}
@@ -506,7 +378,7 @@ function renderAttributes() {
 
 function renderMvp() {
   view.innerHTML = `${section('MVP scope',data.project.mvpQuestion)}
-    <div class="card"><table class="table"><tbody>${data.mvp.map(x=>`<tr><th>${x.item}</th><td>${x.value}</td></tr>`).join('')}</tbody></table></div>
+    <div class="card"><table class="table"><tbody>${data.mvp.map(x=>`<tr><th>${escapeHtml(x.item)}</th><td>${escapeHtml(x.value)}</td></tr>`).join('')}</tbody></table></div>
     ${section('Priority stack')}
     <div class="grid cols-2">${data.priorities.map(priorityCard).join('')}</div>`;
 }
@@ -547,7 +419,7 @@ function renderGraveyard() {
 
 function renderQuestions() {
   view.innerHTML = `${section('Open questions','현재 확정되지 않은 설계 질문')}
-    <div class="question-list">${data.openQuestions.map((q,i)=>`<div class="question"><span class="muted">${String(i+1).padStart(2,'0')}</span> &nbsp;${q}</div>`).join('')}</div>`;
+    <div class="question-list">${data.openQuestions.map((q,i)=>`<div class="question"><span class="muted">${String(i+1).padStart(2,'0')}</span> &nbsp;${escapeHtml(q)}</div>`).join('')}</div>`;
 }
 
 function renderEditorExtra(item) {
@@ -591,7 +463,7 @@ function openEditor(id) {
   $('#editId').value = id;
   $('#editorTitle').textContent = item.name;
   $('#editStatus').innerHTML = data.statuses
-    .map(s=>`<option value="${s.id}" ${s.id===item.status?'selected':''}>${s.icon} ${s.label}</option>`)
+    .map(s=>`<option value="${escapeHtml(s.id)}" ${s.id===item.status?'selected':''}>${escapeHtml(s.icon)} ${escapeHtml(s.label)}</option>`)
     .join('');
   $('#editDefinition').value = item.definition || '';
   $('#editDetails').value = item.details || item.definition || '';
@@ -628,7 +500,7 @@ function toast(message) {
 }
 
 $('#saveBtn').onclick = () => {
-  localStorage.setItem('spellwright-project-draft', JSON.stringify(data));
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ revision: repositoryRevision, data }));
   dirty = false;
   $('#saveBtn').textContent = 'Save local draft';
   toast('Saved as local draft');
@@ -647,7 +519,9 @@ $('#importInput').onchange = async e => {
   const file = e.target.files?.[0];
   if (!file) return;
   try {
-    data = JSON.parse(await file.text());
+    const imported = JSON.parse(await file.text());
+    if (!isProjectData(imported)) throw new Error('Invalid project data');
+    data = imported;
     markDirty();
     renderNav();
     render();

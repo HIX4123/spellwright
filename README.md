@@ -17,11 +17,13 @@ spellwright/
    ├─ .nojekyll
    ├─ index.html          # /spellwright/ 진입점
    ├─ 404.html            # 잘못된 경로를 대시보드 루트로 복귀
-   ├─ app.js
+   ├─ app.js              # 화면 렌더링과 편집 동작
+   ├─ graph-model.mjs     # 관계 그래프의 순수 모델·레이아웃
+   ├─ graph-layout.css
    ├─ styles.css
-   ├─ favicon.svg
    └─ data/
-      └─ project.json     # 현재 설계 데이터의 source of truth
+      ├─ project.json     # 현재 설계 데이터의 source of truth
+      └─ relationships.json
 ```
 
 사이트 내부의 자산과 데이터 경로는 모두 상대 경로를 사용하므로 GitHub Project Pages의 `/spellwright/` base path에서 동작합니다.
@@ -39,3 +41,5 @@ Repository **Settings → Pages**에서 다음 값만 지정하면 됩니다.
 `docs/data/project.json`이 현재 프로젝트 설계의 공식 데이터입니다.
 
 대시보드에서 수정한 내용은 브라우저 `localStorage`에 로컬 초안으로 저장되며, 저장소의 공식 데이터 변경은 Git commit으로 관리합니다. 따라서 대시보드는 공개 조회용 UI이면서 동시에 설계 초안을 실험하는 프런트엔드 역할을 합니다.
+
+그래프 모델의 최소 회귀 검사는 `node --test test/graph-model.test.mjs`로 실행합니다.
