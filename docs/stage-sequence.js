@@ -1,5 +1,7 @@
 (() => {
   const SVG_NS = 'http://www.w3.org/2000/svg';
+  const ROW_GAP = 26;
+  const ROW_MARGIN = 26;
   let relationships = null;
   let scheduled = false;
   const observed = new WeakSet();
@@ -80,12 +82,30 @@
       path = document.createElementNS(SVG_NS, 'path');
       path.setAttribute('class', 'compact-edge stage-sequence');
       path.dataset.sequence = key;
-      path.dataset.from = from;
-      path.dataset.to = to;
+      // Keep stage-flow metadata separate from data-from/data-to. The base DAG
+      // layout treats those attributes as rank-producing graph edges.
+      path.dataset.sequenceFrom = from;
+      path.dataset.sequenceTo = to;
       path.setAttribute('marker-end', 'url(#stageSequenceArrow)');
       svg.appendChild(path);
     }
     return path;
+  }
+
+  function stageRowSlots(root, row, targetCenter) {
+    const map = root.querySelector('.compact-map');
+    const mapWidth = Number.parseFloat(map?.style.width) || map?.clientWidth || 900;
+    const nodeW = Math.max(...row.map(item => item.g.w));
+    const available = Math.max(nodeW, mapWidth - ROW_MARGIN * 2);
+    let gap = ROW_GAP;
+    if (row.length > 1) {
+      gap = Math.max(8, Math.min(ROW_GAP, (available - row.length * nodeW) / (row.length - 1)));
+    }
+    const rowW = row.length * nodeW + Math.max(0, row.length - 1) * gap;
+    let start = targetCenter - rowW / 2;
+    start = Math.max(ROW_MARGIN, Math.min(mapWidth - ROW_MARGIN - rowW, start));
+    if (!Number.isFinite(start)) start = ROW_MARGIN;
+    return Array.from({ length: row.length }, (_, index) => start + index * (nodeW + gap));
   }
 
   function alignGroup(root, parent, stages) {
@@ -94,17 +114,24 @@
       .filter(item => item.node);
     if (nodes.length < 2) return;
 
-    const ys = nodes.map(item => geometry(item.node).y).sort((a, b) => a - b);
+    const stageIds = new Set(nodes.map(item => item.stage.child));
+    const stageGeometry = nodes.map(item => geometry(item.node));
+    const ys = stageGeometry.map(g => g.y).sort((a, b) => a - b);
     const targetY = ys[Math.floor(ys.length / 2)];
-    const allNodes = [...root.querySelectorAll('.compact-node')];
-    const row = allNodes
+    const parentNode = root.querySelector(`.compact-node[data-id="${CSS.escape(parent)}"]`);
+    const parentGeometry = parentNode ? geometry(parentNode) : null;
+    const stageCenter = stageGeometry.reduce((sum, g) => sum + g.x + g.w / 2, 0) / stageGeometry.length;
+    const targetCenter = parentGeometry ? parentGeometry.x + parentGeometry.w / 2 : stageCenter;
+
+    // Stage nodes are explicitly included even if a previous layout pass placed
+    // them on different ranks. This makes the three-stage row self-healing.
+    const row = [...root.querySelectorAll('.compact-node')]
       .map(node => ({ node, g: geometry(node) }))
-      .filter(item => Math.abs(item.g.y - targetY) < 6)
+      .filter(item => stageIds.has(item.node.dataset.id) || Math.abs(item.g.y - targetY) < 6)
       .sort((a, b) => a.g.x - b.g.x);
     if (row.length < nodes.length) return;
 
-    const stageIds = new Set(nodes.map(item => item.stage.child));
-    const slots = row.map(item => item.g.x);
+    const slots = stageRowSlots(root, row, targetCenter);
     const currentCenters = nodes.map(item => {
       const g = geometry(item.node);
       return g.x + g.w / 2;
@@ -118,6 +145,8 @@
         const slotCenter = slots[start + i] + geometry(nodes[i].node).w / 2;
         cost += Math.abs(slotCenter - currentCenters[i]);
       }
+      const groupCenter = (slots[start] + slots[start + nodes.length - 1] + geometry(nodes[0].node).w) / 2;
+      cost += Math.abs(groupCenter - targetCenter) * 1.5;
       if (cost < bestCost) {
         bestCost = cost;
         bestStart = start;
@@ -132,9 +161,11 @@
     orderedNodes.forEach((node, index) => {
       const old = geometry(node);
       const nextX = slots[index];
-      if (Math.abs(old.x - nextX) > .5 || (stageIds.has(node.dataset.id) && Math.abs(old.y - targetY) > .5)) moved.add(node.dataset.id);
+      const isStage = stageIds.has(node.dataset.id);
+      const nextY = isStage ? targetY : old.y;
+      if (Math.abs(old.x - nextX) > .5 || Math.abs(old.y - nextY) > .5) moved.add(node.dataset.id);
       node.style.left = `${nextX}px`;
-      if (stageIds.has(node.dataset.id)) node.style.top = `${targetY}px`;
+      if (isStage) node.style.top = `${targetY}px`;
     });
 
     rerouteIncidentEdges(root, moved);
@@ -179,6 +210,8 @@
   function schedule() {
     if (scheduled) return;
     scheduled = true;
+    // Run after the base layout and clarity pass so stage ordering is the final
+    // positional adjustment, not an input to the DAG rank calculation.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       scheduled = false;
       patchAll();
