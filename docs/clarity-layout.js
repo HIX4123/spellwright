@@ -173,6 +173,19 @@
     return centers;
   }
 
+  function recenterCenters(layers, centers, width) {
+    const ids=[...layers.values()].flat();
+    if(!ids.length)return centers;
+    const left=Math.min(...ids.map(id=>(centers.get(id)??width/2)-NODE_W/2));
+    const right=Math.max(...ids.map(id=>(centers.get(id)??width/2)+NODE_W/2));
+    const wanted=width/2-(left+right)/2;
+    const minShift=MARGIN_X-left;
+    const maxShift=width-MARGIN_X-right;
+    const shift=Math.max(minShift,Math.min(maxShift,wanted));
+    ids.forEach(id=>centers.set(id,(centers.get(id)??width/2)+shift));
+    return centers;
+  }
+
   function crosses(a,b,geom,ranks){
     if(ranks.get(a.from)===ranks.get(a.to)||ranks.get(b.from)===ranks.get(b.to))return false;
     if(ranks.get(a.from)!==ranks.get(b.from)||ranks.get(a.to)!==ranks.get(b.to))return false;
@@ -190,7 +203,7 @@
     const connected=nodes.map(n=>n.dataset.id).filter(id=>incident.has(id)); const isolated=nodes.map(n=>n.dataset.id).filter(id=>!incident.has(id));
     const sourceOrder=new Map(nodes.map((n,i)=>[n.dataset.id,i])); const ranks=ranksFor(connected,edges); const layers=optimize(connected,ranks,edges,sourceOrder);
     const maxCount=Math.max(1,...[...layers.values()].map(x=>x.length)); const host=root.parentElement?.clientWidth||900;
-    const width=Math.max(620,host,MARGIN_X*2+maxCount*NODE_W+Math.max(0,maxCount-1)*GAP_X); const centers=fitCenters(layers,ranks,edges,width);
+    const width=Math.max(620,host,MARGIN_X*2+maxCount*NODE_W+Math.max(0,maxCount-1)*GAP_X); const centers=recenterCenters(layers,fitCenters(layers,ranks,edges,width),width);
     const geom=new Map(); let y=MARGIN_TOP; const maxRank=connected.length?Math.max(...connected.map(id=>ranks.get(id)||0)):-1;
     for(let rank=0;rank<=maxRank;rank++){
       (layers.get(rank)||[]).forEach(id=>{const x=(centers.get(id)??width/2)-NODE_W/2;geom.set(id,{x,y,w:NODE_W,h:NODE_H,cx:x+NODE_W/2,rank});}); y+=NODE_H+RANK_GAP;
