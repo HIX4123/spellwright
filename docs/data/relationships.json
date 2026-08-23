@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "hierarchy": [
     {
       "parent": "circle",
@@ -17,18 +17,21 @@
       "parent": "engraving",
       "child": "initiation",
       "type": "stage",
+      "order": 1,
       "note": "개시는 각인의 첫 단계다."
     },
     {
       "parent": "engraving",
       "child": "development",
       "type": "stage",
+      "order": 2,
       "note": "전개는 각인의 중간 단계다."
     },
     {
       "parent": "engraving",
       "child": "completion",
       "type": "stage",
+      "order": 3,
       "note": "완결은 각인의 마지막 단계다."
     },
     {
@@ -42,6 +45,22 @@
       "child": "casting-form",
       "type": "subtype",
       "note": "시전 형식은 완결 단계의 외곽 도형으로 결정한다."
+    }
+  ],
+  "sequence": [
+    {
+      "from": "initiation",
+      "to": "development",
+      "type": "stage-flow",
+      "order": 1,
+      "note": "각인 구성은 개시에서 전개로 진행한다."
+    },
+    {
+      "from": "development",
+      "to": "completion",
+      "type": "stage-flow",
+      "order": 2,
+      "note": "각인 구성은 전개에서 완결로 진행한다."
     }
   ],
   "hiddenSystems": [
