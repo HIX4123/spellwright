@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "hierarchy": [
     {
       "parent": "circle",
@@ -14,16 +14,19 @@
       "note": "카르마는 서클 내부의 균형과 인과를 다루는 하위 개념으로 둔다."
     },
     {
-      "parent": "five-elements",
+      "parent": "engraving",
       "child": "projection-system",
       "type": "subtype",
-      "note": "사영도는 5대속성의 하위 개념으로 둔다."
+      "note": "사영도는 각인의 하위 개념으로 둔다."
     }
   ],
   "hiddenSystems": [
     "projection-abilities"
   ],
   "suppressedDependencies": [
+    {"from": "karma", "to": "engraving"},
+    {"from": "engraving", "to": "karma"},
+    {"from": "five-elements", "to": "projection-system"},
     {"from": "karma", "to": "projection-abilities"},
     {"from": "projection-system", "to": "projection-abilities"}
   ]
