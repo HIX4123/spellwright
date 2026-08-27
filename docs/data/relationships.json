@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "hierarchy": [
     {
       "parent": "circle",
@@ -45,6 +45,55 @@
       "child": "casting-form",
       "type": "subtype",
       "note": "시전 형식은 완결 단계의 외곽 도형으로 결정한다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "health",
+      "type": "stat",
+      "order": 1,
+      "note": "체력은 캐릭터 스탯의 첫 번째 축이다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "mana",
+      "type": "stat",
+      "order": 2,
+      "note": "마력은 캐릭터 스탯의 두 번째 축이다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "circle-count",
+      "type": "stat",
+      "order": 3,
+      "note": "서클의 운용 단계 용례를 별도 스탯 노드로 시각화한다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "engraving-capacity",
+      "type": "stat",
+      "order": 4,
+      "note": "각인력은 캐릭터 스탯의 네 번째 축이다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "insight",
+      "type": "stat",
+      "order": 5,
+      "note": "통찰력은 캐릭터 스탯의 다섯 번째 축이다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "mental-strength",
+      "type": "stat",
+      "order": 6,
+      "note": "정신력은 캐릭터 스탯의 여섯 번째 축이며 무결성의 하위 분류로 두지 않는다."
+    },
+    {
+      "parent": "character-stats",
+      "child": "potential",
+      "type": "stat",
+      "order": 7,
+      "note": "잠재력은 캐릭터 스탯의 성장 축이다."
     }
   ],
   "sequence": [
@@ -63,14 +112,56 @@
       "note": "각인 구성은 전개에서 완결로 진행한다."
     }
   ],
+  "virtualSystems": [
+    {
+      "id": "circle-count",
+      "name": "서클",
+      "category": "character",
+      "status": "confirmed",
+      "definition": "동시에 유지하거나 운용할 수 있는 서클의 수를 나타내는 캐릭터 스탯.",
+      "dependencies": [],
+      "anchor": "character-stats"
+    }
+  ],
+  "crossLinks": [
+    {
+      "from": "circle",
+      "to": "circle-count",
+      "type": "shared-concept",
+      "note": "마법 구조로서의 서클과 스탯으로서의 서클은 같은 용어의 서로 다른 용례다."
+    },
+    {
+      "from": "circle",
+      "to": "mana",
+      "type": "resource",
+      "note": "마력은 서클 운용에 사용되는 기본 마나 한계를 정한다."
+    },
+    {
+      "from": "engraving",
+      "to": "engraving-capacity",
+      "type": "capacity",
+      "note": "각인력은 한 서클에 담을 수 있는 각인의 총 복잡도를 제한한다."
+    }
+  ],
   "hiddenSystems": [
-    "projection-abilities"
+    "projection-abilities",
+    "engraving-speed",
+    "resonance"
   ],
   "suppressedDependencies": [
     {"from": "karma", "to": "engraving"},
     {"from": "engraving", "to": "karma"},
     {"from": "five-elements", "to": "projection-system"},
     {"from": "karma", "to": "projection-abilities"},
-    {"from": "projection-system", "to": "projection-abilities"}
+    {"from": "projection-system", "to": "projection-abilities"},
+    {"from": "integrity", "to": "mental-strength"},
+    {"from": "mental-strength", "to": "health"},
+    {"from": "circle", "to": "mana"},
+    {"from": "mental-strength", "to": "mana"},
+    {"from": "circle", "to": "engraving-capacity"},
+    {"from": "engraving", "to": "engraving-capacity"},
+    {"from": "engraving-capacity", "to": "engraving"},
+    {"from": "mental-strength", "to": "engraving-capacity"},
+    {"from": "mental-strength", "to": "insight"}
   ]
 }
