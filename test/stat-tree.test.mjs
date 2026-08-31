@@ -17,7 +17,7 @@ const statIds = [
   'potential'
 ];
 
-test('renders character stats as a separate ordered compact tree', () => {
+test('renders character stats as one ordered compact panel', () => {
   const model = buildGraphModel(active, relationships);
   const layout = layoutGraph(model);
   const statSet = new Set(['character-stats', ...statIds]);
@@ -30,34 +30,34 @@ test('renders character stats as a separate ordered compact tree', () => {
   assert.equal(circleStat?.category, 'character');
   assert.equal(circleStat?.status, 'confirmed');
 
-  const children = model.hierarchy
-    .filter(edge => edge.from === 'character-stats')
-    .sort((a, b) => a.order - b.order)
-    .map(edge => edge.to);
-  assert.deepEqual(children, statIds);
+  assert.deepEqual(model.statGroup?.childIds, statIds);
+  assert.equal(model.hierarchy.some(edge => edge.from === 'character-stats' && statIds.includes(edge.to)), false);
+  assert.equal(model.edges.some(edge => edge.from === 'character-stats' && statIds.includes(edge.to)), false);
 
   const root = layout.nodes.get('character-stats');
   const statNodes = statIds.map(id => layout.nodes.get(id));
-  const ranks = statNodes.map(node => node?.rank);
-  assert.equal(new Set(ranks).size, 1);
-  assert.equal(ranks[0], (root?.rank ?? -1) + 1);
+  assert.equal(layout.statGroup?.w, 220);
+  assert.equal(root.x, layout.statGroup?.x);
+  assert.equal(root.y, layout.statGroup?.y);
+  assert.equal(root.w, layout.statGroup?.w);
 
   const statX = statNodes.map(node => node?.x);
   assert.equal(new Set(statX).size, 1);
+  assert.equal(statX[0], root.x);
   assert.ok(statNodes.every((node, index) => index === 0 || node.y > statNodes[index - 1].y));
-  assert.equal(root.x, statX[0]);
+  assert.equal(statNodes[0].y, root.y + root.h);
 
   const nonStatRight = Math.max(...[...layout.nodes]
     .filter(([id]) => !statSet.has(id))
     .map(([, node]) => node.x + node.w));
-  const statRight = Math.max(root.x + root.w, ...statNodes.map(node => node.x + node.w));
+  const panelRight = layout.statGroup.x + layout.statGroup.w;
 
   assert.ok(root.x > nonStatRight);
-  assert.ok(statRight - nonStatRight < 320);
-  assert.ok(layout.width - nonStatRight < 380);
+  assert.ok(panelRight - nonStatRight < 390);
+  assert.ok(layout.width - nonStatRight < 440);
 });
 
-test('keeps only explicit stat cross-links layout-neutral', () => {
+test('keeps only explicit external stat cross-links', () => {
   const model = buildGraphModel(active, relationships);
   const crossLinks = model.dependency.filter(edge => edge.layoutNeutral);
 
