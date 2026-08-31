@@ -84,7 +84,9 @@ export function layoutGraph(model) {
   const mainRight = nodes.size
     ? Math.max(...[...nodes.values()].map(node => node.x + node.w))
     : LAYOUT_MARGIN;
-  const statX = mainRight + STAT_SIDE_GAP;
+  const routeRight = Math.max(0, ...[...mainLayout.routes.values()]
+    .map(route => Number(route.channelX) || 0));
+  const statX = Math.max(mainRight + STAT_SIDE_GAP, routeRight ? routeRight + 18 : 0);
   const nodeW = sample.w || 148;
   const nodeH = sample.h || 58;
 
