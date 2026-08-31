@@ -20,16 +20,19 @@ function decorateStatPanel(map) {
   root.classList.add('stat-panel-title');
   rows.forEach(row => row.classList.add('stat-panel-row'));
 
-  map.querySelector('.stat-panel-frame')?.remove();
   const last = rows.at(-1);
-  const frame = document.createElement('div');
-  frame.className = 'stat-panel-frame';
-  frame.setAttribute('aria-hidden', 'true');
+  let frame = map.querySelector('.stat-panel-frame');
+  if (!frame) {
+    frame = document.createElement('div');
+    frame.className = 'stat-panel-frame';
+    frame.setAttribute('aria-hidden', 'true');
+    map.appendChild(frame);
+  }
+
   frame.style.left = root.style.left;
   frame.style.top = root.style.top;
   frame.style.width = root.style.width;
   frame.style.height = `${parseFloat(last.style.top) + parseFloat(last.style.height) - parseFloat(root.style.top)}px`;
-  map.appendChild(frame);
 }
 
 function decorateAll() {
