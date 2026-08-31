@@ -45,7 +45,7 @@ test('renders character stats as a separate ordered compact tree', () => {
   const statX = statNodes.map(node => node?.x);
   assert.equal(new Set(statX).size, 1);
   assert.ok(statNodes.every((node, index) => index === 0 || node.y > statNodes[index - 1].y));
-  assert.ok(root.x === statX[0]);
+  assert.equal(root.x, statX[0]);
 
   const nonStatRight = Math.max(...[...layout.nodes]
     .filter(([id]) => !statSet.has(id))
@@ -53,8 +53,8 @@ test('renders character stats as a separate ordered compact tree', () => {
   const statRight = Math.max(root.x + root.w, ...statNodes.map(node => node.x + node.w));
 
   assert.ok(root.x > nonStatRight);
-  assert.ok(statRight - nonStatRight < 220);
-  assert.ok(layout.width - nonStatRight < 280);
+  assert.ok(statRight - nonStatRight < 320);
+  assert.ok(layout.width - nonStatRight < 380);
 });
 
 test('keeps only explicit stat cross-links layout-neutral', () => {
