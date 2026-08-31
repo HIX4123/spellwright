@@ -8,20 +8,19 @@ import {
 export { CATEGORY_ORDER };
 
 const STAT_ROOT_ID = 'character-stats';
+const STAT_PANEL_W = 220;
+const STAT_HEADER_H = 42;
+const STAT_ROW_H = 42;
 const STAT_SIDE_GAP = 36;
-const STAT_ITEM_GAP = 12;
-const STAT_ROOT_GAP = 28;
-const STAT_TRUNK_GAP = 14;
 const LAYOUT_MARGIN = 26;
 
-function orderedStatIds(model) {
+function statHierarchy(model) {
   return model.hierarchy
     .filter(edge => edge.from === STAT_ROOT_ID && edge.relationType === 'stat')
-    .sort((a, b) => (a.order || 0) - (b.order || 0))
-    .map(edge => edge.to);
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 }
 
-function stripStatTree(model, statSet) {
+function stripStatGroup(model, statSet) {
   const keepsEdge = edge => !statSet.has(edge.from) && !statSet.has(edge.to);
   return {
     ...model,
@@ -41,10 +40,22 @@ export function buildGraphModel(systems, relationships = {}) {
     .filter(system => !suppliedIds.has(system.id))
     .map(system => ({ ...system, dependencies: system.dependencies || [] }));
 
-  const model = buildCoreGraphModel([...systems, ...virtualSystems], relationships);
+  const coreModel = buildCoreGraphModel([...systems, ...virtualSystems], relationships);
+  const statEdges = statHierarchy(coreModel);
+  const statIds = statEdges.map(edge => edge.to);
+  const statKeys = new Set(statEdges.map(edge => `${edge.from}::${edge.to}`));
+  const withoutStatTree = edge => !statKeys.has(`${edge.from}::${edge.to}`);
+
+  const model = {
+    ...coreModel,
+    hierarchy: coreModel.hierarchy.filter(withoutStatTree),
+    rankEdges: coreModel.rankEdges.filter(withoutStatTree),
+    edges: coreModel.edges.filter(withoutStatTree),
+    statGroup: statIds.length ? { rootId: STAT_ROOT_ID, childIds: statIds } : null
+  };
+
   const visibleIds = new Set(model.systems.map(system => system.id));
   const existingEdges = new Set(model.edges.map(edge => `${edge.from}::${edge.to}`));
-
   const crossLinks = (relationships.crossLinks || [])
     .filter(edge => visibleIds.has(edge.from) && visibleIds.has(edge.to))
     .filter(edge => !existingEdges.has(`${edge.from}::${edge.to}`))
@@ -57,8 +68,6 @@ export function buildGraphModel(systems, relationships = {}) {
       mutual: Boolean(edge.mutual)
     }));
 
-  if (!crossLinks.length) return model;
-
   return {
     ...model,
     dependency: [...model.dependency, ...crossLinks],
@@ -67,7 +76,7 @@ export function buildGraphModel(systems, relationships = {}) {
 }
 
 export function layoutGraph(model) {
-  const childIds = orderedStatIds(model)
+  const childIds = (model.statGroup?.childIds || [])
     .filter(id => model.systems.some(system => system.id === id));
   const hasStatRoot = model.systems.some(system => system.id === STAT_ROOT_ID);
 
@@ -76,60 +85,57 @@ export function layoutGraph(model) {
   }
 
   const statSet = new Set([STAT_ROOT_ID, ...childIds]);
-  const mainLayout = coreLayoutGraph(stripStatTree(model, statSet));
+  const mainLayout = coreLayoutGraph(stripStatGroup(model, statSet));
   const nodes = new Map([...mainLayout.nodes].map(([id, node]) => [id, { ...node }]));
-  const sample = [...nodes.values()][0] || { w: 148, h: 58 };
   const topRank = [...nodes.values()].filter(node => node.rank === 0);
-  const topY = topRank.length ? Math.min(...topRank.map(node => node.y)) : 24;
+  const panelY = topRank.length ? Math.min(...topRank.map(node => node.y)) : 24;
   const mainRight = nodes.size
     ? Math.max(...[...nodes.values()].map(node => node.x + node.w))
     : LAYOUT_MARGIN;
   const routeRight = Math.max(0, ...[...mainLayout.routes.values()]
     .map(route => Number(route.channelX) || 0));
-  const statX = Math.max(mainRight + STAT_SIDE_GAP, routeRight ? routeRight + 18 : 0);
-  const nodeW = sample.w || 148;
-  const nodeH = sample.h || 58;
+  const panelX = Math.max(mainRight + STAT_SIDE_GAP, routeRight ? routeRight + 18 : 0);
 
   nodes.set(STAT_ROOT_ID, {
-    x: statX,
-    y: topY,
-    w: nodeW,
-    h: nodeH,
-    rank: 0
+    x: panelX,
+    y: panelY,
+    w: STAT_PANEL_W,
+    h: STAT_HEADER_H,
+    rank: null
   });
 
-  const firstChildY = topY + nodeH + STAT_ROOT_GAP;
   childIds.forEach((id, index) => {
     nodes.set(id, {
-      x: statX,
-      y: firstChildY + index * (nodeH + STAT_ITEM_GAP),
-      w: nodeW,
-      h: nodeH,
-      rank: 1
+      x: panelX,
+      y: panelY + STAT_HEADER_H + index * STAT_ROW_H,
+      w: STAT_PANEL_W,
+      h: STAT_ROW_H,
+      rank: null
     });
   });
 
   const ranks = new Map(mainLayout.ranks);
-  ranks.set(STAT_ROOT_ID, 0);
-  childIds.forEach(id => ranks.set(id, 1));
+  ranks.set(STAT_ROOT_ID, null);
+  childIds.forEach(id => ranks.set(id, null));
 
-  const statBottom = firstChildY
-    + (childIds.length - 1) * (nodeH + STAT_ITEM_GAP)
-    + nodeH;
-  const trunkX = statX + nodeW + STAT_TRUNK_GAP;
-  const compactWidth = trunkX + LAYOUT_MARGIN;
+  const panelH = STAT_HEADER_H + childIds.length * STAT_ROW_H;
+  const panelRight = panelX + STAT_PANEL_W;
+  const panelBottom = panelY + panelH;
 
   return {
     ...mainLayout,
     nodes,
     ranks,
-    width: Math.max(mainLayout.width, compactWidth),
-    contentWidth: Math.max(mainLayout.contentWidth, compactWidth),
-    height: Math.max(mainLayout.height, statBottom + 22),
-    statTree: {
+    width: Math.max(mainLayout.width, panelRight + LAYOUT_MARGIN),
+    contentWidth: Math.max(mainLayout.contentWidth, panelRight + LAYOUT_MARGIN),
+    height: Math.max(mainLayout.height, panelBottom + 22),
+    statGroup: {
       rootId: STAT_ROOT_ID,
       childIds,
-      trunkX
+      x: panelX,
+      y: panelY,
+      w: STAT_PANEL_W,
+      h: panelH
     }
   };
 }
@@ -152,23 +158,6 @@ function crossLinkPath(edge, layout) {
 }
 
 export function edgePath(edge, layout, index = 0) {
-  if (layout.statTree
-    && edge.kind === 'hierarchy'
-    && edge.from === layout.statTree.rootId
-    && layout.statTree.childIds.includes(edge.to)) {
-    const root = layout.nodes.get(edge.from);
-    const child = layout.nodes.get(edge.to);
-    if (!root || !child) return '';
-
-    const startX = root.x + root.w / 2;
-    const startY = root.y + root.h;
-    const elbowY = startY + 14;
-    const endX = child.x + child.w;
-    const endY = child.y + child.h / 2;
-
-    return `M ${startX} ${startY} V ${elbowY} H ${layout.statTree.trunkX} V ${endY} H ${endX}`;
-  }
-
   if (edge.layoutNeutral) {
     return crossLinkPath(edge, layout);
   }
