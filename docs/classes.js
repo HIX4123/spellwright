@@ -1,4 +1,8 @@
 const CLASSES_URL = './data/classes.json';
+const CLASSES_HASH = '#classes';
+const CLASS_LINK_GAP = 16;
+const CLASS_LINK_HEIGHT = 62;
+const CLASS_LINK_BOTTOM_PADDING = 24;
 
 let classData;
 let classesViewActive = false;
@@ -54,7 +58,7 @@ async function renderClasses() {
   classesViewActive = true;
 
   document.querySelectorAll('#nav .nav-btn').forEach(button => {
-    button.classList.toggle('active', button.dataset.view === 'classes');
+    button.classList.remove('active');
   });
 
   view.innerHTML = `${section('Classes', '상위 스탯 2개 조합 15종 + 잠재력 특수 직업 1종')}
@@ -91,43 +95,84 @@ async function renderClasses() {
   }
 }
 
-function placeClassesButton(button) {
-  const statsButton = nav?.querySelector('[data-view="stats"]');
-  const combatButton = nav?.querySelector('[data-view="combat"]');
-  const anchor = statsButton || combatButton;
+function createClassesGraphLink(map) {
+  const link = document.createElement('a');
+  link.className = 'compact-node class-link-node';
+  link.dataset.category = 'character';
+  link.href = CLASSES_HASH;
+  link.setAttribute('aria-label', '직업 초안 보기');
+  link.style.height = `${CLASS_LINK_HEIGHT}px`;
+  link.style.textDecoration = 'none';
+  link.style.cursor = 'pointer';
+  link.innerHTML = `
+    <span class="compact-node-kicker">
+      <span class="compact-category">Character</span>
+      <span class="compact-status">↗</span>
+    </span>
+    <strong>직업 / Classes</strong>
+    <small>스탯 조합 기반 직업안 보기</small>`;
+  map.appendChild(link);
+  return link;
+}
 
-  if (!anchor) {
-    nav?.appendChild(button);
+function injectClassesGraphLink() {
+  const map = document.querySelector('#systemMap .compact-map');
+  if (!map) return;
+
+  const statRoot = map.querySelector('.compact-node[data-id="character-stats"]');
+  const potentialRow = map.querySelector('.compact-node[data-id="potential"]');
+  if (!statRoot || !potentialRow) return;
+
+  let link = map.querySelector('.class-link-node');
+  if (!link) link = createClassesGraphLink(map);
+
+  const left = parseFloat(statRoot.style.left) || 0;
+  const width = parseFloat(statRoot.style.width) || 220;
+  const top = (parseFloat(potentialRow.style.top) || 0)
+    + (parseFloat(potentialRow.style.height) || 0)
+    + CLASS_LINK_GAP;
+
+  link.style.left = `${left}px`;
+  link.style.top = `${top}px`;
+  link.style.width = `${width}px`;
+
+  if (!map.dataset.classLinkBaseHeight) {
+    map.dataset.classLinkBaseHeight = String(parseFloat(map.style.height) || map.offsetHeight || 0);
+  }
+  const baseHeight = Number(map.dataset.classLinkBaseHeight) || 0;
+  const requiredHeight = top + CLASS_LINK_HEIGHT + CLASS_LINK_BOTTOM_PADDING;
+  map.style.height = `${Math.max(baseHeight, requiredHeight)}px`;
+}
+
+function syncClassRoute() {
+  if (location.hash === CLASSES_HASH) {
+    if (!classesViewActive && nav?.querySelector('.nav-btn')) renderClasses();
     return;
   }
 
-  if (anchor.nextSibling !== button) {
-    nav.insertBefore(button, anchor.nextSibling);
+  if (classesViewActive) {
+    classesViewActive = false;
+    nav?.querySelector('.nav-btn[data-view="systems"]')?.click();
   }
 }
 
-function ensureClassesNavButton() {
-  if (!nav) return;
-
-  let button = nav.querySelector('[data-view="classes"]');
-  if (!button) {
-    button = document.createElement('button');
-    button.className = `nav-btn${classesViewActive ? ' active' : ''}`;
-    button.dataset.view = 'classes';
-    button.textContent = 'Classes';
-    button.addEventListener('click', renderClasses);
-  }
-
-  placeClassesButton(button);
+function refreshClassEntry() {
+  injectClassesGraphLink();
+  syncClassRoute();
 }
 
 nav?.addEventListener('click', event => {
   const button = event.target.closest('.nav-btn');
-  if (!button || button.dataset.view === 'classes') return;
+  if (!button) return;
+
   classesViewActive = false;
+  if (location.hash === CLASSES_HASH) {
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+  }
 });
 
-if (nav) {
-  new MutationObserver(ensureClassesNavButton).observe(nav, { childList: true });
-  ensureClassesNavButton();
-}
+window.addEventListener('hashchange', syncClassRoute);
+
+const observer = new MutationObserver(() => queueMicrotask(refreshClassEntry));
+observer.observe(document.documentElement, { childList: true, subtree: true });
+queueMicrotask(refreshClassEntry);
