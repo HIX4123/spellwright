@@ -17,13 +17,10 @@ const statIds = [
   'potential'
 ];
 
-test('renders character stats as a separate ordered tree', () => {
+test('renders character stats as a separate ordered compact tree', () => {
   const model = buildGraphModel(active, relationships);
   const layout = layoutGraph(model);
-  const center = id => {
-    const node = layout.nodes.get(id);
-    return node.x + node.w / 2;
-  };
+  const statSet = new Set(['character-stats', ...statIds]);
 
   assert.equal(model.systems.some(system => system.id === 'engraving-speed'), false);
   assert.equal(model.systems.some(system => system.id === 'resonance'), false);
@@ -39,10 +36,25 @@ test('renders character stats as a separate ordered tree', () => {
     .map(edge => edge.to);
   assert.deepEqual(children, statIds);
 
-  const ranks = statIds.map(id => layout.nodes.get(id)?.rank);
+  const root = layout.nodes.get('character-stats');
+  const statNodes = statIds.map(id => layout.nodes.get(id));
+  const ranks = statNodes.map(node => node?.rank);
   assert.equal(new Set(ranks).size, 1);
-  assert.equal(ranks[0], (layout.nodes.get('character-stats')?.rank ?? -1) + 1);
-  assert.ok(center('character-stats') > center('circle'));
+  assert.equal(ranks[0], (root?.rank ?? -1) + 1);
+
+  const statX = statNodes.map(node => node?.x);
+  assert.equal(new Set(statX).size, 1);
+  assert.ok(statNodes.every((node, index) => index === 0 || node.y > statNodes[index - 1].y));
+  assert.ok(root.x === statX[0]);
+
+  const nonStatRight = Math.max(...[...layout.nodes]
+    .filter(([id]) => !statSet.has(id))
+    .map(([, node]) => node.x + node.w));
+  const statRight = Math.max(root.x + root.w, ...statNodes.map(node => node.x + node.w));
+
+  assert.ok(root.x > nonStatRight);
+  assert.ok(statRight - nonStatRight < 220);
+  assert.ok(layout.width - nonStatRight < 280);
 });
 
 test('keeps only explicit stat cross-links layout-neutral', () => {
