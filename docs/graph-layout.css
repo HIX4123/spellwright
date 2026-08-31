@@ -308,7 +308,15 @@
 
 @media (max-width: 900px) {
   .compact-legend { align-items: flex-start; flex-direction: column; }
-  .compact-map-scroll { max-height: 72vh; overflow-x: auto; }
+  .compact-map-scroll {
+    max-height: 72vh;
+    max-height: 72dvh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  .compact-node { touch-action: manipulation; }
   .map-note { align-items: flex-start; }
   .map-note span { white-space: normal; }
 }
