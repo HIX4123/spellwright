@@ -35,8 +35,18 @@ function decorateStatPanel(map) {
   frame.style.height = `${parseFloat(last.style.top) + parseFloat(last.style.height) - parseFloat(root.style.top)}px`;
 }
 
-function decorateAll() {
+function removeRedundantRelationNotes() {
+  document.querySelectorAll('.map-note').forEach(note => {
+    const text = note.textContent || '';
+    if (text.includes('실선 =') || text.includes('점선 =') || text.includes('파선 =')) {
+      note.remove();
+    }
+  });
+}
+
+function refreshDashboardDecorations() {
   document.querySelectorAll('.compact-map').forEach(decorateStatPanel);
+  removeRedundantRelationNotes();
 }
 
 document.addEventListener('click', event => {
@@ -50,6 +60,6 @@ document.addEventListener('click', event => {
   statsButton?.click();
 }, true);
 
-const observer = new MutationObserver(() => queueMicrotask(decorateAll));
+const observer = new MutationObserver(() => queueMicrotask(refreshDashboardDecorations));
 observer.observe(document.documentElement, { childList: true, subtree: true });
-queueMicrotask(decorateAll);
+queueMicrotask(refreshDashboardDecorations);
