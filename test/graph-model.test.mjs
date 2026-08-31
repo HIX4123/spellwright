@@ -78,7 +78,7 @@ function pathSegments(path) {
   return segments;
 }
 
-test('uses subtree space and routes the current graph without ambiguous crossings', () => {
+test('uses subtree space and routes the current structural graph without ambiguous crossings', () => {
   const project = JSON.parse(readFileSync(new URL('../docs/data/project.json', import.meta.url)));
   const graphRelationships = JSON.parse(readFileSync(new URL('../docs/data/relationships.json', import.meta.url)));
   const active = project.systems.filter(system => system.category !== 'legacy' && system.status !== 'rejected');
@@ -92,10 +92,12 @@ test('uses subtree space and routes the current graph without ambiguous crossing
     .map((id, index) => center(id) - center(layout.layers.get(3)[index]));
   assert.ok(new Set(bottomGaps).size > 1);
 
-  const routed = model.edges.map((edge, index) => ({
-    edge,
-    segments: pathSegments(edgePath(edge, layout, index))
-  }));
+  const routed = model.edges
+    .filter(edge => !edge.layoutNeutral)
+    .map((edge, index) => ({
+      edge,
+      segments: pathSegments(edgePath(edge, layout, index))
+    }));
   routed.forEach((left, leftIndex) => routed.slice(leftIndex + 1).forEach(right => {
     const sharesNode = [left.edge.from, left.edge.to]
       .some(id => id === right.edge.from || id === right.edge.to);

@@ -218,6 +218,74 @@
   opacity: .76;
 }
 
+.stat-panel-frame {
+  position: absolute;
+  z-index: 2;
+  border: 1px solid var(--line-strong);
+  border-top: 3px solid var(--cat-character);
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-1);
+  pointer-events: none;
+}
+
+.compact-node.stat-panel-title,
+.compact-node.stat-panel-row {
+  z-index: 3;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.compact-node.stat-panel-title {
+  justify-content: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.compact-node.stat-panel-row {
+  justify-content: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.compact-node.stat-panel-row:last-of-type { border-bottom: 0; }
+
+.compact-node.stat-panel-title .compact-node-kicker,
+.compact-node.stat-panel-title > small,
+.compact-node.stat-panel-row .compact-node-kicker,
+.compact-node.stat-panel-row > small {
+  display: none;
+}
+
+.compact-node.stat-panel-title > strong {
+  color: var(--cat-character);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.compact-node.stat-panel-row > strong {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.compact-node.stat-panel-title:hover,
+.compact-node.stat-panel-title:focus,
+.compact-node.stat-panel-title.focus,
+.compact-node.stat-panel-row:hover,
+.compact-node.stat-panel-row:focus,
+.compact-node.stat-panel-row.focus {
+  z-index: 4;
+  border-color: transparent;
+  background: color-mix(in srgb, var(--cat-character) 9%, transparent);
+  box-shadow: none;
+}
+
+.compact-map-root.relation-focus-active .compact-node.stat-panel-title.focus,
+.compact-map-root.relation-focus-active .compact-node.stat-panel-row.focus {
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--cat-character) 75%, transparent);
+}
+
 .isolated-label {
   position: absolute;
   left: 24px;
