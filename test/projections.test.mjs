@@ -5,7 +5,7 @@ import test from 'node:test';
 const projections = JSON.parse(readFileSync(new URL('../docs/data/projections.json', import.meta.url)));
 
 test('publishes all 43 generated projection classes in stable complexity order', () => {
-  assert.equal(projections.orientation, 'best-fit-symmetry-axis-vertical');
+  assert.equal(projections.orientation, 'vertical-axis-wide-horizontal-bottom-heavy');
   assert.deepEqual(projections.solids.map(solid => solid.classes.length), [4, 6, 6, 14, 13]);
   assert.equal(projections.solids.flatMap(solid => solid.classes).length, 43);
 
