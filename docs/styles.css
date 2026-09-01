@@ -208,12 +208,13 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
 .attribute-background { display: grid; gap: 12px; }
 .attribute-background p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.7; }
 .attribute-background .core-statement { color: var(--text); font-size: 16px; }
-.projection-atlas-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.projection-atlas { margin: 0; padding: 10px; }
-.projection-atlas a { display: block; overflow: hidden; border-radius: 8px; background: #fff; }
-.projection-atlas img { display: block; width: 100%; height: auto; }
-.projection-atlas figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 10px 2px 1px; font-size: 11px; }
-.projection-atlas figcaption span { color: var(--muted); }
+.projection-tables { display: grid; gap: 10px; }
+.projection-table-card { padding: 0; overflow: hidden; }
+.projection-group-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.projection-group-head h3 { margin: 0; font-size: 13px; }
+.projection-group-head p, .projection-group-head > span { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+.projection-table td:first-child { width: 176px; }
+.projection-table img { display: block; width: 160px; height: 120px; border: 1px solid var(--line); border-radius: 8px; background: #fff; object-fit: contain; }
 
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .toolbar input, .toolbar select,
@@ -486,7 +487,7 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
   #view { padding: 18px 12px 44px; }
   .grid.cols-4, .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
   .system-grid { grid-template-columns: 1fr; }
-  .projection-atlas-grid { grid-template-columns: 1fr; }
+  .projection-group-head { align-items: flex-start; }
   .card { min-width: 0; padding: 14px; overflow-wrap: anywhere; }
   .section-head { align-items: flex-start; flex-direction: column; gap: 4px; margin-top: 24px; }
   .toolbar { display: grid; grid-template-columns: 1fr; }
