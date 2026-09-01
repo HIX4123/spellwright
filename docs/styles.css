@@ -205,6 +205,15 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
 .section-head p { margin: 0; font-size: 11px; color: var(--muted); }
 .core-statement { margin: 0; font-size: 16px; line-height: 1.65; }
 .muted { color: var(--muted); }
+.attribute-background { display: grid; gap: 12px; }
+.attribute-background p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.7; }
+.attribute-background .core-statement { color: var(--text); font-size: 16px; }
+.projection-atlas-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.projection-atlas { margin: 0; padding: 10px; }
+.projection-atlas a { display: block; overflow: hidden; border-radius: 8px; background: #fff; }
+.projection-atlas img { display: block; width: 100%; height: auto; }
+.projection-atlas figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 10px 2px 1px; font-size: 11px; }
+.projection-atlas figcaption span { color: var(--muted); }
 
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .toolbar input, .toolbar select,
@@ -477,6 +486,7 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
   #view { padding: 18px 12px 44px; }
   .grid.cols-4, .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
   .system-grid { grid-template-columns: 1fr; }
+  .projection-atlas-grid { grid-template-columns: 1fr; }
   .card { min-width: 0; padding: 14px; overflow-wrap: anywhere; }
   .section-head { align-items: flex-start; flex-direction: column; gap: 4px; margin-top: 24px; }
   .toolbar { display: grid; grid-template-columns: 1fr; }

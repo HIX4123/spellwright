@@ -29,7 +29,10 @@ function isProjectData(value) {
       .every(key => Array.isArray(value[key]))
     && value.systems.every(system => typeof system?.id === 'string'
       && typeof system.name === 'string'
-      && Array.isArray(system.dependencies)));
+      && Array.isArray(system.dependencies))
+    && value.elements.every(element => ['name', 'solid', 'motto', 'loss', 'meaning', 'image']
+      .every(key => typeof element?.[key] === 'string')
+      && Number.isInteger(element.projectionClasses)));
 }
 
 function isRelationshipData(value) {
@@ -363,12 +366,32 @@ function renderCombat() {
 }
 
 function renderAttributes() {
-  view.innerHTML = `${section('Five attributes','정다면체 → 사영도 → 각인')}
+  const attributeSystem = data.systems.find(system => system.id === 'five-elements');
+  const background = attributeSystem.details
+    .split('\n\n')
+    .map(paragraph => `<p>${escapeHtml(paragraph)}</p>`)
+    .join('');
+
+  view.innerHTML = `${section('Five attributes','상실 → 정신의 반응 → 정다면체 → 사영도')}
+    <div class="card attribute-background">
+      <p class="core-statement">삶이란 상실의 연속이다.</p>
+      ${background}
+    </div>
+    ${section('Attribute correspondence','자기 → 자리 → 안정 → 관계 → 가능성')}
     <div class="card">
       <table class="table">
-        <thead><tr><th>속성</th><th>정다면체</th><th>기본 성향</th><th>사영 클래스</th></tr></thead>
-        <tbody>${data.elements.map(e=>`<tr><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.traits)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
+        <thead><tr><th>속성</th><th>정다면체</th><th>근본 모토</th><th>상실 대상</th><th>해석</th><th>사영 클래스</th></tr></thead>
+        <tbody>${data.elements.map(e=>`<tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.motto)}</td><td>${escapeHtml(e.loss)}</td><td>${escapeHtml(e.meaning)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
       </table>
+    </div>
+    ${section('Projection atlases','정다면체별 위상 클래스 전체 보기 · 이미지를 누르면 원본 크기로 열린다')}
+    <div class="projection-atlas-grid">
+      ${data.elements.map(e=>`<figure class="card projection-atlas">
+        <a href="${escapeHtml(e.image)}" target="_blank" rel="noopener" aria-label="${escapeHtml(`${e.solid} 사영도 원본 열기`)}">
+          <img src="${escapeHtml(e.image)}" alt="${escapeHtml(`${e.name} 속성 ${e.solid} 사영 클래스 아틀라스`)}" loading="lazy" />
+        </a>
+        <figcaption><strong>${escapeHtml(e.name)} · ${escapeHtml(e.solid)}</strong><span>${escapeHtml(e.projectionClasses)} classes</span></figcaption>
+      </figure>`).join('')}
     </div>
     ${section('Related systems')}
     <div class="system-grid">${data.systems.filter(x=>x.category==='attribute').map(systemCard).join('')}</div>`;
