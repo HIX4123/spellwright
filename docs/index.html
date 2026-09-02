@@ -11,6 +11,9 @@
       const saved = localStorage.getItem('spellwright-theme');
       const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', saved || preferred);
+
+      const sidebarState = localStorage.getItem('spellwright-sidebar');
+      document.documentElement.setAttribute('data-sidebar', sidebarState === 'collapsed' ? 'collapsed' : 'expanded');
     })();
   </script>
   <script type="importmap">
@@ -22,10 +25,40 @@
   </script>
   <link rel="stylesheet" href="./styles.css?v=individual-projections-20260901-1" />
   <link rel="stylesheet" href="./graph-layout.css?v=mobile-20260831-1" />
+  <style>
+    html[data-sidebar="collapsed"] .app-shell {
+      grid-template-columns: 0 minmax(0, 1fr);
+    }
+    html[data-sidebar="collapsed"] .sidebar {
+      display: none;
+    }
+    .topbar-heading {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #sidebarToggle {
+      flex: 0 0 auto;
+      min-width: 34px;
+      padding-inline: 9px;
+      font-size: 18px;
+      line-height: 1;
+    }
+    @media (max-width: 900px) {
+      html[data-sidebar="collapsed"] .app-shell {
+        grid-template-columns: 1fr;
+      }
+      #sidebarToggle {
+        min-width: 44px;
+        min-height: 44px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <strong>SPELLWRIGHT</strong>
         <span>DESIGN DB</span>
@@ -39,7 +72,10 @@
 
     <main>
       <header class="topbar">
-        <h1 id="projectName"></h1>
+        <div class="topbar-heading">
+          <button class="ghost" id="sidebarToggle" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="사이드바 닫기" title="사이드바 닫기">☰</button>
+          <h1 id="projectName"></h1>
+        </div>
         <div class="topbar-actions">
           <span class="version-pill" id="version"></span>
           <button class="ghost" id="themeToggle" type="button">Theme</button>
@@ -100,6 +136,28 @@
         updateLabel();
       });
       updateLabel();
+    })();
+
+    (() => {
+      const button = document.getElementById('sidebarToggle');
+      const root = document.documentElement;
+      const isCollapsed = () => root.getAttribute('data-sidebar') === 'collapsed';
+      const updateButton = () => {
+        const expanded = !isCollapsed();
+        const label = expanded ? '사이드바 닫기' : '사이드바 열기';
+        button.setAttribute('aria-expanded', String(expanded));
+        button.setAttribute('aria-label', label);
+        button.title = label;
+      };
+
+      button.addEventListener('click', () => {
+        const next = isCollapsed() ? 'expanded' : 'collapsed';
+        root.setAttribute('data-sidebar', next);
+        localStorage.setItem('spellwright-sidebar', next);
+        updateButton();
+      });
+
+      updateButton();
     })();
   </script>
 </body>
