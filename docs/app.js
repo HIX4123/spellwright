@@ -402,7 +402,7 @@ function renderAttributes() {
         <tbody>${data.elements.map(e=>`<tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.motto)}</td><td>${escapeHtml(e.loss)}</td><td>${escapeHtml(e.meaning)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    ${section('Projection class tables','Class ID 유지 · 교차 수 오름차순 · 이미지를 누르면 원본 크기로 열린다')}
+    ${section('Projection class tables','기존 atlas의 좌→우·위→아래 배치 순서 · Class ID 유지 · 이미지를 누르면 원본 크기로 열린다')}
     <div class="projection-tables">
       ${data.elements.map(projectionTable).join('')}
     </div>
