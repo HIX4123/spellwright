@@ -1,70 +1,30 @@
 (() => {
-  const THEORY_SYSTEMS = [
-    {
-      id: 'projection-operator',
-      name: '사영 연산자',
-      category: 'attribute',
-      status: 'review',
-      definition: '각 사영도를 속성 영역에 적용되는 기본 연산자로 해석하는 설계 모델.',
-      details: '사영도는 완성된 주문명이 아니라 해당 속성이 세계를 어떻게 조작하는지를 정하는 기본 연산자로 본다. 해리는 경계와 동일성, 소외는 위치와 거리, 초조는 운동과 변화량, 고착은 관계와 참조, 반추는 가능성과 결과를 조작 영역으로 삼는다.\n\n43개 사영도 각각의 구체 연산은 아직 역할 가설 단계다. 도형의 구조적 차이는 역할을 구별하는 근거로 사용하되, 최종 판정 기준은 실제 전투에서 서로 다른 실행 동사를 제공하는가에 둔다.',
-      introduced: 'v0.2',
-      lastModified: 'v0.2',
-      dependencies: ['projection-system', 'five-elements']
-    },
-    {
-      id: 'spell-grammar',
-      name: '마법 문법',
-      category: 'magic',
-      status: 'review',
-      definition: '유한한 각인 문법을 조합해 많은 마법 구조를 만드는 규칙 체계.',
-      details: '무한한 완성 주문을 개별 구현하지 않고 제한된 문법을 조립한다. 개시에서 속성과 사영 연산자를 정하고, 전개에서 대상·형태·변환·조건·보강·제약을 붙이며, 완결에서 즉발·스톡·영속 같은 시전 형식을 정한다.\n\n각 각인은 입력과 출력의 타입을 가진 함수처럼 취급할 수 있다. 문법과 타입이 맞지 않는 조합은 구성 단계에서 거부하고, 유효한 조합만 실행 구조로 변환한다.',
-      introduced: 'v0.2',
-      lastModified: 'v0.2',
-      dependencies: ['engraving', 'projection-operator', 'initiation', 'development', 'completion']
-    },
-    {
-      id: 'effect-graph',
-      name: '효과 그래프',
-      category: 'magic',
-      status: 'review',
-      definition: '완성된 서클을 유한한 런타임 객체와 연산의 그래프로 변환하는 구현 모델.',
-      details: '서클 조합 결과를 새로운 주문 코드로 생성하는 대신 Entity, Field, Relation, Boundary, SpatialState, Motion, PossibilityState 같은 소수의 공통 런타임 객체로 컴파일한다. 각인은 이 객체를 생성하거나 변형하는 연산이 된다.\n\n예를 들어 유도 화염구는 별도 스킬 코드가 아니라 열을 가진 Projectile에 Motion, 추적 Relation, 충돌 Trigger가 결합된 효과 그래프로 표현한다. 조합 수는 매우 커도 엔진이 구현해야 하는 기본 객체와 연산은 유한하게 유지하는 것이 목표다.',
-      introduced: 'v0.2',
-      lastModified: 'v0.2',
-      dependencies: ['spell-grammar']
-    },
-    {
-      id: 'structural-counterplay',
-      name: '구조적 상성',
-      category: 'combat',
-      status: 'review',
-      definition: '고정 속성표가 아니라 서로 같은 상태를 건드리는 연산 충돌에서 발생하는 상성.',
-      details: '해리 > 고착 같은 절대적인 오행식 상성표를 두기보다 상대 서클이 만든 구조를 어떤 연산으로 깨거나 우회하는지가 상성을 만든다. 고착의 관계는 해리로 끊을 수 있고, 초조 투사체는 해리로 차단하거나 소외로 회피하거나 초조로 반전하거나 고착으로 정지시키거나 반추로 다른 결과를 선택할 수 있다.\n\n동일한 현상에도 여러 속성이 서로 다른 원리의 대응책을 갖도록 하며, 전투의 핵심을 화력 비교가 아니라 구조 판독과 카운터 서클 작성에 둔다.',
-      introduced: 'v0.2',
-      lastModified: 'v0.2',
-      dependencies: ['effect-graph', 'projection-operator', 'integrity']
-    },
-    {
-      id: 'spell-naming',
-      name: '마법 명명 체계',
-      category: 'magic',
-      status: 'review',
-      definition: '자유 조합 결과를 기억하고 공유할 수 있도록 구조명·마법군·변형명·개인명을 겹쳐 쓰는 체계.',
-      details: '모든 유효 서클에는 구조를 설명하는 자동 구조명을 붙일 수 있다. 익숙한 결과 패턴은 화염구·방벽 같은 마법군으로 분류하고, 유도·광역·잔류 같은 변형명을 더한다. 플레이어는 저장한 서클에 별도의 개인명을 붙일 수 있다.\n\n겉으로 같은 화염구라도 초조로 열운동을 집속한 구조와 소외로 다른 위치의 화염을 전이한 구조는 내부 원리와 카운터가 다를 수 있다. 따라서 현상적 이름과 구조적 이름을 분리한다.',
-      introduced: 'v0.2',
-      lastModified: 'v0.2',
-      dependencies: ['effect-graph', 'spell-grammar']
-    }
-  ];
+  const THEORY_DATA_URL = './data/theory.json';
+  const nativeFetch = window.fetch.bind(window);
 
-  const THEORY_HIERARCHY = [
-    { parent: 'projection-system', child: 'projection-operator', type: 'subtype', note: '사영도는 속성 영역에 적용되는 기본 연산자로 해석한다.' },
-    { parent: 'projection-operator', child: 'spell-grammar', type: 'dependency', note: '사영 연산자는 마법 문법의 개시 연산을 제공한다.' },
-    { parent: 'engraving', child: 'spell-grammar', type: 'subtype', note: '마법 문법은 개시·전개·완결 각인의 조립 규칙을 정의한다.' },
-    { parent: 'spell-grammar', child: 'effect-graph', type: 'dependency', note: '유효한 서클 문법은 실행 가능한 효과 그래프로 변환된다.' },
-    { parent: 'effect-graph', child: 'structural-counterplay', type: 'dependency', note: '효과 그래프의 연산 충돌이 구조적 상성을 만든다.' },
-    { parent: 'effect-graph', child: 'spell-naming', type: 'dependency', note: '효과 그래프의 결과 특징을 기준으로 마법군과 구조명을 분류한다.' }
-  ];
+  function isTheoryData(value) {
+    return Boolean(value?.schemaVersion === 1
+      && Array.isArray(value.systems)
+      && Array.isArray(value.hierarchy)
+      && value.systems.every(system => typeof system?.id === 'string'
+        && typeof system.name === 'string'
+        && typeof system.category === 'string'
+        && typeof system.status === 'string'
+        && Array.isArray(system.dependencies))
+      && value.hierarchy.every(edge => typeof edge?.parent === 'string'
+        && typeof edge.child === 'string'
+        && typeof edge.type === 'string'));
+  }
+
+  const theoryDataPromise = nativeFetch(THEORY_DATA_URL, { cache: 'no-store' })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to load magic theory data');
+      return response.json();
+    })
+    .then(theory => {
+      if (!isTheoryData(theory)) throw new Error('Invalid magic theory data');
+      return theory;
+    });
 
   const PROJECTION_ROLES = {
     '정사면체': {
@@ -133,7 +93,6 @@
     ['화염구 예시', '초조 계통에서 가장 단순한 고전적 화염구를 조립한 예시.', '초조·집속 → 구형 구속 → 열화 → 전방 지향 → 충돌 시 해제 → 즉발 = 화염구 계열']
   ];
 
-  const nativeFetch = window.fetch.bind(window);
   window.fetch = async (input, init) => {
     const response = await nativeFetch(input, init);
     if (!response.ok) return response;
@@ -142,9 +101,9 @@
     const url = new URL(rawUrl, location.href);
 
     if (url.pathname.endsWith('/data/project.json')) {
-      const project = JSON.parse(await response.text());
+      const [project, theory] = await Promise.all([response.json(), theoryDataPromise]);
       const existing = new Set(project.systems.map(system => system.id));
-      THEORY_SYSTEMS.forEach(system => {
+      theory.systems.forEach(system => {
         if (!existing.has(system.id)) project.systems.push(system);
       });
       project.project.updatedAt = '2026-09-03';
@@ -155,10 +114,10 @@
     }
 
     if (url.pathname.endsWith('/data/relationships.json')) {
-      const relationships = await response.json();
+      const [relationships, theory] = await Promise.all([response.json(), theoryDataPromise]);
       const key = edge => `${edge.parent}>${edge.child}`;
       const existing = new Set(relationships.hierarchy.map(key));
-      THEORY_HIERARCHY.forEach(edge => {
+      theory.hierarchy.forEach(edge => {
         if (!existing.has(key(edge))) relationships.hierarchy.push(edge);
       });
       return new Response(JSON.stringify(relationships), {
