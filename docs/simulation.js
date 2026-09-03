@@ -11,11 +11,11 @@ function renderSimulation() {
   view.innerHTML = `
     <div class="section-head">
       <h2>Projection simulation</h2>
-      <p>속성별 정다면체에서 사영 클래스를 좌우 드래그로 전환하는 인터랙션 실험</p>
+      <p>실제 정다면체를 3D 회전한 뒤 2.5D wireframe으로 투영해 사영 클래스를 탐색하는 인터랙션 실험</p>
     </div>
     <div class="card">
-      <p class="core-statement" style="font-size:15px">정다면체 선택 → 좌우 드래그 → 다음 사영도로 스냅</p>
-      <p class="muted" style="margin:10px 0 0">현재 단계에서는 선택 감각과 전환 연출만 검증한다. 실제 3D 회전과 게임 상태 저장은 이후 단계에서 연결한다.</p>
+      <p class="core-statement" style="font-size:15px">정다면체 선택 → 직접 회전 → 사영 방향으로 스냅</p>
+      <p class="muted" style="margin:10px 0 0">드래그 중 모든 프레임은 실제 3D 정점·간선 계산 결과다. class별 대표 시선은 현재 임시 orientation이며, 원본 대표 시선 벡터를 복구하면 그대로 교체할 수 있다.</p>
     </div>
     <div class="section-head ${SIMULATION_ANCHOR_CLASS}" style="display:none" aria-hidden="true">
       <h2>Projection class tables</h2>
@@ -23,6 +23,10 @@ function renderSimulation() {
     </div>
     <div class="projection-tables" data-theory-enhanced="true" data-simulation-anchor="true" style="display:none" aria-hidden="true"></div>
   `;
+
+  import('./projection-selector.js?v=projection-selector-20260903-4')
+    .then(module => module.mountProjectionSelector())
+    .catch(error => console.warn('[simulation] projection renderer failed', error));
 }
 
 function ensureSimulationNav() {
