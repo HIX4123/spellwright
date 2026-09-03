@@ -1,7 +1,8 @@
 const SELECTOR_ID = 'projectionSelectorPrototype';
-const SECTION_ID = 'projectionSelectorSection';
 const SWIPE_THRESHOLD = 0.23;
 const VELOCITY_THRESHOLD = 0.55;
+const TAU = Math.PI * 2;
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
 export function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -29,8 +30,212 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#039;');
 }
 
-let selectorDataPromise;
+function normalizeVertices(vertices) {
+  const radius = Math.max(...vertices.map(([x, y, z]) => Math.hypot(x, y, z)));
+  return vertices.map(([x, y, z]) => [x / radius, y / radius, z / radius]);
+}
 
+function signedPermutations(values) {
+  const out = [];
+  const [a, b, c] = values;
+  const perms = [
+    [a, b, c], [a, c, b], [b, a, c],
+    [b, c, a], [c, a, b], [c, b, a]
+  ];
+  const seen = new Set();
+  for (const p of perms) {
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
+      const v = [p[0] * sx, p[1] * sy, p[2] * sz];
+      const key = v.map(n => n.toFixed(8)).join(',');
+      if (!seen.has(key)) {
+        seen.add(key);
+        out.push(v);
+      }
+    }
+  }
+  return out;
+}
+
+function geometryForSolid(name) {
+  const phi = (1 + Math.sqrt(5)) / 2;
+  const inv = 1 / phi;
+  let vertices;
+
+  switch (name) {
+    case '정사면체':
+      vertices = [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]];
+      break;
+    case '정육면체':
+      vertices = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) vertices.push([x, y, z]);
+      break;
+    case '정팔면체':
+      vertices = [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]];
+      break;
+    case '정십이면체':
+      vertices = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) vertices.push([x, y, z]);
+      for (const a of [-inv, inv]) for (const b of [-phi, phi]) {
+        vertices.push([0, a, b], [a, b, 0], [b, 0, a]);
+      }
+      break;
+    case '정이십면체':
+      vertices = [];
+      for (const a of [-1, 1]) for (const b of [-phi, phi]) {
+        vertices.push([0, a, b], [a, b, 0], [b, 0, a]);
+      }
+      break;
+    default:
+      vertices = signedPermutations([1, 1, 1]);
+  }
+
+  vertices = normalizeVertices(vertices);
+  let edgeLength = Infinity;
+  for (let i = 0; i < vertices.length; i++) {
+    for (let j = i + 1; j < vertices.length; j++) {
+      const d = Math.hypot(
+        vertices[i][0] - vertices[j][0],
+        vertices[i][1] - vertices[j][1],
+        vertices[i][2] - vertices[j][2]
+      );
+      if (d > 1e-6 && d < edgeLength) edgeLength = d;
+    }
+  }
+
+  const edges = [];
+  const tolerance = edgeLength * 0.035;
+  for (let i = 0; i < vertices.length; i++) {
+    for (let j = i + 1; j < vertices.length; j++) {
+      const d = Math.hypot(
+        vertices[i][0] - vertices[j][0],
+        vertices[i][1] - vertices[j][1],
+        vertices[i][2] - vertices[j][2]
+      );
+      if (Math.abs(d - edgeLength) <= tolerance) edges.push([i, j]);
+    }
+  }
+  return { vertices, edges };
+}
+
+const GEOMETRY_CACHE = new Map();
+function getGeometry(name) {
+  if (!GEOMETRY_CACHE.has(name)) GEOMETRY_CACHE.set(name, geometryForSolid(name));
+  return GEOMETRY_CACHE.get(name);
+}
+
+function classOrientation(index, count, solidIndex) {
+  const t = count <= 1 ? 0 : index / count;
+  const yaw = t * TAU + solidIndex * 0.31;
+  const pitch = 0.48 * Math.sin(t * TAU * 1.5 + solidIndex * 0.73);
+  const roll = 0.18 * Math.sin(t * TAU * 2 + solidIndex * 0.41);
+  return { yaw, pitch, roll };
+}
+
+function shortestAngleDelta(from, to) {
+  let d = (to - from) % TAU;
+  if (d > Math.PI) d -= TAU;
+  if (d < -Math.PI) d += TAU;
+  return d;
+}
+
+function lerpOrientation(a, b, t) {
+  return {
+    yaw: a.yaw + shortestAngleDelta(a.yaw, b.yaw) * t,
+    pitch: a.pitch + shortestAngleDelta(a.pitch, b.pitch) * t,
+    roll: a.roll + shortestAngleDelta(a.roll, b.roll) * t
+  };
+}
+
+function rotateVertex([x, y, z], o) {
+  const cy = Math.cos(o.yaw), sy = Math.sin(o.yaw);
+  const cp = Math.cos(o.pitch), sp = Math.sin(o.pitch);
+  const cr = Math.cos(o.roll), sr = Math.sin(o.roll);
+
+  let x1 = x * cy + z * sy;
+  let z1 = -x * sy + z * cy;
+  let y1 = y;
+
+  let y2 = y1 * cp - z1 * sp;
+  let z2 = y1 * sp + z1 * cp;
+  let x2 = x1;
+
+  return [
+    x2 * cr - y2 * sr,
+    x2 * sr + y2 * cr,
+    z2
+  ];
+}
+
+function resizeCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const width = Math.max(1, Math.round(rect.width * dpr));
+  const height = Math.max(1, Math.round(rect.height * dpr));
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+  return { width, height, dpr };
+}
+
+function renderSolid(canvas, solidName, orientation, motion = 0) {
+  const { width, height, dpr } = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const geometry = getGeometry(solidName);
+  ctx.clearRect(0, 0, width, height);
+  ctx.save();
+  ctx.scale(dpr, dpr);
+
+  const cssW = width / dpr;
+  const cssH = height / dpr;
+  const scale = Math.min(cssW, cssH) * 0.31;
+  const centerX = cssW * 0.5;
+  const centerY = cssH * 0.48;
+  const cameraDistance = 4.2;
+  const darkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+  const ink = darkTheme ? '232, 236, 242' : '20, 26, 34';
+
+  const points = geometry.vertices.map(vertex => {
+    const [x, y, z] = rotateVertex(vertex, orientation);
+    const perspective = cameraDistance / (cameraDistance - z * 0.7);
+    return {
+      x: centerX + x * scale * perspective,
+      y: centerY - y * scale * perspective,
+      z,
+      p: perspective
+    };
+  });
+
+  const edgeDepths = geometry.edges.map(([a, b]) => ({
+    a, b,
+    z: (points[a].z + points[b].z) * 0.5
+  })).sort((u, v) => u.z - v.z);
+
+  for (const edge of edgeDepths) {
+    const a = points[edge.a];
+    const b = points[edge.b];
+    const depth = clamp((edge.z + 1) * 0.5, 0, 1);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = `rgba(${ink}, ${0.18 + depth * 0.68})`;
+    ctx.lineWidth = 0.75 + depth * 1.65 + Math.abs(motion) * 0.25;
+    ctx.stroke();
+  }
+
+  const sortedPoints = points.map((p, i) => ({ ...p, i })).sort((a, b) => a.z - b.z);
+  for (const p of sortedPoints) {
+    const depth = clamp((p.z + 1) * 0.5, 0, 1);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.6 + depth * 1.7, 0, TAU);
+    ctx.fillStyle = `rgba(${ink}, ${0.25 + depth * 0.72})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+let selectorDataPromise;
 async function loadSelectorData() {
   if (!selectorDataPromise) {
     selectorDataPromise = Promise.all([
@@ -55,7 +260,7 @@ function selectorEntries(elements, solids) {
 function createSelector(entries) {
   const root = document.createElement('section');
   root.id = SELECTOR_ID;
-  root.className = 'card projection-selector';
+  root.className = 'card projection-selector projection-selector-3d';
 
   root.innerHTML = `
     <div class="projection-selector-toolbar">
@@ -67,18 +272,16 @@ function createSelector(entries) {
             <span>${escapeHtml(entry.solid.name)}</span>
           </button>`).join('')}
       </div>
-      <span class="projection-selector-instruction">DRAG · ← →</span>
+      <span class="projection-selector-instruction">REAL 3D · DRAG · ← →</span>
     </div>
 
     <div class="projection-selector-stage-row">
       <button class="projection-step projection-step-prev" type="button" aria-label="이전 사영도">‹</button>
-      <div class="projection-stage" tabindex="0" role="slider" aria-label="사영도 선택" aria-valuemin="1">
+      <div class="projection-stage projection-stage-3d" tabindex="0" role="slider" aria-label="3D 정다면체 사영도 선택" aria-valuemin="1">
         <div class="projection-stage-grid" aria-hidden="true"></div>
         <div class="projection-stage-shadow" aria-hidden="true"></div>
-        <div class="projection-visual" aria-hidden="true">
-          <img class="projection-selector-image projection-selector-image-current" draggable="false" alt="" />
-          <img class="projection-selector-image projection-selector-image-next" draggable="false" alt="" />
-        </div>
+        <canvas class="projection-canvas" aria-hidden="true"></canvas>
+        <div class="projection-axis-badge" aria-hidden="true">3D → 2.5D</div>
         <span class="projection-drag-cue" aria-hidden="true">↔</span>
       </div>
       <button class="projection-step projection-step-next" type="button" aria-label="다음 사영도">›</button>
@@ -99,25 +302,26 @@ function createSelector(entries) {
     </div>
 
     <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
-    <p class="projection-selector-note">현재는 선택 감각을 검증하는 interaction prototype이다. 선택 결과는 게임 상태에 저장하지 않는다.</p>
+    <p class="projection-selector-note">사진 모핑을 사용하지 않는다. 정다면체의 실제 정점·간선을 3D 회전한 뒤 원근을 약하게 적용해 2.5D wireframe으로 투영한다. 현재 class별 대표 orientation은 임시 배정값이다.</p>
     <span class="projection-selector-live" aria-live="polite"></span>
   `;
 
   const state = {
     solidIndex: 0,
     selectedBySolid: new Map(entries.map((_, index) => [index, 0])),
-    previewDirection: 1,
-    progress: 0,
+    orientation: { yaw: 0, pitch: 0, roll: 0 },
     pointerId: null,
     startX: 0,
+    startY: 0,
     startTime: 0,
+    dragStartOrientation: null,
+    previewDirection: 1,
     animationFrame: 0,
     locked: false
   };
 
   const stage = root.querySelector('.projection-stage');
-  const currentImage = root.querySelector('.projection-selector-image-current');
-  const nextImage = root.querySelector('.projection-selector-image-next');
+  const canvas = root.querySelector('.projection-canvas');
   const shadow = root.querySelector('.projection-stage-shadow');
   const rail = root.querySelector('.projection-class-rail');
   const live = root.querySelector('.projection-selector-live');
@@ -129,27 +333,19 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
 
+  function orientationFor(index = currentIndex()) {
+    return classOrientation(index, currentClasses().length, state.solidIndex);
+  }
+
   function targetIndex(direction) {
     return wrapIndex(currentIndex() + direction, currentClasses().length);
   }
 
-  function prepareNext(direction, explicitTargetIndex = null) {
-    const normalized = direction >= 0 ? 1 : -1;
-    state.previewDirection = normalized;
-    const index = explicitTargetIndex ?? targetIndex(normalized);
-    const item = currentClasses()[index];
-    nextImage.src = item.image;
-    nextImage.alt = '';
-  }
-
-  function resetTransforms() {
-    state.progress = 0;
-    currentImage.style.opacity = '1';
-    currentImage.style.transform = 'translate3d(0,0,0) rotate(0deg) rotateY(0deg) scale(1)';
-    nextImage.style.opacity = '0';
-    nextImage.style.transform = 'translate3d(42px,0,0) rotate(10deg) rotateY(-52deg) scale(.965)';
-    shadow.style.transform = 'translateX(-50%) scaleX(1)';
-    shadow.style.opacity = '.18';
+  function draw(motion = 0) {
+    renderSolid(canvas, currentEntry().solid.name, state.orientation, motion);
+    const amount = Math.min(1, Math.abs(motion));
+    shadow.style.transform = `translateX(calc(-50% + ${motion * 8}px)) scaleX(${1 - amount * 0.12})`;
+    shadow.style.opacity = String(0.18 - amount * 0.05);
   }
 
   function renderRail() {
@@ -160,13 +356,11 @@ function createSelector(entries) {
       </button>`).join('');
   }
 
-  function renderStatic({ announce = false } = {}) {
+  function updateMetadata({ announce = false } = {}) {
     const entry = currentEntry();
     const classes = currentClasses();
     const item = classes[currentIndex()];
 
-    currentImage.src = item.image;
-    currentImage.alt = `${entry.element.name} ${entry.solid.name} Class ${item.id} 사영도`;
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
     title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.label}`;
     position.textContent = `${currentIndex() + 1} / ${classes.length}`;
@@ -186,70 +380,44 @@ function createSelector(entries) {
       button.tabIndex = active ? 0 : -1;
     });
 
-    prepareNext(1);
-    resetTransforms();
     renderRail();
-    preloadAdjacent();
-
     if (announce) live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.label}`;
   }
 
-  function preloadAdjacent() {
-    const classes = currentClasses();
-    if (classes.length < 2) return;
-    [-1, 1].forEach(direction => {
-      const image = new Image();
-      image.src = classes[targetIndex(direction)].image;
-    });
+  function renderStatic({ announce = false } = {}) {
+    state.orientation = orientationFor();
+    updateMetadata({ announce });
+    draw(0);
   }
 
-  function applyProgress(progress) {
-    const nextProgress = clamp(progress, -1, 1);
-    if (nextProgress !== 0) {
-      const direction = nextProgress > 0 ? 1 : -1;
-      if (direction !== state.previewDirection) prepareNext(direction);
-    }
-
-    state.progress = nextProgress;
-    const amount = Math.abs(nextProgress);
-    const direction = nextProgress === 0 ? state.previewDirection : Math.sign(nextProgress);
-    const blend = 1 - Math.pow(1 - amount, 2);
-    const arc = Math.sin(amount * Math.PI) * -8;
-    const incoming = direction * (1 - amount);
-
-    currentImage.style.opacity = String(1 - blend);
-    currentImage.style.transform = `translate3d(${-nextProgress * 28}px, ${arc}px, 0) rotate(${-nextProgress * 9}deg) rotateY(${nextProgress * 48}deg) scale(${1 - amount * 0.035})`;
-    nextImage.style.opacity = String(blend);
-    nextImage.style.transform = `translate3d(${incoming * 42}px, ${arc * 0.55}px, 0) rotate(${incoming * 10}deg) rotateY(${incoming * -52}deg) scale(${0.965 + amount * 0.035})`;
-    shadow.style.transform = `translateX(calc(-50% + ${nextProgress * 12}px)) scaleX(${1 - amount * 0.12})`;
-    shadow.style.opacity = String(0.18 - amount * 0.06);
-  }
-
-  function animateProgress(to, duration, onDone) {
+  function animateOrientation(to, duration = 240, onDone) {
     cancelAnimationFrame(state.animationFrame);
-    const from = state.progress;
+    const from = { ...state.orientation };
     const started = performance.now();
 
     const frame = now => {
       const t = clamp((now - started) / duration, 0, 1);
       const eased = 1 - Math.pow(1 - t, 3);
-      applyProgress(from + (to - from) * eased);
+      state.orientation = lerpOrientation(from, to, eased);
+      draw(shortestAngleDelta(from.yaw, to.yaw) * (1 - eased));
       if (t < 1) state.animationFrame = requestAnimationFrame(frame);
       else {
         state.animationFrame = 0;
+        state.orientation = { ...to };
+        draw(0);
         onDone?.();
       }
     };
-
     state.animationFrame = requestAnimationFrame(frame);
   }
 
   function finishStep(target) {
     state.selectedBySolid.set(state.solidIndex, target);
     state.locked = false;
-    state.progress = 0;
     stage.classList.remove('is-dragging', 'is-grabbing');
-    renderStatic({ announce: true });
+    state.orientation = orientationFor(target);
+    updateMetadata({ announce: true });
+    draw(0);
     stage.focus({ preventScroll: true });
   }
 
@@ -258,17 +426,15 @@ function createSelector(entries) {
     state.locked = true;
     const normalized = direction >= 0 ? 1 : -1;
     const target = explicitTargetIndex ?? targetIndex(normalized);
-    prepareNext(normalized, target);
     stage.classList.add('is-dragging');
-    animateProgress(normalized, 180, () => finishStep(target));
+    animateOrientation(orientationFor(target), 260, () => finishStep(target));
   }
 
   function cancelDrag() {
     if (state.locked) return;
     stage.classList.remove('is-grabbing');
-    animateProgress(0, 145, () => {
+    animateOrientation(orientationFor(), 180, () => {
       stage.classList.remove('is-dragging');
-      resetTransforms();
     });
   }
 
@@ -278,7 +444,9 @@ function createSelector(entries) {
     state.animationFrame = 0;
     state.pointerId = event.pointerId;
     state.startX = event.clientX;
+    state.startY = event.clientY;
     state.startTime = performance.now();
+    state.dragStartOrientation = { ...state.orientation };
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('is-dragging', 'is-grabbing');
   });
@@ -286,9 +454,17 @@ function createSelector(entries) {
   stage.addEventListener('pointermove', event => {
     if (event.pointerId !== state.pointerId || state.locked) return;
     const dx = event.clientX - state.startX;
+    const dy = event.clientY - state.startY;
     if (Math.abs(dx) > 4) event.preventDefault();
-    const span = Math.max(140, stage.clientWidth * 0.34);
-    applyProgress(-dx / span);
+
+    const yawDelta = dx / Math.max(180, stage.clientWidth * 0.42) * Math.PI * 0.8;
+    const pitchDelta = -dy / Math.max(160, stage.clientHeight * 0.55) * Math.PI * 0.35;
+    state.orientation = {
+      yaw: state.dragStartOrientation.yaw + yawDelta,
+      pitch: clamp(state.dragStartOrientation.pitch + pitchDelta, -1.05, 1.05),
+      roll: state.dragStartOrientation.roll + yawDelta * 0.12
+    };
+    draw(yawDelta);
   });
 
   stage.addEventListener('pointerup', event => {
@@ -341,41 +517,45 @@ function createSelector(entries) {
     commitStep(forward <= backward ? 1 : -1, target);
   });
 
+  const resizeObserver = new ResizeObserver(() => draw(0));
+  resizeObserver.observe(stage);
+
   renderStatic();
   return root;
 }
 
-async function mountProjectionSelector() {
+export async function mountProjectionSelector() {
   const view = document.querySelector('#view');
-  if (!view || view.querySelector(`#${SELECTOR_ID}`)) return;
-  const tables = view.querySelector('.projection-tables');
-  if (!tables) return;
+  if (!view || view.querySelector(`#${SELECTOR_ID}`)) return false;
+
+  const tables = view.querySelector('.projection-tables[data-simulation-anchor="true"]');
+  if (!tables) return false;
   const tableHeading = tables.previousElementSibling;
-  if (!tableHeading?.classList.contains('section-head')) return;
+  if (!tableHeading?.classList.contains('section-head')) return false;
 
   try {
     const { elements, solids } = await loadSelectorData();
-    if (!tables.isConnected || view.querySelector('.projection-tables') !== tables || view.querySelector(`#${SELECTOR_ID}`)) return;
+    if (!tables.isConnected || view.querySelector(`#${SELECTOR_ID}`)) return false;
     const entries = selectorEntries(elements, solids);
-    if (!entries.length) return;
-
-    const heading = document.createElement('div');
-    heading.id = SECTION_ID;
-    heading.className = 'section-head projection-selector-section-head';
-    heading.innerHTML = '<h2>Projection selector</h2><p>정다면체 선택 → 좌우 드래그 → 다음 사영도로 스냅</p>';
-
-    tableHeading.before(heading, createSelector(entries));
+    if (!entries.length) return false;
+    const selector = createSelector(entries);
+    tableHeading.before(selector);
+    return true;
   } catch (error) {
-    console.warn('[projection-selector] mount failed', error);
+    console.warn('[projection-selector] failed to mount', error);
+    return false;
   }
 }
 
-function initProjectionSelector() {
-  const view = document.querySelector('#view');
+const observer = new MutationObserver(() => mountProjectionSelector());
+const start = () => {
+  const view = document.getElementById('view');
   if (!view) return;
-  const observer = new MutationObserver(() => mountProjectionSelector());
-  observer.observe(view, { childList: true });
+  observer.observe(view, { childList: true, subtree: false });
   mountProjectionSelector();
-}
+};
 
-if (typeof document !== 'undefined') initProjectionSelector();
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+}
