@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wrapIndex, swipeDirection } from '../docs/projection-selector.js';
+
+globalThis.MutationObserver ??= class {
+  observe() {}
+  disconnect() {}
+};
+
+const { wrapIndex, swipeDirection } = await import('../docs/projection-selector.js');
 
 test('wrapIndex cycles projection classes in both directions', () => {
   assert.equal(wrapIndex(6, 6), 0);
