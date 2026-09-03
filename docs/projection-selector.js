@@ -235,6 +235,24 @@ function renderSolid(canvas, solidName, orientation, motion = 0) {
   ctx.restore();
 }
 
+function inject3dStyles() {
+  if (document.getElementById('projection3dRuntimeStyles')) return;
+  const style = document.createElement('style');
+  style.id = 'projection3dRuntimeStyles';
+  style.textContent = `
+    .projection-selector-3d .projection-stage-3d{position:relative;isolation:isolate}
+    .projection-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;pointer-events:none}
+    .projection-selector-3d .projection-stage-grid{z-index:0}
+    .projection-selector-3d .projection-stage-shadow{z-index:1}
+    .projection-axis-badge{position:absolute;left:12px;bottom:10px;z-index:3;padding:4px 7px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--surface) 82%,transparent);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:.12em;pointer-events:none;backdrop-filter:blur(8px)}
+    .projection-selector-3d .projection-drag-cue{z-index:3}
+    .projection-selector-3d .projection-stage.is-dragging .projection-axis-badge{opacity:.58}
+    html[data-theme="dark"] .projection-selector-3d .projection-stage{background:#111317;border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 12px 36px rgba(0,0,0,.22)}
+    html[data-theme="dark"] .projection-selector-3d .projection-stage-grid{background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)}
+  `;
+  document.head.appendChild(style);
+}
+
 let selectorDataPromise;
 async function loadSelectorData() {
   if (!selectorDataPromise) {
@@ -258,6 +276,7 @@ function selectorEntries(elements, solids) {
 }
 
 function createSelector(entries) {
+  inject3dStyles();
   const root = document.createElement('section');
   root.id = SELECTOR_ID;
   root.className = 'card projection-selector projection-selector-3d';
