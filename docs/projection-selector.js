@@ -2,6 +2,7 @@ import { clamp, dragProgress, geometryForSolid, interpolateFrames, projectVertic
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
+const BUTTON_STEP_DURATION_MS = 2000;
 
 function escapeHtml(value = '') {
   return String(value)
@@ -11,6 +12,7 @@ function escapeHtml(value = '') {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
 function resizeCanvas(canvas) {
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -112,9 +114,9 @@ async function loadSelectorData() {
       if (!projectResponse.ok || !projectionResponse.ok || !viewResponse.ok) {
         throw new Error('Failed to load projection simulation data');
       }
-      const [project, projectionData, viewData] = await Promise.all([
-        projectResponse.json(), projectionResponse.json(), viewResponse.json()
-      ]);
+      const project = await projectResponse.json();
+      const projectionData = await projectionResponse.json();
+      const viewData = await viewResponse.json();
       return {
         elements: project.elements || [],
         solids: projectionData.solids || [],
@@ -210,7 +212,8 @@ function createSelector(entries) {
     startTime: 0,
     animationFrame: 0,
     locked: false,
-    queue: []
+    queue: [],
+    stepDuration: null
   };
 
   const stage = root.querySelector('.projection-stage');
@@ -310,6 +313,7 @@ function createSelector(entries) {
   function runQueue() {
     if (!state.queue.length) {
       state.locked = false;
+      state.stepDuration = null;
       stage.classList.remove('is-dragging', 'is-grabbing');
       stage.focus({ preventScroll: true });
       return;
@@ -319,13 +323,14 @@ function createSelector(entries) {
     const target = targetIndex(direction);
     const targetFrame = frameFor(target);
     stage.classList.add('is-dragging');
-    const duration = state.progress ? 130 + 150 * (1 - Math.abs(state.progress)) : 245;
+    const duration = state.stepDuration ?? (state.progress ? 130 + 150 * (1 - Math.abs(state.progress)) : 245);
     animateToFrame(targetFrame, duration, () => finishOneStep(target, runQueue));
   }
 
-  function commitSteps(directions) {
+  function commitSteps(directions, duration = null) {
     if (state.locked || !directions.length) return;
     state.locked = true;
+    state.stepDuration = duration;
     state.queue = directions.slice();
     runQueue();
   }
@@ -402,8 +407,8 @@ function createSelector(entries) {
     }
   });
 
-  root.querySelector('.projection-step-prev').addEventListener('click', () => commitSteps([-1]));
-  root.querySelector('.projection-step-next').addEventListener('click', () => commitSteps([1]));
+  root.querySelector('.projection-step-prev').addEventListener('click', () => commitSteps([-1], BUTTON_STEP_DURATION_MS));
+  root.querySelector('.projection-step-next').addEventListener('click', () => commitSteps([1], BUTTON_STEP_DURATION_MS));
 
   root.querySelector('.projection-solid-tabs').addEventListener('click', event => {
     const button = event.target.closest('.projection-solid-tab');
