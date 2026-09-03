@@ -24,7 +24,7 @@
     }
   </script>
   <link rel="stylesheet" href="./styles.css?v=individual-projections-20260901-1" />
-  <link rel="stylesheet" href="./projection-selector.css?v=projection-selector-20260903-3" />
+  <link rel="stylesheet" href="./projection-selector.css?v=projection-selector-20260903-4" />
   <link rel="stylesheet" href="./graph-layout.css?v=mobile-20260831-1" />
   <style>
     html[data-sidebar="collapsed"] .app-shell {
@@ -121,43 +121,8 @@
 
   <script src="./theory-extension.js?v=magic-theory-20260903-1"></script>
   <script type="module" src="./app.js?v=geometric-order-20260902-1"></script>
-  <script type="module" src="./projection-selector.js?v=projection-selector-20260903-3"></script>
-  <script type="module">
-    const projectionView = document.getElementById('view');
-    let projectionMountAttempt = 0;
-    let projectionMountPending = false;
-
-    const ensureProjectionSelector = () => {
-      const tables = projectionView?.querySelector('.projection-tables');
-      if (!tables || projectionView.querySelector('#projectionSelectorPrototype') || projectionMountPending) return;
-
-      // theory-extension inserts a note between the section heading and tables.
-      // Restore the heading as the immediate sibling expected by projection-selector.
-      const tableHeading = [...projectionView.querySelectorAll('.section-head')]
-        .find(head => head.querySelector('h2')?.textContent === 'Projection class tables');
-      if (tableHeading && tables.previousElementSibling !== tableHeading) tables.before(tableHeading);
-
-      projectionMountPending = true;
-      const attempt = ++projectionMountAttempt;
-      import(`./projection-selector.js?v=projection-selector-20260903-3&mount=${attempt}`)
-        .catch(error => console.warn('[projection-selector] retry import failed', error))
-        .finally(() => {
-          projectionMountPending = false;
-          if (projectionView.querySelector('.projection-tables')
-            && !projectionView.querySelector('#projectionSelectorPrototype')
-            && projectionMountAttempt < 4) {
-            setTimeout(ensureProjectionSelector, 120 * projectionMountAttempt);
-          }
-        });
-    };
-
-    new MutationObserver(ensureProjectionSelector).observe(projectionView, { childList: true });
-    document.addEventListener('click', event => {
-      if (event.target.closest?.('[data-view="attributes"]')) setTimeout(ensureProjectionSelector, 0);
-    });
-    ensureProjectionSelector();
-  </script>
-  <script type="module" src="./simulation.js?v=simulation-20260903-1"></script>
+  <script type="module" src="./projection-selector.js?v=projection-selector-20260903-4"></script>
+  <script type="module" src="./simulation.js?v=simulation-20260903-2"></script>
   <script type="module" src="./stats.js?v=stats-20260825-1"></script>
   <script type="module" src="./classes.js?v=classes-20260831-2"></script>
   <script type="module" src="./stat-tree-ui.js?v=ui-20260831-2"></script>
