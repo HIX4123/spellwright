@@ -25,7 +25,7 @@ async function renderSimulation() {
   `;
 
   try {
-    const { mountProjectionSelector } = await import('./projection-selector.js?v=projection-selector-20260903-6');
+    const { mountProjectionSelector } = await import('./projection-selector.js?v=projection-selector-20260903-7');
     await mountProjectionSelector();
   } catch (error) {
     console.warn('[simulation] failed to mount projection selector', error);
