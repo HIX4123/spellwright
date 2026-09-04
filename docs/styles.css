@@ -240,11 +240,11 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 10px;
 }
-.system-card {
+.system-card[data-id] {
   cursor: pointer;
   transition: border-color .14s ease, box-shadow .14s ease, transform .14s ease;
 }
-.system-card:hover {
+.system-card[data-id]:hover {
   border-color: var(--line-strong);
   box-shadow: var(--shadow-2);
   transform: translateY(-1px);
@@ -291,7 +291,6 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
   align-items: start;
 }
 .decision:last-child { border-bottom: 0; }
-.decision:hover { background: var(--hover); }
 .decision .date, .decision .type { font-size: 10px; color: var(--muted); }
 .decision h3 { margin: 0 0 5px; font-size: 12px; font-weight: 650; }
 .decision p { margin: 0; color: var(--secondary); font-size: 11px; line-height: 1.5; }
@@ -305,7 +304,6 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
 }
 .table th { color: var(--muted); font-weight: 500; }
 .table tr:last-child th, .table tr:last-child td { border-bottom: 0; }
-.table tbody tr:hover { background: var(--hover); }
 
 .question-list {
   overflow: hidden;
@@ -321,7 +319,6 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
   font-size: 12px;
 }
 .question:last-child { border-bottom: 0; }
-.question:hover { background: var(--hover); }
 
 dialog {
   width: min(720px, calc(100vw - 28px));
