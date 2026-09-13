@@ -1,4 +1,14 @@
-import { clamp, dragProgress, geometryForSolid, interpolateFrames, projectVertices, projectionEvents, swipeDirection, viewFrame, wrapIndex } from './projection-core.js?v=projection-core-20260903-1';
+import {
+  clamp,
+  dragProgress,
+  geometryForSolid,
+  interpolateFrames,
+  projectVertices,
+  projectionEvents,
+  swipeDirection,
+  viewFrame,
+  wrapIndex
+} from './projection-core.js?v=projection-core-20260903-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -12,6 +22,7 @@ function escapeHtml(value = '') {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
 function resizeCanvas(canvas) {
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -40,7 +51,10 @@ function renderProjection(canvas, geometry, frame) {
   const padding = span * 0.15;
   const cssWidth = width / dpr;
   const cssHeight = height / dpr;
-  const scale = Math.min(cssWidth / (maxX - minX + padding * 2), cssHeight / (maxY - minY + padding * 2));
+  const scale = Math.min(
+    cssWidth / (maxX - minX + padding * 2),
+    cssHeight / (maxY - minY + padding * 2)
+  );
   const centerX = (minX + maxX) / 2;
   const centerY = (minY + maxY) / 2;
   const screenPoint = point => [
@@ -114,7 +128,9 @@ async function loadSelectorData() {
         throw new Error('Failed to load projection simulation data');
       }
       const [project, projectionData, viewData] = await Promise.all([
-        projectResponse.json(), projectionResponse.json(), viewResponse.json()
+        projectResponse.json(),
+        projectionResponse.json(),
+        viewResponse.json()
       ]);
       return {
         elements: project.elements || [],
@@ -196,7 +212,7 @@ function createSelector(entries) {
     </div>
 
     <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
-    <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그는 이전·다음 사영만 선택하며, 회전 경로는 현재 class 순서에 고정된다. 각 정지점은 기존 사영 이미지와 같은 대표 시선·화면 방향을 사용한다.</p>
+    <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그·버튼·키보드는 인접 사영으로 이동하고, 클래스 번호를 직접 선택하면 중간 클래스를 거치지 않고 목표 사영으로 바로 회전한다.</p>
     <span class="projection-selector-live" aria-live="polite"></span>
   `;
 
@@ -210,9 +226,7 @@ function createSelector(entries) {
     startX: 0,
     startTime: 0,
     animationFrame: 0,
-    locked: false,
-    queue: [],
-    stepDuration: null
+    locked: false
   };
 
   const stage = root.querySelector('.projection-stage');
@@ -300,38 +314,27 @@ function createSelector(entries) {
     state.animationFrame = requestAnimationFrame(frame);
   }
 
-  function finishOneStep(target, continueQueue) {
+  function finishTransition(target, targetFrame) {
     state.selectedBySolid.set(state.solidIndex, target);
     state.progress = 0;
-    state.frame = frameFor(target);
+    state.frame = targetFrame;
+    state.locked = false;
+    stage.classList.remove('is-dragging', 'is-grabbing');
     updateMetadata({ announce: true });
     draw();
-    continueQueue();
+    stage.focus({ preventScroll: true });
   }
 
-  function runQueue() {
-    if (!state.queue.length) {
-      state.locked = false;
-      state.stepDuration = null;
-      stage.classList.remove('is-dragging', 'is-grabbing');
-      stage.focus({ preventScroll: true });
-      return;
-    }
-
-    const direction = state.queue.shift();
-    const target = targetIndex(direction);
+  function commitTarget(target, duration = DEFAULT_TRANSITION_DURATION_MS) {
+    if (state.locked || target === currentIndex()) return;
+    state.locked = true;
     const targetFrame = frameFor(target);
     stage.classList.add('is-dragging');
-    const duration = state.stepDuration ?? DEFAULT_TRANSITION_DURATION_MS;
-    animateToFrame(targetFrame, duration, () => finishOneStep(target, runQueue));
+    animateToFrame(targetFrame, duration, () => finishTransition(target, targetFrame));
   }
 
-  function commitSteps(directions, totalDuration = DEFAULT_TRANSITION_DURATION_MS) {
-    if (state.locked || !directions.length) return;
-    state.locked = true;
-    state.stepDuration = totalDuration / directions.length;
-    state.queue = directions.slice();
-    runQueue();
+  function commitNeighbor(direction, duration = DEFAULT_TRANSITION_DURATION_MS) {
+    commitTarget(targetIndex(direction), duration);
   }
 
   function cancelDrag() {
@@ -340,18 +343,10 @@ function createSelector(entries) {
     const targetFrame = frameFor(currentIndex());
     animateToFrame(targetFrame, 165, () => {
       state.progress = 0;
+      state.frame = targetFrame;
       stage.classList.remove('is-dragging');
+      draw();
     });
-  }
-
-  function routeTo(target) {
-    const classes = currentClasses();
-    const current = currentIndex();
-    const forward = wrapIndex(target - current, classes.length);
-    const backward = wrapIndex(current - target, classes.length);
-    const direction = forward <= backward ? 1 : -1;
-    const steps = Math.min(forward, backward);
-    commitSteps(Array.from({ length: steps }, () => direction));
   }
 
   stage.addEventListener('pointerdown', event => {
@@ -374,7 +369,11 @@ function createSelector(entries) {
     const direction = progress === 0 ? state.previewDirection : Math.sign(progress);
     state.previewDirection = direction;
     state.progress = progress;
-    state.frame = interpolateFrames(frameFor(currentIndex()), frameFor(targetIndex(direction)), Math.abs(progress));
+    state.frame = interpolateFrames(
+      frameFor(currentIndex()),
+      frameFor(targetIndex(direction)),
+      Math.abs(progress)
+    );
     draw();
   });
 
@@ -386,10 +385,13 @@ function createSelector(entries) {
     state.pointerId = null;
     if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
     stage.classList.remove('is-grabbing');
+
     if (direction) {
       const remaining = Math.max(0.08, 1 - Math.abs(state.progress));
-      commitSteps([direction], DEFAULT_TRANSITION_DURATION_MS * remaining);
-    } else cancelDrag();
+      commitNeighbor(direction, DEFAULT_TRANSITION_DURATION_MS * remaining);
+    } else {
+      cancelDrag();
+    }
   });
 
   stage.addEventListener('pointercancel', event => {
@@ -401,15 +403,15 @@ function createSelector(entries) {
   stage.addEventListener('keydown', event => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      commitSteps([-1]);
+      commitNeighbor(-1);
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
-      commitSteps([1]);
+      commitNeighbor(1);
     }
   });
 
-  root.querySelector('.projection-step-prev').addEventListener('click', () => commitSteps([-1]));
-  root.querySelector('.projection-step-next').addEventListener('click', () => commitSteps([1]));
+  root.querySelector('.projection-step-prev').addEventListener('click', () => commitNeighbor(-1));
+  root.querySelector('.projection-step-next').addEventListener('click', () => commitNeighbor(1));
 
   root.querySelector('.projection-solid-tabs').addEventListener('click', event => {
     const button = event.target.closest('.projection-solid-tab');
@@ -425,7 +427,7 @@ function createSelector(entries) {
     if (!button || state.locked) return;
     const target = Number(button.dataset.classIndex);
     if (!Number.isInteger(target) || target === currentIndex()) return;
-    routeTo(target);
+    commitTarget(target);
   });
 
   if (typeof ResizeObserver !== 'undefined') {
