@@ -118,7 +118,7 @@ nav?.addEventListener('click', event => {
   const button = event.target.closest('.nav-btn');
   if (!button || button.dataset.view === 'stats') return;
   statsViewActive = false;
-});
+}, true);
 
 if (nav) {
   new MutationObserver(ensureStatsNavButton).observe(nav, { childList: true });
