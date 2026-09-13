@@ -440,21 +440,16 @@ function createSelector(entries) {
 }
 
 export async function mountProjectionSelector() {
-  const view = document.querySelector('#view');
-  if (!view) return false;
-  if (view.querySelector(`#${SELECTOR_ID}`)) return true;
-
-  const anchor = view.querySelector('.projection-tables[data-simulation-anchor="true"]');
-  if (!anchor) return false;
-  const heading = anchor.previousElementSibling;
-  if (!heading?.classList.contains('section-head')) return false;
+  const container = document.getElementById('projectionSimulation');
+  if (!container) return false;
+  if (container.querySelector(`#${SELECTOR_ID}`)) return true;
 
   try {
     const { elements, solids, viewSolids } = await loadSelectorData();
-    if (!anchor.isConnected || view.querySelector(`#${SELECTOR_ID}`)) return false;
+    if (!container.isConnected || container.querySelector(`#${SELECTOR_ID}`)) return false;
     const entries = selectorEntries(elements, solids, viewSolids);
     if (!entries.length) throw new Error('Projection simulation has no complete solid/view entries');
-    heading.before(createSelector(entries));
+    container.appendChild(createSelector(entries));
     return true;
   } catch (error) {
     console.warn('[projection-selector] failed to mount simulation', error);

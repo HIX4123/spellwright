@@ -1,4 +1,5 @@
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=routing-20260823-1';
+import { mountProjectionSelector } from './projection-selector.js?v=attributes-simulation-20260913-1';
 
 let data;
 let relationships;
@@ -402,6 +403,8 @@ function renderAttributes() {
         <tbody>${data.elements.map(e=>`<tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.motto)}</td><td>${escapeHtml(e.loss)}</td><td>${escapeHtml(e.meaning)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
+    ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · 클래스 번호로 사영 전환')}
+    <div id="projectionSimulation"></div>
     ${section('Projection class tables','점 → 선 → 면 → 원 유형 번호 순서 · Class ID 유지 · 이미지를 누르면 원본 크기로 열린다')}
     <div class="projection-tables">
       ${data.elements.map(projectionTable).join('')}
@@ -409,6 +412,7 @@ function renderAttributes() {
     ${section('Related systems')}
     <div class="system-grid">${data.systems.filter(x=>x.category==='attribute').map(systemCard).join('')}</div>`;
 
+  mountProjectionSelector();
   bindSystemCards();
 }
 
