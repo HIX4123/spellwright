@@ -1,8 +1,8 @@
 import { projectVertices, projectionEvents } from './projection-core.js';
 
 const TAU = Math.PI * 2;
-const POSITION_TOLERANCE_FACTOR = 0.006;
-const AXIS_CLUSTER_TOLERANCE = Math.PI / 180;
+const SILHOUETTE_TOLERANCE_FACTOR = 0.02;
+const AXIS_CLUSTER_TOLERANCE = Math.PI / 360;
 
 function edgeKey(a, b) {
   return a <= b ? `${a}:${b}` : `${b}:${a}`;
@@ -31,8 +31,7 @@ function projectedArrangement(vertices, edges, frame) {
     xy: event.xy.slice(),
     vertexMultiplicity: event.vertexIds.size,
     incidentEdgeIds: [...event.edgeIds],
-    degree: 0,
-    signature: ''
+    degree: 0
   }));
   const segments = new Set();
 
@@ -64,15 +63,8 @@ function projectedArrangement(vertices, edges, frame) {
     nodes[a].degree += 1;
     nodes[b].degree += 1;
   }
-  nodes.forEach(node => {
-    const kind = node.vertexMultiplicity > 0 ? 'vertex' : 'crossing';
-    node.signature = `${kind}:${node.vertexMultiplicity}:${node.degree}`;
-  });
 
-  const scale = Math.max(
-    1,
-    ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1]))
-  );
+  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
   return { points, nodes, segments, scale };
 }
 
@@ -119,46 +111,6 @@ function nestedConvexLayers(nodes, scale) {
   return outerToInner.reverse();
 }
 
-function transformedNodeMap(nodes, transform, tolerance) {
-  const mapping = new Array(nodes.length).fill(-1);
-  const used = new Set();
-
-  const sourceOrder = nodes
-    .map((node, index) => ({ index, rarity: nodes.filter(other => other.signature === node.signature).length }))
-    .sort((a, b) => a.rarity - b.rarity);
-
-  for (const source of sourceOrder) {
-    const index = source.index;
-    const target = transform(nodes[index].xy);
-    let bestIndex = -1;
-    let bestDistance = Infinity;
-    for (let candidate = 0; candidate < nodes.length; candidate += 1) {
-      if (used.has(candidate) || nodes[candidate].signature !== nodes[index].signature) continue;
-      const dx = nodes[candidate].xy[0] - target[0];
-      const dy = nodes[candidate].xy[1] - target[1];
-      const distance = Math.hypot(dx, dy);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestIndex = candidate;
-      }
-    }
-    if (bestIndex < 0 || bestDistance > tolerance) return null;
-    mapping[index] = bestIndex;
-    used.add(bestIndex);
-  }
-  return mapping;
-}
-
-function preservesArrangement(nodes, segments, transform, tolerance) {
-  const mapping = transformedNodeMap(nodes, transform, tolerance);
-  if (!mapping) return false;
-  for (const key of segments) {
-    const [a, b] = key.split(':').map(Number);
-    if (!segments.has(edgeKey(mapping[a], mapping[b]))) return false;
-  }
-  return true;
-}
-
 function reflectionTransform(axisAngle) {
   const cos = Math.cos(axisAngle * 2);
   const sin = Math.sin(axisAngle * 2);
@@ -171,7 +123,38 @@ function rotationTransform(angle) {
   return ([x, y]) => [x * cos - y * sin, x * sin + y * cos];
 }
 
-function candidateReflectionAxes(nodes) {
+function transformMatchError(nodes, indices, transform) {
+  const used = new Set();
+  let maximum = 0;
+  let sumSquares = 0;
+
+  for (const index of indices) {
+    const target = transform(nodes[index].xy);
+    let bestIndex = -1;
+    let bestDistance = Infinity;
+    for (const candidate of indices) {
+      if (used.has(candidate)) continue;
+      const dx = nodes[candidate].xy[0] - target[0];
+      const dy = nodes[candidate].xy[1] - target[1];
+      const distance = Math.hypot(dx, dy);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = candidate;
+      }
+    }
+    if (bestIndex < 0) return { maximum: Infinity, rms: Infinity };
+    used.add(bestIndex);
+    maximum = Math.max(maximum, bestDistance);
+    sumSquares += bestDistance * bestDistance;
+  }
+
+  return {
+    maximum,
+    rms: Math.sqrt(sumSquares / Math.max(1, indices.length))
+  };
+}
+
+function candidateReflectionAxes(nodes, indices) {
   const candidates = [];
   const add = angle => {
     const normalized = normalizeAxisAngle(angle);
@@ -179,11 +162,12 @@ function candidateReflectionAxes(nodes) {
     candidates.push(normalized);
   };
 
-  for (let first = 0; first < nodes.length; first += 1) {
+  for (let firstPosition = 0; firstPosition < indices.length; firstPosition += 1) {
+    const first = indices[firstPosition];
     const firstAngle = Math.atan2(nodes[first].xy[1], nodes[first].xy[0]);
     add(firstAngle);
-    for (let second = first + 1; second < nodes.length; second += 1) {
-      if (nodes[first].signature !== nodes[second].signature) continue;
+    for (let secondPosition = firstPosition + 1; secondPosition < indices.length; secondPosition += 1) {
+      const second = indices[secondPosition];
       const secondAngle = Math.atan2(nodes[second].xy[1], nodes[second].xy[0]);
       const doubledAxis = Math.atan2(
         Math.sin(firstAngle + secondAngle),
@@ -196,23 +180,47 @@ function candidateReflectionAxes(nodes) {
   return candidates;
 }
 
-function reflectionAxisAngles(nodes, segments, tolerance) {
-  const passing = candidateReflectionAxes(nodes)
-    .filter(angle => preservesArrangement(nodes, segments, reflectionTransform(angle), tolerance))
-    .sort((a, b) => a - b);
-  const clustered = [];
-  for (const angle of passing) {
-    if (clustered.some(existing => axisAngleDistance(existing, angle) < AXIS_CLUSTER_TOLERANCE)) continue;
-    clustered.push(angle);
-  }
-  return clustered;
-}
-
-function rotationalOrder(nodes, segments, tolerance) {
-  for (let order = 12; order >= 2; order -= 1) {
-    if (preservesArrangement(nodes, segments, rotationTransform(TAU / order), tolerance)) return order;
+function silhouetteRotationalOrder(nodes, outerLayer, tolerance) {
+  const count = outerLayer.length;
+  for (let order = Math.min(12, count); order >= 2; order -= 1) {
+    if (count % order !== 0) continue;
+    const error = transformMatchError(nodes, outerLayer, rotationTransform(TAU / order));
+    if (error.maximum <= tolerance) return order;
   }
   return 1;
+}
+
+function silhouetteReflectionAxes(nodes, outerLayer, rotationalOrder, tolerance) {
+  const candidates = candidateReflectionAxes(nodes, outerLayer);
+  if (!candidates.length) return [];
+  let best = null;
+
+  for (const baseAngle of candidates) {
+    const family = [];
+    let maximumError = 0;
+    let rmsError = 0;
+    for (let index = 0; index < rotationalOrder; index += 1) {
+      const angle = normalizeAxisAngle(baseAngle + index * Math.PI / rotationalOrder);
+      const error = transformMatchError(nodes, outerLayer, reflectionTransform(angle));
+      maximumError = Math.max(maximumError, error.maximum);
+      rmsError += error.rms;
+      family.push(angle);
+    }
+    rmsError /= rotationalOrder;
+    if (maximumError > tolerance) continue;
+    if (!best || maximumError < best.maximumError - 1e-9
+      || (Math.abs(maximumError - best.maximumError) <= 1e-9 && rmsError < best.rmsError)) {
+      best = { family, maximumError, rmsError };
+    }
+  }
+
+  if (!best) return [];
+  const result = [];
+  for (const angle of best.family.sort((a, b) => a - b)) {
+    if (result.some(existing => axisAngleDistance(existing, angle) < AXIS_CLUSTER_TOLERANCE)) continue;
+    result.push(angle);
+  }
+  return result;
 }
 
 function solveLinearSystem(matrix, vector) {
@@ -276,21 +284,31 @@ function fitConcentricCircles(nodes, layers, scale) {
     ];
   }
 
-  const radii = layers.map(layer => {
-    const distances = layer.map(index => Math.hypot(
-      nodes[index].xy[0] - center[0],
-      nodes[index].xy[1] - center[1]
-    ));
-    return distances.reduce((sum, value) => sum + value, 0) / distances.length;
-  });
+  const radii = layers.map(layer => Math.max(...layer.map(index => Math.hypot(
+    nodes[index].xy[0] - center[0],
+    nodes[index].xy[1] - center[1]
+  ))));
   return { center, radii };
 }
 
 export function analyzeProjectionStructure(vertices, edges, frame) {
   const arrangement = projectedArrangement(vertices, edges, frame);
-  const tolerance = arrangement.scale * POSITION_TOLERANCE_FACTOR;
   const layers = nestedConvexLayers(arrangement.nodes, arrangement.scale);
   const circles = fitConcentricCircles(arrangement.nodes, layers, arrangement.scale);
+  const outerLayer = layers.at(-1) || [];
+  const silhouetteTolerance = arrangement.scale * SILHOUETTE_TOLERANCE_FACTOR;
+  const rotationalOrder = silhouetteRotationalOrder(
+    arrangement.nodes,
+    outerLayer,
+    silhouetteTolerance
+  );
+  const symmetryAxisAngles = silhouetteReflectionAxes(
+    arrangement.nodes,
+    outerLayer,
+    rotationalOrder,
+    silhouetteTolerance
+  );
+
   return {
     points: arrangement.points,
     nodes: arrangement.nodes,
@@ -299,7 +317,7 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     layerPointCounts: layers.map(layer => layer.length),
     circleCenter: circles.center,
     circleRadii: circles.radii,
-    symmetryAxisAngles: reflectionAxisAngles(arrangement.nodes, arrangement.segments, tolerance),
-    rotationalOrder: rotationalOrder(arrangement.nodes, arrangement.segments, tolerance)
+    symmetryAxisAngles,
+    rotationalOrder
   };
 }
