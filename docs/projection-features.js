@@ -209,7 +209,9 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
   const layers = groupedRadialLayers(nodes, tolerance * 4);
   const centerLayer = layers[0];
   const hasCenterPoint = Boolean(centerLayer && centerLayer.radius <= tolerance * 4);
-  const polygonSides = hasCenterPoint ? 0 : regularCycleSides(nodes, edgeCounts, centerLayer, tolerance * 4);
+  const polygonSides = hasCenterPoint || layers.length < 2
+    ? 0
+    : regularCycleSides(nodes, edgeCounts, centerLayer, tolerance * 4);
   const centerStructure = hasCenterPoint
     ? { kind: 'point' }
     : polygonSides >= 3
