@@ -1,7 +1,8 @@
 import { projectVertices, projectionEvents } from './projection-core.js';
 
 const TAU = Math.PI * 2;
-const SILHOUETTE_TOLERANCE_FACTOR = 0.02;
+const ROTATION_TOLERANCE_FACTOR = 0.006;
+const REFLECTION_TOLERANCE_FACTOR = 0.02;
 const AXIS_CLUSTER_TOLERANCE = Math.PI / 360;
 
 function edgeKey(a, b) {
@@ -284,10 +285,16 @@ function fitConcentricCircles(nodes, layers, scale) {
     ];
   }
 
-  const radii = layers.map(layer => Math.max(...layer.map(index => Math.hypot(
-    nodes[index].xy[0] - center[0],
-    nodes[index].xy[1] - center[1]
-  ))));
+  let previousRadius = 0;
+  const radii = layers.map(layer => {
+    const rawRadius = Math.max(...layer.map(index => Math.hypot(
+      nodes[index].xy[0] - center[0],
+      nodes[index].xy[1] - center[1]
+    )));
+    const radius = Math.max(previousRadius, rawRadius);
+    previousRadius = radius;
+    return radius;
+  });
   return { center, radii };
 }
 
@@ -296,17 +303,16 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
   const layers = nestedConvexLayers(arrangement.nodes, arrangement.scale);
   const circles = fitConcentricCircles(arrangement.nodes, layers, arrangement.scale);
   const outerLayer = layers.at(-1) || [];
-  const silhouetteTolerance = arrangement.scale * SILHOUETTE_TOLERANCE_FACTOR;
   const rotationalOrder = silhouetteRotationalOrder(
     arrangement.nodes,
     outerLayer,
-    silhouetteTolerance
+    arrangement.scale * ROTATION_TOLERANCE_FACTOR
   );
   const symmetryAxisAngles = silhouetteReflectionAxes(
     arrangement.nodes,
     outerLayer,
     rotationalOrder,
-    silhouetteTolerance
+    arrangement.scale * REFLECTION_TOLERANCE_FACTOR
   );
 
   return {
