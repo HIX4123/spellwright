@@ -1,0 +1,1 @@
+Projection feature cache key bumped to projection-tags-20260915-2 so browsers fetch the corrected nested convex-layer logic after the typography deployment.
