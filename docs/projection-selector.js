@@ -116,6 +116,21 @@ function renderProjection(canvas, geometry, frame) {
   ctx.restore();
 }
 
+function isProjectionData(value) {
+  return Boolean(value?.schemaVersion === 1
+    && Array.isArray(value.solids)
+    && value.solids.every(solid => typeof solid?.id === 'string'
+      && typeof solid.name === 'string'
+      && Array.isArray(solid.classes)
+      && solid.classes.every(item => Number.isInteger(item?.id)
+        && typeof item.label === 'string'
+        && typeof item.image === 'string'
+        && ['crossings', 'vertexClusters', 'maxVertexOverlap', 'stabilizer']
+          .every(key => Number.isInteger(item[key]))
+        && ['structure', 'name', 'description', 'example']
+          .every(key => typeof item.role?.[key] === 'string'))));
+}
+
 let selectorDataPromise;
 async function loadSelectorData() {
   if (!selectorDataPromise) {
@@ -132,6 +147,7 @@ async function loadSelectorData() {
         projectionResponse.json(),
         viewResponse.json()
       ]);
+      if (!isProjectionData(projectionData)) throw new Error('Invalid projection data');
       return {
         elements: project.elements || [],
         solids: projectionData.solids || [],
@@ -212,6 +228,20 @@ function createSelector(entries) {
     </div>
 
     <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
+    <section class="projection-role-details" aria-label="선택한 사영도의 역할">
+      <div class="projection-role-heading">
+        <div>
+          <span class="detail-kicker">역할 가설 · <span data-role="structure"></span></span>
+          <h3 data-role="name"></h3>
+        </div>
+        <a data-projection-source target="_blank" rel="noopener">원본 사영도 ↗</a>
+      </div>
+      <dl class="projection-role-copy">
+        <div><dt>마법적 해석</dt><dd data-role="description"></dd></div>
+        <div><dt>예시</dt><dd data-role="example"></dd></div>
+      </dl>
+      <p class="muted">사영도의 구조적 차이를 마법 연산으로 번역한 1차 가설이며, 최종 능력은 전투 프로토타입 검증 후 확정한다.</p>
+    </section>
     <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그·버튼·키보드는 인접 사영으로 이동하고, 클래스 번호를 직접 선택하면 중간 클래스를 거치지 않고 목표 사영으로 바로 회전한다.</p>
     <span class="projection-selector-live" aria-live="polite"></span>
   `;
@@ -271,6 +301,10 @@ function createSelector(entries) {
     root.querySelector('[data-metric="vertexClusters"]').textContent = String(item.vertexClusters);
     root.querySelector('[data-metric="maxVertexOverlap"]').textContent = `×${item.maxVertexOverlap}`;
     root.querySelector('[data-metric="stabilizer"]').textContent = String(item.stabilizer);
+    for (const field of ['structure', 'name', 'description', 'example']) {
+      root.querySelector(`[data-role="${field}"]`).textContent = item.role[field];
+    }
+    root.querySelector('[data-projection-source]').href = item.image;
 
     stage.setAttribute('aria-valuemax', String(classes.length));
     stage.setAttribute('aria-valuenow', String(currentIndex() + 1));
@@ -284,7 +318,7 @@ function createSelector(entries) {
     });
 
     renderRail();
-    if (announce) live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.label}`;
+    if (announce) live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.label}, 역할 가설 ${item.role.name}`;
   }
 
   function renderStatic({ announce = false } = {}) {
@@ -453,6 +487,7 @@ export async function mountProjectionSelector() {
     return true;
   } catch (error) {
     console.warn('[projection-selector] failed to mount simulation', error);
+    if (container.isConnected) container.textContent = '사영도와 역할 설명을 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.';
     return false;
   }
 }
