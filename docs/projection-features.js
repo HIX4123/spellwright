@@ -4,6 +4,7 @@ import {
   projectionEvents,
   viewFrame
 } from './projection-core.js';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js';
 
 const TAU = Math.PI * 2;
 const ANGLE_TOLERANCE = 0.012;
@@ -11,17 +12,6 @@ const POSITION_TOLERANCE_FACTOR = 1e-5;
 
 function edgeKey(a, b) {
   return a <= b ? `${a}:${b}` : `${b}:${a}`;
-}
-
-function normalizeAxisAngle(angle) {
-  let normalized = angle % Math.PI;
-  if (normalized < 0) normalized += Math.PI;
-  return normalized;
-}
-
-function axisAngleDistance(a, b) {
-  const diff = Math.abs(normalizeAxisAngle(a) - normalizeAxisAngle(b));
-  return Math.min(diff, Math.PI - diff);
 }
 
 function nearlyEqual(a, b, tolerance) {
@@ -48,7 +38,6 @@ function projectedVertexGraph(vertices, edges, frame) {
     const key = edgeKey(from, to);
     edgeCounts.set(key, (edgeCounts.get(key) || 0) + 1);
   });
-
   return { nodes, edgeCounts };
 }
 
@@ -57,7 +46,6 @@ function groupedRadiusBands(nodes, tolerance) {
     .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
     .sort((a, b) => a.radius - b.radius);
   const bands = [];
-
   for (const item of sorted) {
     const current = bands.at(-1);
     if (!current || !nearlyEqual(item.radius, current.radius, tolerance)) {
@@ -70,147 +58,7 @@ function groupedRadiusBands(nodes, tolerance) {
       return sum + Math.hypot(x, y);
     }, 0) / current.nodeIndices.length;
   }
-
   return bands;
-}
-
-function cross2d(origin, first, second) {
-  return (first[0] - origin[0]) * (second[1] - origin[1])
-    - (first[1] - origin[1]) * (second[0] - origin[0]);
-}
-
-function convexHullIndices(nodes, indices, areaTolerance) {
-  if (indices.length <= 2) return indices.slice();
-  const sorted = indices.slice().sort((a, b) => (
-    nodes[a].xy[0] - nodes[b].xy[0] || nodes[a].xy[1] - nodes[b].xy[1]
-  ));
-  const lower = [];
-  for (const index of sorted) {
-    while (lower.length >= 2 && cross2d(
-      nodes[lower.at(-2)].xy,
-      nodes[lower.at(-1)].xy,
-      nodes[index].xy
-    ) <= areaTolerance) lower.pop();
-    lower.push(index);
-  }
-  const upper = [];
-  for (let position = sorted.length - 1; position >= 0; position -= 1) {
-    const index = sorted[position];
-    while (upper.length >= 2 && cross2d(
-      nodes[upper.at(-2)].xy,
-      nodes[upper.at(-1)].xy,
-      nodes[index].xy
-    ) <= areaTolerance) upper.pop();
-    upper.push(index);
-  }
-  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
-}
-
-function nestedConvexLayers(nodes, tolerance) {
-  let remaining = nodes.map((_, index) => index);
-  const outerToInner = [];
-  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
-  const areaTolerance = tolerance * scale * 4;
-
-  while (remaining.length) {
-    const hull = convexHullIndices(nodes, remaining, areaTolerance);
-    const layer = hull.length ? hull : remaining.slice(0, 1);
-    outerToInner.push(layer);
-    const removed = new Set(layer);
-    remaining = remaining.filter(index => !removed.has(index));
-  }
-
-  return outerToInner.reverse().map(nodeIndices => ({ nodeIndices }));
-}
-
-function transformedNodeMap(nodes, transform, tolerance) {
-  const mapping = new Array(nodes.length).fill(-1);
-  const used = new Set();
-
-  for (let index = 0; index < nodes.length; index += 1) {
-    const target = transform(nodes[index].xy);
-    let bestIndex = -1;
-    let bestDistance = Infinity;
-    for (let candidate = 0; candidate < nodes.length; candidate += 1) {
-      const dx = nodes[candidate].xy[0] - target[0];
-      const dy = nodes[candidate].xy[1] - target[1];
-      const distance = Math.hypot(dx, dy);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestIndex = candidate;
-      }
-    }
-    if (bestDistance > tolerance || used.has(bestIndex)) return null;
-    mapping[index] = bestIndex;
-    used.add(bestIndex);
-  }
-
-  return mapping;
-}
-
-function preservesProjectedGraph(nodes, edgeCounts, transform, tolerance) {
-  const mapping = transformedNodeMap(nodes, transform, tolerance);
-  if (!mapping) return false;
-
-  const transformedEdges = new Map();
-  for (const [key, count] of edgeCounts) {
-    const [a, b] = key.split(':').map(Number);
-    const transformedKey = edgeKey(mapping[a], mapping[b]);
-    transformedEdges.set(transformedKey, (transformedEdges.get(transformedKey) || 0) + count);
-  }
-  if (transformedEdges.size !== edgeCounts.size) return false;
-  for (const [key, count] of edgeCounts) {
-    if (transformedEdges.get(key) !== count) return false;
-  }
-  return true;
-}
-
-function rotationTransform(angle) {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return ([x, y]) => [x * cos - y * sin, x * sin + y * cos];
-}
-
-function reflectionTransform(axisAngle) {
-  const cos = Math.cos(axisAngle * 2);
-  const sin = Math.sin(axisAngle * 2);
-  return ([x, y]) => [x * cos + y * sin, x * sin - y * cos];
-}
-
-function rotationalOrder(nodes, edgeCounts, tolerance) {
-  for (let order = 12; order >= 2; order -= 1) {
-    if (preservesProjectedGraph(nodes, edgeCounts, rotationTransform(TAU / order), tolerance)) {
-      return order;
-    }
-  }
-  return 1;
-}
-
-function reflectionAxisCount(nodes, edgeCounts, bands, tolerance) {
-  const candidates = [];
-  const addCandidate = angle => {
-    const normalized = normalizeAxisAngle(angle);
-    if (candidates.some(existing => axisAngleDistance(existing, normalized) < 1e-5)) return;
-    candidates.push(normalized);
-  };
-
-  for (const band of bands) {
-    if (band.radius <= tolerance) continue;
-    const angles = band.nodeIndices.map(index => Math.atan2(nodes[index].xy[1], nodes[index].xy[0]));
-    for (let first = 0; first < angles.length; first += 1) {
-      for (let second = first; second < angles.length; second += 1) {
-        const doubledAxis = Math.atan2(
-          Math.sin(angles[first] + angles[second]),
-          Math.cos(angles[first] + angles[second])
-        );
-        addCandidate(doubledAxis / 2);
-      }
-    }
-  }
-
-  return candidates.filter(angle => (
-    preservesProjectedGraph(nodes, edgeCounts, reflectionTransform(angle), tolerance)
-  )).length;
 }
 
 function regularCycleSides(nodes, edgeCounts, band, tolerance) {
@@ -219,7 +67,6 @@ function regularCycleSides(nodes, edgeCounts, band, tolerance) {
     .map(index => ({ index, angle: Math.atan2(nodes[index].xy[1], nodes[index].xy[0]) }))
     .sort((a, b) => a.angle - b.angle);
   const expectedGap = TAU / ordered.length;
-
   for (let index = 0; index < ordered.length; index += 1) {
     const current = ordered[index];
     const next = ordered[(index + 1) % ordered.length];
@@ -231,11 +78,26 @@ function regularCycleSides(nodes, edgeCounts, band, tolerance) {
   return ordered.length;
 }
 
+function cross2d(origin, first, second) {
+  return (first[0] - origin[0]) * (second[1] - origin[1])
+    - (first[1] - origin[1]) * (second[0] - origin[0]);
+}
+
 function convexHullVertexCount(nodes, tolerance) {
-  const indices = nodes.map((_, index) => index);
-  if (indices.length <= 2) return indices.length;
-  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
-  return Math.max(1, convexHullIndices(nodes, indices, tolerance * scale * 4).length);
+  if (nodes.length <= 2) return nodes.length;
+  const sorted = nodes.map(node => node.xy.slice()).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const lower = [];
+  for (const point of sorted) {
+    while (lower.length >= 2 && cross2d(lower.at(-2), lower.at(-1), point) <= tolerance) lower.pop();
+    lower.push(point);
+  }
+  const upper = [];
+  for (let index = sorted.length - 1; index >= 0; index -= 1) {
+    const point = sorted[index];
+    while (upper.length >= 2 && cross2d(upper.at(-2), upper.at(-1), point) <= tolerance) upper.pop();
+    upper.push(point);
+  }
+  return Math.max(1, lower.length + upper.length - 2);
 }
 
 export function analyzeProjectionFeatures(vertices, edges, frame) {
@@ -243,10 +105,9 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
   const radiusScale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
   const tolerance = radiusScale * POSITION_TOLERANCE_FACTOR;
   const radiusBands = groupedRadiusBands(nodes, tolerance * 4);
-  const layers = nestedConvexLayers(nodes, tolerance * 4);
   const centerBand = radiusBands[0];
   const hasCenterPoint = Boolean(centerBand && centerBand.radius <= tolerance * 4);
-  const polygonSides = hasCenterPoint || layers.length < 2
+  const polygonSides = hasCenterPoint || radiusBands.length < 2
     ? 0
     : regularCycleSides(nodes, edgeCounts, centerBand, tolerance * 4);
   const centerStructure = hasCenterPoint
@@ -254,14 +115,15 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
     : polygonSides >= 3
       ? { kind: 'regularPolygon', sides: polygonSides }
       : { kind: 'none' };
+  const structure = analyzeProjectionStructure(vertices, edges, frame);
 
   return {
     centerStructure,
-    symmetryAxes: reflectionAxisCount(nodes, edgeCounts, radiusBands, tolerance * 8),
-    rotationalOrder: rotationalOrder(nodes, edgeCounts, tolerance * 8),
-    radialLayers: layers.length,
-    layerPointCounts: layers.map(layer => layer.nodeIndices.length),
-    hullVertices: convexHullVertexCount(nodes, tolerance)
+    symmetryAxes: structure.symmetryAxisAngles.length,
+    rotationalOrder: structure.rotationalOrder,
+    radialLayers: structure.layers.length,
+    layerPointCounts: structure.layerPointCounts,
+    hullVertices: convexHullVertexCount(nodes, tolerance * radiusScale * 4)
   };
 }
 
@@ -284,12 +146,8 @@ export function projectionFeatureItems(features) {
 export function projectionHashtags(features) {
   const tags = [];
   if (features.centerStructure.kind === 'point') tags.push('#중심점');
-  if (features.centerStructure.kind === 'regularPolygon') {
-    tags.push(`#정${features.centerStructure.sides}각핵`);
-  }
-  if (features.symmetryAxes > 0) {
-    tags.push(features.symmetryAxes % 2 === 0 ? '#짝수대칭' : '#홀수대칭');
-  }
+  if (features.centerStructure.kind === 'regularPolygon') tags.push(`#정${features.centerStructure.sides}각핵`);
+  if (features.symmetryAxes > 0) tags.push(features.symmetryAxes % 2 === 0 ? '#짝수대칭' : '#홀수대칭');
   if (features.radialLayers <= 3) tags.push('#극저층형');
   else if (features.radialLayers <= 5) tags.push('#저층형');
   return tags;
@@ -335,7 +193,6 @@ function ensureFeatureUi(root) {
     featureLine.setAttribute('aria-label', '사영 구조 태그');
     root.querySelector('.projection-role-copy')?.before(featureLine);
   }
-
   let hashtagBlock = root.querySelector('.projection-hashtag-block');
   if (!hashtagBlock) {
     hashtagBlock = document.createElement('div');
@@ -377,7 +234,6 @@ function attachSelector(root, data) {
       renderFeatureUi(root, data);
     });
   };
-
   const stage = root.querySelector('.projection-stage');
   const tabs = root.querySelector('.projection-solid-tabs');
   const rail = root.querySelector('.projection-class-rail');
@@ -390,9 +246,7 @@ function attachSelector(root, data) {
 export async function mountProjectionFeatureTags() {
   if (typeof document === 'undefined') return;
   const data = await loadFeatureData();
-  const scan = () => {
-    document.querySelectorAll('#projectionSelectorPrototype').forEach(root => attachSelector(root, data));
-  };
+  const scan = () => document.querySelectorAll('#projectionSelectorPrototype').forEach(root => attachSelector(root, data));
   scan();
   new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
 }
