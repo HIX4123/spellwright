@@ -1,0 +1,82 @@
+/* Dashboard-wide typography lift.
+   Keep the existing visual hierarchy while making every text tier slightly easier to read. */
+
+body { font-size: 17px; }
+
+.brand strong { font-size: 14px; }
+.brand span { font-size: 11px; }
+.nav-btn { font-size: 14px; }
+.topbar h1 { font-size: 22px; }
+.version-pill { font-size: 12px; }
+#sidebarToggle { font-size: 19px; }
+
+.metric span { font-size: 12px; }
+.metric strong { font-size: 24px; }
+.section-head h2 { font-size: 16px; }
+.section-head p { font-size: 12px; }
+.core-statement { font-size: 17px; }
+.attribute-background p { font-size: 13px; }
+.attribute-background .core-statement { font-size: 17px; }
+.system-card h3 { font-size: 15px; }
+.system-card p { font-size: 13px; }
+.meta { font-size: 11px; }
+.status { font-size: 11px; }
+.rank { font-size: 17px; }
+.priority h3 { font-size: 14px; }
+.priority p { font-size: 12px; }
+.decision .date,
+.decision .type { font-size: 11px; }
+.decision h3 { font-size: 13px; }
+.decision p { font-size: 12px; }
+.table th,
+.table td { font-size: 12px; }
+.question { font-size: 13px; }
+.dialog-head h2 { font-size: 20px; }
+.detail-kicker { font-size: 10px; }
+.icon-btn { font-size: 21px; }
+#editorForm label { font-size: 12px; }
+.detail-block h3 { font-size: 12px; }
+.detail-row { font-size: 12px; }
+.detail-sense strong,
+.detail-sense p { font-size: 12px; }
+.toast { font-size: 12px; }
+
+.compact-legend { font-size: 10px; }
+.compact-node-kicker { font-size: 9px; }
+.compact-node > strong { font-size: 13px; }
+.compact-node > small { font-size: 9px; }
+.compact-parent { font-size: 8px; }
+.compact-node.stat-panel-title > strong { font-size: 13px; }
+.compact-node.stat-panel-row > strong { font-size: 12px; }
+.isolated-label { font-size: 9px; }
+
+.projection-solid-tab strong { font-size: 12px; }
+.projection-solid-tab span { font-size: 10px; }
+.projection-selector-instruction { font-size: 10px; }
+.projection-step { font-size: 25px; }
+.projection-drag-cue { font-size: 17px; }
+.projection-selector-copy strong { font-size: 15px; }
+.projection-selector-copy > span:last-child { font-size: 11px; }
+.projection-selector-metrics dt { font-size: 10px; }
+.projection-selector-metrics dd { font-size: 13px; }
+.projection-class-chip { font-size: 10px; }
+.projection-role-heading h3 { font-size: 17px; }
+.projection-role-heading a { font-size: 12px; }
+.projection-role-copy dt { font-size: 11px; }
+.projection-role-copy dd { font-size: 13px; }
+.projection-role-details > p { font-size: 11px; }
+.projection-selector-note { font-size: 10px; }
+
+.projection-feature-tag { font-size: 11px; }
+.projection-feature-tag b { font-size: 9px; }
+.projection-hashtag-block span { font-size: 9px; }
+
+/* These badges can be injected after stylesheets at runtime, so force the typography lift. */
+.projection-projection-badge,
+.projection-axis-badge { font-size: 9px !important; }
+
+@media (max-width: 900px) {
+  .nav-btn { font-size: 13px; }
+  .topbar h1 { font-size: 20px; }
+  .projection-feature-tag { font-size: 10px; }
+}
