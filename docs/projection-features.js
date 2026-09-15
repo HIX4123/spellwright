@@ -52,16 +52,16 @@ function projectedVertexGraph(vertices, edges, frame) {
   return { nodes, edgeCounts };
 }
 
-function groupedRadialLayers(nodes, tolerance) {
+function groupedRadiusBands(nodes, tolerance) {
   const sorted = nodes
     .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
     .sort((a, b) => a.radius - b.radius);
-  const layers = [];
+  const bands = [];
 
   for (const item of sorted) {
-    const current = layers.at(-1);
+    const current = bands.at(-1);
     if (!current || !nearlyEqual(item.radius, current.radius, tolerance)) {
-      layers.push({ radius: item.radius, nodeIndices: [item.index] });
+      bands.push({ radius: item.radius, nodeIndices: [item.index] });
       continue;
     }
     current.nodeIndices.push(item.index);
@@ -71,7 +71,56 @@ function groupedRadialLayers(nodes, tolerance) {
     }, 0) / current.nodeIndices.length;
   }
 
-  return layers;
+  return bands;
+}
+
+function cross2d(origin, first, second) {
+  return (first[0] - origin[0]) * (second[1] - origin[1])
+    - (first[1] - origin[1]) * (second[0] - origin[0]);
+}
+
+function convexHullIndices(nodes, indices, areaTolerance) {
+  if (indices.length <= 2) return indices.slice();
+  const sorted = indices.slice().sort((a, b) => (
+    nodes[a].xy[0] - nodes[b].xy[0] || nodes[a].xy[1] - nodes[b].xy[1]
+  ));
+  const lower = [];
+  for (const index of sorted) {
+    while (lower.length >= 2 && cross2d(
+      nodes[lower.at(-2)].xy,
+      nodes[lower.at(-1)].xy,
+      nodes[index].xy
+    ) <= areaTolerance) lower.pop();
+    lower.push(index);
+  }
+  const upper = [];
+  for (let position = sorted.length - 1; position >= 0; position -= 1) {
+    const index = sorted[position];
+    while (upper.length >= 2 && cross2d(
+      nodes[upper.at(-2)].xy,
+      nodes[upper.at(-1)].xy,
+      nodes[index].xy
+    ) <= areaTolerance) upper.pop();
+    upper.push(index);
+  }
+  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+}
+
+function nestedConvexLayers(nodes, tolerance) {
+  let remaining = nodes.map((_, index) => index);
+  const outerToInner = [];
+  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
+  const areaTolerance = tolerance * scale * 4;
+
+  while (remaining.length) {
+    const hull = convexHullIndices(nodes, remaining, areaTolerance);
+    const layer = hull.length ? hull : remaining.slice(0, 1);
+    outerToInner.push(layer);
+    const removed = new Set(layer);
+    remaining = remaining.filter(index => !removed.has(index));
+  }
+
+  return outerToInner.reverse().map(nodeIndices => ({ nodeIndices }));
 }
 
 function transformedNodeMap(nodes, transform, tolerance) {
@@ -137,7 +186,7 @@ function rotationalOrder(nodes, edgeCounts, tolerance) {
   return 1;
 }
 
-function reflectionAxisCount(nodes, edgeCounts, layers, tolerance) {
+function reflectionAxisCount(nodes, edgeCounts, bands, tolerance) {
   const candidates = [];
   const addCandidate = angle => {
     const normalized = normalizeAxisAngle(angle);
@@ -145,9 +194,9 @@ function reflectionAxisCount(nodes, edgeCounts, layers, tolerance) {
     candidates.push(normalized);
   };
 
-  for (const layer of layers) {
-    if (layer.radius <= tolerance) continue;
-    const angles = layer.nodeIndices.map(index => Math.atan2(nodes[index].xy[1], nodes[index].xy[0]));
+  for (const band of bands) {
+    if (band.radius <= tolerance) continue;
+    const angles = band.nodeIndices.map(index => Math.atan2(nodes[index].xy[1], nodes[index].xy[0]));
     for (let first = 0; first < angles.length; first += 1) {
       for (let second = first; second < angles.length; second += 1) {
         const doubledAxis = Math.atan2(
@@ -164,9 +213,9 @@ function reflectionAxisCount(nodes, edgeCounts, layers, tolerance) {
   )).length;
 }
 
-function regularCycleSides(nodes, edgeCounts, layer, tolerance) {
-  if (!layer || layer.radius <= tolerance || layer.nodeIndices.length < 3) return 0;
-  const ordered = layer.nodeIndices
+function regularCycleSides(nodes, edgeCounts, band, tolerance) {
+  if (!band || band.radius <= tolerance || band.nodeIndices.length < 3) return 0;
+  const ordered = band.nodeIndices
     .map(index => ({ index, angle: Math.atan2(nodes[index].xy[1], nodes[index].xy[0]) }))
     .sort((a, b) => a.angle - b.angle);
   const expectedGap = TAU / ordered.length;
@@ -183,35 +232,23 @@ function regularCycleSides(nodes, edgeCounts, layer, tolerance) {
 }
 
 function convexHullVertexCount(nodes, tolerance) {
-  if (nodes.length <= 2) return nodes.length;
-  const points = nodes.map(node => node.xy.slice()).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const cross = (o, a, b) => (
-    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
-  );
-  const lower = [];
-  for (const point of points) {
-    while (lower.length >= 2 && cross(lower.at(-2), lower.at(-1), point) <= tolerance) lower.pop();
-    lower.push(point);
-  }
-  const upper = [];
-  for (let index = points.length - 1; index >= 0; index -= 1) {
-    const point = points[index];
-    while (upper.length >= 2 && cross(upper.at(-2), upper.at(-1), point) <= tolerance) upper.pop();
-    upper.push(point);
-  }
-  return Math.max(1, lower.length + upper.length - 2);
+  const indices = nodes.map((_, index) => index);
+  if (indices.length <= 2) return indices.length;
+  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
+  return Math.max(1, convexHullIndices(nodes, indices, tolerance * scale * 4).length);
 }
 
 export function analyzeProjectionFeatures(vertices, edges, frame) {
   const { nodes, edgeCounts } = projectedVertexGraph(vertices, edges, frame);
   const radiusScale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
   const tolerance = radiusScale * POSITION_TOLERANCE_FACTOR;
-  const layers = groupedRadialLayers(nodes, tolerance * 4);
-  const centerLayer = layers[0];
-  const hasCenterPoint = Boolean(centerLayer && centerLayer.radius <= tolerance * 4);
+  const radiusBands = groupedRadiusBands(nodes, tolerance * 4);
+  const layers = nestedConvexLayers(nodes, tolerance * 4);
+  const centerBand = radiusBands[0];
+  const hasCenterPoint = Boolean(centerBand && centerBand.radius <= tolerance * 4);
   const polygonSides = hasCenterPoint || layers.length < 2
     ? 0
-    : regularCycleSides(nodes, edgeCounts, centerLayer, tolerance * 4);
+    : regularCycleSides(nodes, edgeCounts, centerBand, tolerance * 4);
   const centerStructure = hasCenterPoint
     ? { kind: 'point' }
     : polygonSides >= 3
@@ -220,11 +257,11 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
 
   return {
     centerStructure,
-    symmetryAxes: reflectionAxisCount(nodes, edgeCounts, layers, tolerance * 8),
+    symmetryAxes: reflectionAxisCount(nodes, edgeCounts, radiusBands, tolerance * 8),
     rotationalOrder: rotationalOrder(nodes, edgeCounts, tolerance * 8),
     radialLayers: layers.length,
     layerPointCounts: layers.map(layer => layer.nodeIndices.length),
-    hullVertices: convexHullVertexCount(nodes, tolerance * tolerance * 4)
+    hullVertices: convexHullVertexCount(nodes, tolerance)
   };
 }
 

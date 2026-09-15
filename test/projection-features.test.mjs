@@ -43,7 +43,9 @@ test('all 43 projections expose six stable geometry tags', () => {
         `${solid.name} class ${item.id} radial layers cover every projected vertex cluster`
       );
       assert.ok(features.radialLayers >= 1);
-      assert.ok(features.hullVertices >= 3);
+      assert.ok(features.radialLayers <= item.vertexClusters);
+      assert.equal(features.layerPointCounts.length, features.radialLayers);
+      assert.ok(features.hullVertices >= 2);
       assert.ok(features.rotationalOrder >= 1);
       assert.ok(features.symmetryAxes >= 0);
 
@@ -55,6 +57,28 @@ test('all 43 projections expose six stable geometry tags', () => {
     }
   }
   assert.equal(count, 43);
+});
+
+test('radial layers count nested hull corners rather than distinct radii', () => {
+  const dissociationBarrier = featuresFor('정사면체', 4);
+  assert.equal(dissociationBarrier.radialLayers, 2);
+  assert.deepEqual(dissociationBarrier.layerPointCounts, [1, 3]);
+
+  const tetraVertex = featuresFor('정사면체', 1);
+  assert.equal(tetraVertex.radialLayers, 2);
+  assert.deepEqual(tetraVertex.layerPointCounts, [1, 3]);
+
+  const tetraEdge = featuresFor('정사면체', 2);
+  assert.equal(tetraEdge.radialLayers, 1);
+  assert.deepEqual(tetraEdge.layerPointCounts, [4]);
+
+  const cubeFace = featuresFor('정육면체', 1);
+  assert.equal(cubeFace.radialLayers, 1);
+  assert.deepEqual(cubeFace.layerPointCounts, [4]);
+
+  const octaVertex = featuresFor('정팔면체', 2);
+  assert.equal(octaVertex.radialLayers, 2);
+  assert.deepEqual(octaVertex.layerPointCounts, [1, 4]);
 });
 
 test('canonical high-symmetry views are classified as expected', () => {
