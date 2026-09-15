@@ -23,7 +23,7 @@ function featuresFor(solidName, classId) {
   );
 }
 
-test('all 43 projections expose six stable geometry tags', () => {
+test('all 43 projections expose six stable geometry tags from every visible point', () => {
   let count = 0;
   for (const solid of projections.solids) {
     const viewSolid = views.solids.find(item => item.name === solid.name);
@@ -36,14 +36,15 @@ test('all 43 projections expose six stable geometry tags', () => {
         geometry.edges,
         viewFrame(view.viewDirection, view.rollDegrees)
       );
+      const visiblePointCount = item.vertexClusters + item.crossings;
       assert.equal(projectionFeatureItems(features).length, 6, `${solid.name} class ${item.id}`);
       assert.equal(
         features.layerPointCounts.reduce((sum, value) => sum + value, 0),
-        item.vertexClusters,
-        `${solid.name} class ${item.id} radial layers cover every projected vertex cluster`
+        visiblePointCount,
+        `${solid.name} class ${item.id} radial layers include projected vertices and crossings`
       );
       assert.ok(features.radialLayers >= 1);
-      assert.ok(features.radialLayers <= item.vertexClusters);
+      assert.ok(features.radialLayers <= visiblePointCount);
       assert.equal(features.layerPointCounts.length, features.radialLayers);
       assert.ok(features.hullVertices >= 2);
       assert.ok(features.rotationalOrder >= 1);
@@ -59,26 +60,67 @@ test('all 43 projections expose six stable geometry tags', () => {
   assert.equal(count, 43);
 });
 
-test('radial layers count nested hull corners rather than distinct radii', () => {
-  const dissociationBarrier = featuresFor('정사면체', 4);
-  assert.equal(dissociationBarrier.radialLayers, 2);
-  assert.deepEqual(dissociationBarrier.layerPointCounts, [1, 3]);
+test('radial layers peel all visible points, including edge crossings', () => {
+  const cases = [
+    ['정사면체', 3, 1, [3]],
+    ['정사면체', 4, 2, [1, 3]],
+    ['정사면체', 2, 2, [1, 4]],
+    ['정팔면체', 1, 1, [4]],
+    ['정십이면체', 4, 4, [2, 2, 6, 10]],
+    ['정십이면체', 6, 4, [2, 4, 6, 10]],
+    ['정십이면체', 7, 5, [2, 4, 4, 6, 8]],
+    ['정십이면체', 8, 4, [2, 6, 6, 10]],
+    ['정십이면체', 10, 4, [6, 4, 6, 10]],
+    ['정십이면체', 9, 5, [2, 2, 4, 6, 12]],
+    ['정십이면체', 12, 3, [8, 8, 10]],
+    ['정십이면체', 14, 4, [2, 8, 8, 10]],
+    ['정십이면체', 1, 3, [2, 4, 6]],
+    ['정이십면체', 1, 2, [2, 6]],
+    ['정이십면체', 4, 3, [4, 6, 6]],
+    ['정이십면체', 5, 5, [4, 4, 6, 6, 6]],
+    ['정이십면체', 7, 5, [4, 4, 6, 6, 6]],
+    ['정이십면체', 8, 4, [4, 8, 8, 8]],
+    ['정이십면체', 9, 4, [4, 8, 8, 8]],
+    ['정이십면체', 10, 5, [4, 4, 8, 8, 8]],
+    ['정이십면체', 11, 5, [4, 4, 8, 8, 8]],
+    ['정이십면체', 12, 4, [4, 10, 10, 10]]
+  ];
 
-  const tetraVertex = featuresFor('정사면체', 1);
-  assert.equal(tetraVertex.radialLayers, 2);
-  assert.deepEqual(tetraVertex.layerPointCounts, [1, 3]);
+  for (const [solidName, classId, expectedLayers, expectedCounts] of cases) {
+    const features = featuresFor(solidName, classId);
+    assert.equal(features.radialLayers, expectedLayers, `${solidName} class ${classId} layer count`);
+    assert.deepEqual(features.layerPointCounts, expectedCounts, `${solidName} class ${classId} layer signature`);
+  }
 
-  const tetraEdge = featuresFor('정사면체', 2);
-  assert.equal(tetraEdge.radialLayers, 1);
-  assert.deepEqual(tetraEdge.layerPointCounts, [4]);
+  const fiveLayer = projectionHashtags(featuresFor('정십이면체', 7));
+  assert.ok(fiveLayer.includes('#저층형'));
+  assert.ok(!fiveLayer.includes('#극저층형'));
+  const threeLayer = projectionHashtags(featuresFor('정십이면체', 1));
+  assert.ok(threeLayer.includes('#극저층형'));
+});
 
-  const cubeFace = featuresFor('정육면체', 1);
-  assert.equal(cubeFace.radialLayers, 1);
-  assert.deepEqual(cubeFace.layerPointCounts, [4]);
-
-  const octaVertex = featuresFor('정팔면체', 2);
-  assert.equal(octaVertex.radialLayers, 2);
-  assert.deepEqual(octaVertex.layerPointCounts, [1, 4]);
+test('silhouette symmetry regressions cover reported and audit-discovered cases', () => {
+  const cases = [
+    ['정육면체', 4, 2],
+    ['정팔면체', 4, 4],
+    ['정십이면체', 10, 2],
+    ['정십이면체', 11, 2],
+    ['정십이면체', 12, 2],
+    ['정십이면체', 13, 2],
+    ['정십이면체', 14, 2],
+    ['정이십면체', 6, 2],
+    ['정이십면체', 13, 10],
+    ['정십이면체', 6, 2],
+    ['정십이면체', 8, 2],
+    ['정이십면체', 11, 2]
+  ];
+  for (const [solidName, classId, expectedAxes] of cases) {
+    assert.equal(
+      featuresFor(solidName, classId).symmetryAxes,
+      expectedAxes,
+      `${solidName} class ${classId} reflection-axis count`
+    );
+  }
 });
 
 test('canonical high-symmetry views are classified as expected', () => {
