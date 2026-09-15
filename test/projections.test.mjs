@@ -23,6 +23,10 @@ test('publishes all 43 generated projection classes in point-line-face order', (
   for (const solid of projections.solids) {
     assert.equal(new Set(solid.classes.map(item => item.id)).size, solid.classes.length);
     for (const item of solid.classes) {
+      for (const field of ['structure', 'name', 'description', 'example']) {
+        assert.equal(typeof item.role?.[field], 'string', `${solid.name} #${item.id} ${field}`);
+        assert.ok(item.role[field].trim(), `${solid.name} #${item.id} ${field}`);
+      }
       const imagePath = item.image.split('?')[0];
       assert.ok(existsSync(new URL(`../docs/${imagePath.slice(2)}`, import.meta.url)), item.image);
     }

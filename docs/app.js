@@ -1,9 +1,8 @@
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=routing-20260823-1';
-import { mountProjectionSelector } from './projection-selector.js?v=attributes-simulation-20260913-1';
+import { mountProjectionSelector } from './projection-selector.js?v=projection-roles-20260915-1';
 
 let data;
 let relationships;
-let projections;
 let repositoryRevision;
 let currentView = 'overview';
 let dirty = false;
@@ -37,19 +36,6 @@ function isProjectData(value) {
       && Number.isInteger(element.projectionClasses)));
 }
 
-function isProjectionData(value) {
-  return Boolean(value?.schemaVersion === 1
-    && Array.isArray(value.solids)
-    && value.solids.every(solid => typeof solid?.id === 'string'
-      && typeof solid.name === 'string'
-      && Array.isArray(solid.classes)
-      && solid.classes.every(item => Number.isInteger(item?.id)
-        && typeof item.label === 'string'
-        && typeof item.image === 'string'
-        && ['crossings', 'vertexClusters', 'maxVertexOverlap', 'stabilizer']
-          .every(key => Number.isInteger(item[key])))));
-}
-
 function isRelationshipData(value) {
   return Boolean(value
     && ['hierarchy', 'sequence', 'hiddenSystems', 'suppressedDependencies']
@@ -59,19 +45,17 @@ function isRelationshipData(value) {
 }
 
 async function load() {
-  const [projectResponse, relationshipResponse, projectionResponse] = await Promise.all([
+  const [projectResponse, relationshipResponse] = await Promise.all([
     fetch('./data/project.json', { cache: 'no-store' }),
-    fetch('./data/relationships.json', { cache: 'no-store' }),
-    fetch('./data/projections.json', { cache: 'no-store' })
+    fetch('./data/relationships.json', { cache: 'no-store' })
   ]);
-  if (!projectResponse.ok || !relationshipResponse.ok || !projectionResponse.ok) {
+  if (!projectResponse.ok || !relationshipResponse.ok) {
     throw new Error('Failed to load dashboard data');
   }
   const projectSource = await projectResponse.text();
   const remote = JSON.parse(projectSource);
   relationships = await relationshipResponse.json();
-  projections = await projectionResponse.json();
-  if (!isProjectData(remote) || !isRelationshipData(relationships) || !isProjectionData(projections)) {
+  if (!isProjectData(remote) || !isRelationshipData(relationships)) {
     throw new Error('Invalid dashboard data');
   }
   repositoryRevision = await contentRevision(projectSource);
@@ -405,32 +389,11 @@ function renderAttributes() {
     </div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · 클래스 번호로 사영 전환')}
     <div id="projectionSimulation"></div>
-    ${section('Projection class tables','점 → 선 → 면 → 원 유형 번호 순서 · Class ID 유지 · 이미지를 누르면 원본 크기로 열린다')}
-    <div class="projection-tables">
-      ${data.elements.map(projectionTable).join('')}
-    </div>
     ${section('Related systems')}
     <div class="system-grid">${data.systems.filter(x=>x.category==='attribute').map(systemCard).join('')}</div>`;
 
   mountProjectionSelector();
   bindSystemCards();
-}
-
-function projectionTable(element) {
-  const solid = projections.solids.find(item => item.name === element.solid);
-  return `<section class="card projection-table-card">
-    <div class="projection-group-head">
-      <div><h3>${escapeHtml(element.name)} · ${escapeHtml(element.solid)}</h3><p>${escapeHtml(element.motto)} · ${escapeHtml(element.loss)}</p></div>
-      <span>${escapeHtml(solid.classes.length)} classes</span>
-    </div>
-    <table class="table projection-table">
-      <thead><tr><th>사영도</th><th>Class ID</th><th>대표 시선</th><th>교차</th><th>정점군</th><th>최대 중첩</th><th>안정자</th></tr></thead>
-      <tbody>${solid.classes.map(item => `<tr>
-        <td><a href="${escapeHtml(item.image)}" target="_blank" rel="noopener"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(`${element.name} ${element.solid} Class ${item.id} 사영도`)}" width="512" height="384" loading="lazy" decoding="async" /></a></td>
-        <td>#${String(item.id).padStart(2, '0')}</td><td>${escapeHtml(item.label)}</td><td>${escapeHtml(item.crossings)}</td><td>${escapeHtml(item.vertexClusters)}</td><td>×${escapeHtml(item.maxVertexOverlap)}</td><td>${escapeHtml(item.stabilizer)}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-  </section>`;
 }
 
 function renderMvp() {
