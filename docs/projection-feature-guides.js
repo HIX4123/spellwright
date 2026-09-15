@@ -1,212 +1,17 @@
-import {
-  geometryForSolid,
-  projectVertices,
-  projectionEvents,
-  viewFrame
-} from './projection-core.js';
+import { geometryForSolid, viewFrame } from './projection-core.js';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js';
 
-const TAU = Math.PI * 2;
-const POSITION_TOLERANCE_FACTOR = 1e-5;
 const attachedRoots = new WeakSet();
 const activeGuideByRoot = new WeakMap();
 
-function edgeKey(a, b) {
-  return a <= b ? `${a}:${b}` : `${b}:${a}`;
-}
-
-function normalizeAxisAngle(angle) {
-  let normalized = angle % Math.PI;
-  if (normalized < 0) normalized += Math.PI;
-  return normalized;
-}
-
-function axisAngleDistance(a, b) {
-  const diff = Math.abs(normalizeAxisAngle(a) - normalizeAxisAngle(b));
-  return Math.min(diff, Math.PI - diff);
-}
-
-function projectedVertexGraph(vertices, edges, frame) {
-  const points = projectVertices(vertices, frame);
-  const vertexEvents = projectionEvents(points, edges).filter(event => event.vertexIds.size > 0);
-  const nodes = vertexEvents.map(event => ({
-    xy: event.xy.slice(),
-    vertexIds: [...event.vertexIds]
-  }));
-  const vertexToNode = new Map();
-  nodes.forEach((node, nodeIndex) => {
-    node.vertexIds.forEach(vertexId => vertexToNode.set(vertexId, nodeIndex));
-  });
-
-  const edgeCounts = new Map();
-  edges.forEach(([a, b]) => {
-    const from = vertexToNode.get(a);
-    const to = vertexToNode.get(b);
-    if (!Number.isInteger(from) || !Number.isInteger(to)) return;
-    const key = edgeKey(from, to);
-    edgeCounts.set(key, (edgeCounts.get(key) || 0) + 1);
-  });
-
-  return { points, nodes, edgeCounts };
-}
-
-function groupedRadiusBands(nodes, tolerance) {
-  const sorted = nodes
-    .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
-    .sort((a, b) => a.radius - b.radius);
-  const bands = [];
-
-  for (const item of sorted) {
-    const current = bands.at(-1);
-    if (!current || Math.abs(item.radius - current.radius) > tolerance) {
-      bands.push({ radius: item.radius, nodeIndices: [item.index] });
-      continue;
-    }
-    current.nodeIndices.push(item.index);
-    current.radius = current.nodeIndices.reduce((sum, nodeIndex) => {
-      const [x, y] = nodes[nodeIndex].xy;
-      return sum + Math.hypot(x, y);
-    }, 0) / current.nodeIndices.length;
-  }
-  return bands;
-}
-
-function transformedNodeMap(nodes, transform, tolerance) {
-  const mapping = new Array(nodes.length).fill(-1);
-  const used = new Set();
-
-  for (let index = 0; index < nodes.length; index += 1) {
-    const target = transform(nodes[index].xy);
-    let bestIndex = -1;
-    let bestDistance = Infinity;
-    for (let candidate = 0; candidate < nodes.length; candidate += 1) {
-      const dx = nodes[candidate].xy[0] - target[0];
-      const dy = nodes[candidate].xy[1] - target[1];
-      const distance = Math.hypot(dx, dy);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestIndex = candidate;
-      }
-    }
-    if (bestDistance > tolerance || used.has(bestIndex)) return null;
-    mapping[index] = bestIndex;
-    used.add(bestIndex);
-  }
-  return mapping;
-}
-
-function preservesProjectedGraph(nodes, edgeCounts, transform, tolerance) {
-  const mapping = transformedNodeMap(nodes, transform, tolerance);
-  if (!mapping) return false;
-
-  const transformedEdges = new Map();
-  for (const [key, count] of edgeCounts) {
-    const [a, b] = key.split(':').map(Number);
-    const transformedKey = edgeKey(mapping[a], mapping[b]);
-    transformedEdges.set(transformedKey, (transformedEdges.get(transformedKey) || 0) + count);
-  }
-  if (transformedEdges.size !== edgeCounts.size) return false;
-  for (const [key, count] of edgeCounts) {
-    if (transformedEdges.get(key) !== count) return false;
-  }
-  return true;
-}
-
-function reflectionTransform(axisAngle) {
-  const cos = Math.cos(axisAngle * 2);
-  const sin = Math.sin(axisAngle * 2);
-  return ([x, y]) => [x * cos + y * sin, x * sin - y * cos];
-}
-
-function reflectionAxisAngles(nodes, edgeCounts, bands, tolerance) {
-  const candidates = [];
-  const addCandidate = angle => {
-    const normalized = normalizeAxisAngle(angle);
-    if (candidates.some(existing => axisAngleDistance(existing, normalized) < 1e-5)) return;
-    candidates.push(normalized);
-  };
-
-  for (const band of bands) {
-    if (band.radius <= tolerance) continue;
-    const angles = band.nodeIndices.map(index => Math.atan2(nodes[index].xy[1], nodes[index].xy[0]));
-    for (let first = 0; first < angles.length; first += 1) {
-      for (let second = first; second < angles.length; second += 1) {
-        const doubledAxis = Math.atan2(
-          Math.sin(angles[first] + angles[second]),
-          Math.cos(angles[first] + angles[second])
-        );
-        addCandidate(doubledAxis / 2);
-      }
-    }
-  }
-
-  return candidates
-    .filter(angle => preservesProjectedGraph(nodes, edgeCounts, reflectionTransform(angle), tolerance))
-    .sort((a, b) => a - b);
-}
-
-function cross2d(origin, first, second) {
-  return (first[0] - origin[0]) * (second[1] - origin[1])
-    - (first[1] - origin[1]) * (second[0] - origin[0]);
-}
-
-function convexHullIndices(nodes, indices, areaTolerance) {
-  if (indices.length <= 2) return indices.slice();
-  const sorted = indices.slice().sort((a, b) => (
-    nodes[a].xy[0] - nodes[b].xy[0] || nodes[a].xy[1] - nodes[b].xy[1]
-  ));
-  const lower = [];
-  for (const index of sorted) {
-    while (lower.length >= 2 && cross2d(
-      nodes[lower.at(-2)].xy,
-      nodes[lower.at(-1)].xy,
-      nodes[index].xy
-    ) <= areaTolerance) lower.pop();
-    lower.push(index);
-  }
-  const upper = [];
-  for (let position = sorted.length - 1; position >= 0; position -= 1) {
-    const index = sorted[position];
-    while (upper.length >= 2 && cross2d(
-      nodes[upper.at(-2)].xy,
-      nodes[upper.at(-1)].xy,
-      nodes[index].xy
-    ) <= areaTolerance) upper.pop();
-    upper.push(index);
-  }
-  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
-}
-
-function nestedConvexLayers(nodes, tolerance) {
-  let remaining = nodes.map((_, index) => index);
-  const outerToInner = [];
-  const scale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
-  const areaTolerance = tolerance * scale * 4;
-
-  while (remaining.length) {
-    const hull = convexHullIndices(nodes, remaining, areaTolerance);
-    const layer = hull.length ? hull : remaining.slice(0, 1);
-    outerToInner.push(layer);
-    const removed = new Set(layer);
-    remaining = remaining.filter(index => !removed.has(index));
-  }
-
-  return outerToInner.reverse();
-}
-
 export function analyzeProjectionGuides(vertices, edges, frame) {
-  const { points, nodes, edgeCounts } = projectedVertexGraph(vertices, edges, frame);
-  const radiusScale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
-  const tolerance = radiusScale * POSITION_TOLERANCE_FACTOR;
-  const bands = groupedRadiusBands(nodes, tolerance * 4);
-  const layers = nestedConvexLayers(nodes, tolerance * 4);
-
+  const structure = analyzeProjectionStructure(vertices, edges, frame);
   return {
-    points,
-    symmetryAxisAngles: reflectionAxisAngles(nodes, edgeCounts, bands, tolerance * 8),
-    layerRadii: layers.map(layer => Math.max(
-      0,
-      ...layer.map(index => Math.hypot(nodes[index].xy[0], nodes[index].xy[1]))
-    ))
+    points: structure.points,
+    symmetryAxisAngles: structure.symmetryAxisAngles,
+    layerCenter: structure.circleCenter,
+    layerRadii: structure.circleRadii,
+    layerPointCounts: structure.layerPointCounts
   };
 }
 
@@ -329,7 +134,7 @@ function renderSymmetryGuide(overlay, guide, transform) {
 }
 
 function renderLayerGuide(overlay, guide, transform) {
-  const origin = transform.point([0, 0]);
+  const center = transform.point(guide.layerCenter);
   const renderedRadii = [];
   guide.layerRadii.forEach((radius, index) => {
     let screenRadius = radius * transform.scale;
@@ -338,8 +143,8 @@ function renderLayerGuide(overlay, guide, transform) {
     renderedRadii.push(screenRadius);
   });
   overlay.innerHTML = renderedRadii.map((radius, index) => `
-    <circle class="projection-guide-ring" cx="${svgNumber(origin[0])}" cy="${svgNumber(origin[1])}" r="${svgNumber(radius)}" />
-    <text class="projection-guide-label" x="${svgNumber(origin[0] + radius + 4)}" y="${svgNumber(origin[1] - 4)}">${index + 1}</text>
+    <circle class="projection-guide-ring" cx="${svgNumber(center[0])}" cy="${svgNumber(center[1])}" r="${svgNumber(radius)}" />
+    <text class="projection-guide-label" x="${svgNumber(center[0] + radius + 4)}" y="${svgNumber(center[1] - 4)}">${index + 1}</text>
   `).join('');
 }
 
