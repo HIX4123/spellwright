@@ -25,7 +25,6 @@ function featuresFor(solidName, classId) {
 
 test('all 43 projections expose six stable geometry tags', () => {
   let count = 0;
-  const layerSummary = [];
   for (const solid of projections.solids) {
     const viewSolid = views.solids.find(item => item.name === solid.name);
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
@@ -54,11 +53,9 @@ test('all 43 projections expose six stable geometry tags', () => {
       assert.ok(tags.filter(tag => tag === '#중심점' || /^#정\d+각핵$/.test(tag)).length <= 1);
       assert.ok(tags.filter(tag => tag === '#짝수대칭' || tag === '#홀수대칭').length <= 1);
       assert.ok(tags.filter(tag => tag === '#저층형' || tag === '#극저층형').length <= 1);
-      layerSummary.push(`${solid.name}#${item.id}:${features.layerPointCounts.join('-')}`);
       count += 1;
     }
   }
-  console.log(`projection layer audit: ${layerSummary.join(', ')}`);
   assert.equal(count, 43);
 });
 
