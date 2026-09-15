@@ -106,16 +106,6 @@ function convexHullIndices(nodes, indices, areaTolerance) {
   return [...lower.slice(0, -1), ...upper.slice(0, -1)];
 }
 
-function pointOnSegment(point, start, end, tolerance) {
-  const dx = end[0] - start[0];
-  const dy = end[1] - start[1];
-  const length = Math.hypot(dx, dy);
-  if (length <= tolerance) return Math.hypot(point[0] - start[0], point[1] - start[1]) <= tolerance;
-  if (Math.abs(cross2d(start, end, point)) / length > tolerance) return false;
-  const projection = (point[0] - start[0]) * dx + (point[1] - start[1]) * dy;
-  return projection >= -tolerance * length && projection <= length * length + tolerance * length;
-}
-
 function nestedConvexLayers(nodes, tolerance) {
   let remaining = nodes.map((_, index) => index);
   const outerToInner = [];
@@ -123,25 +113,8 @@ function nestedConvexLayers(nodes, tolerance) {
   const areaTolerance = tolerance * scale * 4;
 
   while (remaining.length) {
-    if (remaining.length <= 2) {
-      outerToInner.push(remaining.slice());
-      break;
-    }
-
     const hull = convexHullIndices(nodes, remaining, areaTolerance);
-    if (hull.length <= 2) {
-      outerToInner.push(remaining.slice());
-      break;
-    }
-
-    const boundary = remaining.filter(index => {
-      const point = nodes[index].xy;
-      return hull.some((startIndex, position) => {
-        const endIndex = hull[(position + 1) % hull.length];
-        return pointOnSegment(point, nodes[startIndex].xy, nodes[endIndex].xy, tolerance * 4);
-      });
-    });
-    const layer = boundary.length ? boundary : hull;
+    const layer = hull.length ? hull : remaining.slice(0, 1);
     outerToInner.push(layer);
     const removed = new Set(layer);
     remaining = remaining.filter(index => !removed.has(index));
