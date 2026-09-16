@@ -29,6 +29,7 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         features.radialLayers,
         `${solid.name} class ${item.id} radial guide count`
       );
+      assert.deepEqual(guides.layerCenter, [0, 0], `${solid.name} class ${item.id} radial guide center`);
       assert.ok(guides.layerRadii.every((radius, index, radii) => (
         radius >= 0 && (index === 0 || radius >= radii[index - 1] - 1e-8)
       )), `${solid.name} class ${item.id} layer radii should progress outward`);
