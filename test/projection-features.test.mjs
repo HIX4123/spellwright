@@ -72,10 +72,10 @@ test('radial layers group all visible points by distance from the projection cen
     ['정십이면체', 6, [2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
     ['정십이면체', 7, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
     ['정십이면체', 8, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
-    ['정십이면체', 10, [6, 12, 4, 4]],
+    ['정십이면체', 10, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
     ['정십이면체', 9, [2, 2, 4, 4, 4, 2, 4, 4]],
     ['정십이면체', 12, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
-    ['정십이면체', 14, [2, 10, 2, 4, 2, 4, 4]],
+    ['정십이면체', 14, [2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 4]],
     ['정십이면체', 1, [2, 4, 2, 4]],
     ['정이십면체', 1, [2, 2, 4]],
     ['정이십면체', 4, [2, 2, 2, 2, 2, 2, 2, 2]],
@@ -84,7 +84,7 @@ test('radial layers group all visible points by distance from the projection cen
     ['정이십면체', 8, [2, 2, 4, 4, 4, 2, 2, 4, 4]],
     ['정이십면체', 9, [2, 4, 2, 2, 4, 4, 2, 4, 4]],
     ['정이십면체', 10, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
-    ['정이십면체', 11, [12, 16, 4]],
+    ['정이십면체', 11, [2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 2, 2, 2]],
     ['정이십면체', 12, [2, 2, 4, 4, 4, 2, 4, 2, 2, 4, 4]]
   ];
 
@@ -106,20 +106,20 @@ test('radial layers group all visible points by distance from the projection cen
   assert.ok(!sevenLayer.includes('#극저층형'));
 });
 
-test('silhouette symmetry regressions cover reported and audit-discovered cases', () => {
+test('reflection axes must preserve the full visible arrangement, not only the silhouette', () => {
   const cases = [
-    ['정육면체', 4, 2],
+    ['정육면체', 4, 0],
     ['정팔면체', 4, 2],
-    ['정십이면체', 10, 2],
-    ['정십이면체', 11, 2],
-    ['정십이면체', 12, 2],
-    ['정십이면체', 13, 2],
-    ['정십이면체', 14, 2],
-    ['정이십면체', 6, 2],
-    ['정이십면체', 13, 10],
-    ['정십이면체', 6, 2],
-    ['정십이면체', 8, 2],
-    ['정이십면체', 11, 2]
+    ['정십이면체', 10, 0],
+    ['정십이면체', 11, 0],
+    ['정십이면체', 12, 0],
+    ['정십이면체', 13, 0],
+    ['정십이면체', 14, 0],
+    ['정이십면체', 6, 0],
+    ['정이십면체', 13, 0],
+    ['정십이면체', 6, 0],
+    ['정십이면체', 8, 0],
+    ['정이십면체', 11, 0]
   ];
   for (const [solidName, classId, expectedAxes] of cases) {
     assert.equal(
@@ -128,6 +128,10 @@ test('silhouette symmetry regressions cover reported and audit-discovered cases'
       `${solidName} class ${classId} reflection-axis count`
     );
   }
+
+  const dodecaConnection = featuresFor('정십이면체', 6);
+  assert.equal(dodecaConnection.symmetryAxes, 0, '고착-연결 has no mirror axis');
+  assert.equal(dodecaConnection.rotationalOrder, 2, '고착-연결 keeps its point symmetry');
 });
 
 test('canonical high-symmetry views are classified as expected', () => {
