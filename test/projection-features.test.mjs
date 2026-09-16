@@ -67,6 +67,7 @@ test('radial layers group all visible points by distance from the projection cen
     ['정사면체', 2, [1, 4]],
     ['정육면체', 6, [2, 2, 4]],
     ['정팔면체', 1, [2, 2]],
+    ['정팔면체', 4, [2, 2, 4]],
     ['정십이면체', 4, [2, 2, 2, 4, 2, 4, 4]],
     ['정십이면체', 6, [2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
     ['정십이면체', 7, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
@@ -108,7 +109,7 @@ test('radial layers group all visible points by distance from the projection cen
 test('silhouette symmetry regressions cover reported and audit-discovered cases', () => {
   const cases = [
     ['정육면체', 4, 2],
-    ['정팔면체', 4, 4],
+    ['정팔면체', 4, 2],
     ['정십이면체', 10, 2],
     ['정십이면체', 11, 2],
     ['정십이면체', 12, 2],
