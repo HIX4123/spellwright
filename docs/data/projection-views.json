@@ -1,79 +1,79 @@
 {
   "schemaVersion": 1,
   "projection": "orthographic",
-  "source": "Platonic projection atlas v2 representative directions; dashboard image orientation fitted as antipodal sign + in-plane roll; general-cell representatives moved toward separated cell interiors",
+  "source": "Platonic projection atlas v2 representative directions; dashboard image orientation fitted as antipodal sign + in-plane roll; representatives globally separated within each solid while general cells stay inside their topology cells",
   "solids": [
     {
       "id": "tetrahedron",
       "name": "정사면체",
       "views": [
-        {"classId":3,"viewDirection":[0.0,-0.7071067811865476,-0.7071067811865476],"rollDegrees":180.0,"fitScore":2.1512},
-        {"classId":4,"viewDirection":[0.408248290463863,0.4082482904638631,0.816496580927726],"rollDegrees":309.5,"fitScore":2.0225},
-        {"classId":1,"viewDirection":[0.5773502691896258,0.5773502691896258,0.5773502691896258],"rollDegrees":60.5,"fitScore":2.1645},
-        {"classId":2,"viewDirection":[-1.0,-0.0,-0.0],"rollDegrees":271.5,"fitScore":2.67}
+        {"classId":3,"viewDirection":[0.0,-0.707106781186548,-0.707106781186548],"rollDegrees":180.0,"fitScore":2.1512},
+        {"classId":4,"viewDirection":[-0.408248290463863,-0.408248290463863,0.816496580927726],"rollDegrees":129.5,"fitScore":2.0225},
+        {"classId":1,"viewDirection":[-0.577350269189626,0.577350269189626,-0.577350269189626],"rollDegrees":120.5,"fitScore":2.1645},
+        {"classId":2,"viewDirection":[-1.0,0.0,0.0],"rollDegrees":271.5,"fitScore":2.67}
       ]
     },
     {
       "id": "cube",
       "name": "정육면체",
       "views": [
-        {"classId":1,"viewDirection":[-0.0,-0.0,-1.0],"rollDegrees":268.0,"fitScore":2.7748},
-        {"classId":2,"viewDirection":[0.7071067811865475,0.7071067811865475,-0.0],"rollDegrees":268.0,"fitScore":2.0186},
-        {"classId":3,"viewDirection":[0.5773502691896258,0.5773502691896258,0.5773502691896258],"rollDegrees":30.5,"fitScore":2.7967},
-        {"classId":5,"viewDirection":[0.0,-0.3826834323650898,0.9238795325112867],"rollDegrees":181.5,"fitScore":2.2241},
-        {"classId":6,"viewDirection":[0.6738873386790492,0.6738873386790492,-0.3029054465276863],"rollDegrees":71.0,"fitScore":2.7585},
-        {"classId":4,"viewDirection":[0.352666666666667,0.363712295140889,0.862171438047891],"rollDegrees":40.61903642443219,"fitScore":2.0857}
+        {"classId":1,"viewDirection":[-1.0,0.0,0.0],"rollDegrees":268.0,"fitScore":2.7748},
+        {"classId":2,"viewDirection":[0.0,0.707106781186548,-0.707106781186548],"rollDegrees":178.0,"fitScore":2.0186},
+        {"classId":3,"viewDirection":[0.577350269189626,0.577350269189626,0.577350269189626],"rollDegrees":30.5,"fitScore":2.7967},
+        {"classId":5,"viewDirection":[-0.38268343236509,0.0,0.923879532511287],"rollDegrees":271.5,"fitScore":2.2241},
+        {"classId":6,"viewDirection":[0.673887338679049,-0.302905446527686,0.673887338679049],"rollDegrees":284.703692902355,"fitScore":2.7585},
+        {"classId":4,"viewDirection":[0.363712295140889,-0.862171438047891,-0.352666666666667],"rollDegrees":139.081123917052,"fitScore":2.0857}
       ]
     },
     {
       "id": "octahedron",
       "name": "정팔면체",
       "views": [
-        {"classId":1,"viewDirection":[0.0,0.7071067811865475,0.7071067811865475],"rollDegrees":270.0,"fitScore":1.8775},
-        {"classId":2,"viewDirection":[1.0,0.0,0.0],"rollDegrees":0.0,"fitScore":2.8613},
-        {"classId":5,"viewDirection":[0.3826834323650898,-0.9238795325112867,-0.0],"rollDegrees":179.5,"fitScore":2.5268},
-        {"classId":6,"viewDirection":[0.8164965809277261,-0.40824829046386313,-0.408248290463863],"rollDegrees":181.5,"fitScore":1.8131},
-        {"classId":4,"viewDirection":[-0.9530206138714225,0.21418649529806605,-0.21418649529806605],"rollDegrees":313.6220311667828,"fitScore":2.4469},
-        {"classId":3,"viewDirection":[-0.5773502691896258,-0.5773502691896258,-0.5773502691896258],"rollDegrees":209.5,"fitScore":3.6345}
+        {"classId":1,"viewDirection":[0.0,-0.707106781186548,0.707106781186548],"rollDegrees":270.0,"fitScore":1.8775},
+        {"classId":2,"viewDirection":[0.0,1.0,0.0],"rollDegrees":0.0,"fitScore":2.8613},
+        {"classId":5,"viewDirection":[-0.923879532511287,0.38268343236509,0.0],"rollDegrees":179.5,"fitScore":2.5268},
+        {"classId":6,"viewDirection":[0.816496580927726,0.408248290463863,-0.408248290463863],"rollDegrees":181.5,"fitScore":1.8131},
+        {"classId":4,"viewDirection":[0.214186495298066,-0.214186495298066,-0.953020613871423],"rollDegrees":313.622031166783,"fitScore":2.4469},
+        {"classId":3,"viewDirection":[-0.577350269189626,-0.577350269189626,-0.577350269189626],"rollDegrees":209.5,"fitScore":3.6345}
       ]
     },
     {
       "id": "dodecahedron",
       "name": "정십이면체",
       "views": [
-        {"classId":1,"viewDirection":[-0.0,-0.0,1.0],"rollDegrees":357.5,"fitScore":3.0493},
-        {"classId":4,"viewDirection":[0.0,0.7071067811865476,0.7071067811865476],"rollDegrees":89.0,"fitScore":3.2429},
-        {"classId":6,"viewDirection":[-0.06322278544347561,-0.024148955175965593,0.9977072252743675],"rollDegrees":90.0,"fitScore":3.1184},
-        {"classId":5,"viewDirection":[0.0,0.894427190999916,0.447213595499958],"rollDegrees":180.0,"fitScore":3.092},
-        {"classId":7,"viewDirection":[-0.044596869178898726,-0.07215925012329076,0.9963955850369293],"rollDegrees":90.0,"fitScore":3.6792},
-        {"classId":8,"viewDirection":[0.1201755590380234,-0.9087456584350221,-0.39967382111591576],"rollDegrees":306.5,"fitScore":3.7246},
-        {"classId":2,"viewDirection":[-0.5773502691896258,-0.5773502691896258,-0.5773502691896258],"rollDegrees":276.5,"fitScore":3.571},
-        {"classId":10,"viewDirection":[-0.23882803091894,0.00454379931433383,0.971051247635866],"rollDegrees":20.406923893679583,"fitScore":3.6617},
-        {"classId":11,"viewDirection":[0.223772443518202,-0.220135257684258,-0.949455824062488],"rollDegrees":156.53733949429946,"fitScore":3.6386},
-        {"classId":9,"viewDirection":[0.0,-0.07237459195705659,0.9973775205202139],"rollDegrees":91.5,"fitScore":2.5624},
-        {"classId":12,"viewDirection":[0.07732944074708711,-0.8494860989183628,-0.5219133312516595],"rollDegrees":252.5,"fitScore":3.4874},
-        {"classId":13,"viewDirection":[0.068715880375456,-0.225432237473247,-0.9718325133952],"rollDegrees":157.8477413267055,"fitScore":3.7471},
-        {"classId":14,"viewDirection":[-0.00400254173971923,0.778362100914943,0.627802850836867],"rollDegrees":35.43456245965869,"fitScore":3.482},
-        {"classId":3,"viewDirection":[-0.5257311121191337,-0.0,0.85065080835204],"rollDegrees":126.0,"fitScore":3.3118}
+        {"classId":1,"viewDirection":[1.0,0.0,0.0],"rollDegrees":357.5,"fitScore":3.0493},
+        {"classId":4,"viewDirection":[-0.135045378368863,-0.925614793410958,-0.353553390593274],"rollDegrees":233.735610317245,"fitScore":3.2429},
+        {"classId":6,"viewDirection":[-0.0632227854434756,0.0241489551759656,-0.997707225274368],"rollDegrees":90.0,"fitScore":3.1184},
+        {"classId":5,"viewDirection":[0.585410196624969,0.0527864045000421,0.809016994374948],"rollDegrees":231.922804701597,"fitScore":3.092},
+        {"classId":7,"viewDirection":[-0.783802526825594,0.388579663137123,-0.484416602046269],"rollDegrees":26.2159585613708,"fitScore":3.6792},
+        {"classId":8,"viewDirection":[0.0162431281073556,-0.740579452655801,0.671772457825805],"rollDegrees":270.896383027754,"fitScore":3.7246},
+        {"classId":2,"viewDirection":[-0.577350269189626,-0.577350269189626,-0.577350269189626],"rollDegrees":276.5,"fitScore":3.571},
+        {"classId":10,"viewDirection":[-0.142538961281864,0.637923074602105,0.756793760153243],"rollDegrees":95.557345771722,"fitScore":3.6617},
+        {"classId":11,"viewDirection":[-0.226117564594419,-0.950680519041241,0.212314384103776],"rollDegrees":301.174745203136,"fitScore":3.6386},
+        {"classId":9,"viewDirection":[-0.476323781384424,0.843082659886929,-0.249654328794083],"rollDegrees":68.4408234151015,"fitScore":2.5624},
+        {"classId":12,"viewDirection":[-0.823083692676255,-0.564633321936173,-0.061011856304682],"rollDegrees":301.33996129361,"fitScore":3.4874},
+        {"classId":13,"viewDirection":[-0.694747275105664,-0.517049213708789,0.499986334149622],"rollDegrees":269.201274167024,"fitScore":3.7471},
+        {"classId":14,"viewDirection":[0.82579400884957,-0.548420914280202,-0.131524734283037],"rollDegrees":62.6506931976553,"fitScore":3.482},
+        {"classId":3,"viewDirection":[-0.525731112119134,0.0,0.85065080835204],"rollDegrees":126.0,"fitScore":3.3118}
       ]
     },
     {
       "id": "icosahedron",
       "name": "정이십면체",
       "views": [
-        {"classId":1,"viewDirection":[-0.0,-0.0,1.0],"rollDegrees":178.0,"fitScore":2.5722},
-        {"classId":4,"viewDirection":[-0.13307110414059128,-0.0822424652793623,0.9876883405951378],"rollDegrees":88.5,"fitScore":2.9916},
-        {"classId":2,"viewDirection":[0.5773502691896258,0.5773502691896258,0.5773502691896258],"rollDegrees":307.0,"fitScore":2.8457},
-        {"classId":5,"viewDirection":[-0.0,0.7071067811865476,-0.7071067811865476],"rollDegrees":0.5,"fitScore":2.8297},
-        {"classId":7,"viewDirection":[0.06881450992442341,-0.18015872590130746,0.9812274948784706],"rollDegrees":90.5,"fitScore":3.3291},
-        {"classId":6,"viewDirection":[0.239150820208185,-0.191179730141974,-0.951975417737556],"rollDegrees":146.5708409455002,"fitScore":2.9121},
-        {"classId":8,"viewDirection":[-0.0,0.35682208977309,-0.9341723589627158],"rollDegrees":270.5,"fitScore":2.9235},
-        {"classId":9,"viewDirection":[-0.0,0.1814216649649158,-0.983405399355402],"rollDegrees":93.0,"fitScore":3.3904},
-        {"classId":3,"viewDirection":[0.0,-0.5257311121191336,-0.85065080835204],"rollDegrees":324.0,"fitScore":2.7664},
-        {"classId":10,"viewDirection":[0.1570883798948175,-0.4112627178022879,0.897878732261711],"rollDegrees":216.0,"fitScore":2.9179},
-        {"classId":11,"viewDirection":[0.100981977466349,-0.268333333333333,-0.958018717170603],"rollDegrees":146.30374875361665,"fitScore":2.901},
-        {"classId":12,"viewDirection":[0.0,-0.4432482384586056,0.8963989062372528],"rollDegrees":91.0,"fitScore":2.8845},
-        {"classId":13,"viewDirection":[0.00595792886054338,-0.635078085037124,-0.772424966575571],"rollDegrees":180.11658154266294,"fitScore":2.7703}
+        {"classId":1,"viewDirection":[-0.309016994374947,0.809016994374947,0.5],"rollDegrees":326.282525588539,"fitScore":2.5722},
+        {"classId":4,"viewDirection":[-0.891006524188368,-0.386187385587592,-0.238676930319593],"rollDegrees":120.535774042428,"fitScore":2.9916},
+        {"classId":2,"viewDirection":[-0.35682208977309,2.98549217305541e-17,0.934172358962716],"rollDegrees":89.2387560929649,"fitScore":2.8457},
+        {"classId":5,"viewDirection":[0.135045378368863,-0.353553390593274,0.925614793410958],"rollDegrees":215.764389682755,"fitScore":2.8297},
+        {"classId":7,"viewDirection":[0.337623226227616,0.883909081655293,0.323597423473909],"rollDegrees":298.091979043698,"fitScore":3.3291},
+        {"classId":6,"viewDirection":[0.709666666666666,-0.395221725866941,-0.583243525146211],"rollDegrees":314.803824515128,"fitScore":2.9121},
+        {"classId":8,"viewDirection":[-0.866025403784439,-0.178411044886545,0.467086179481358],"rollDegrees":90.5,"fitScore":2.9235},
+        {"classId":9,"viewDirection":[-0.213178148278443,-0.739529302816645,0.638475909782116],"rollDegrees":307.10094175454,"fitScore":3.3904},
+        {"classId":3,"viewDirection":[0.0,-0.525731112119134,-0.85065080835204],"rollDegrees":324.0,"fitScore":2.7664},
+        {"classId":10,"viewDirection":[0.610178315011581,0.774942132293884,-0.164763817282303],"rollDegrees":191.710290015554,"fitScore":2.9179},
+        {"classId":11,"viewDirection":[0.0952161417435849,-0.994868007732856,0.0342276721546196],"rollDegrees":69.2520123430095,"fitScore":2.901},
+        {"classId":12,"viewDirection":[-0.806794810758398,0.0553783765371234,-0.588230710474584],"rollDegrees":212.535066826407,"fitScore":2.8845},
+        {"classId":13,"viewDirection":[0.660320288966168,-0.750970310642873,0.00455066067554663],"rollDegrees":270.169408888478,"fitScore":2.7703}
       ]
     }
   ]
