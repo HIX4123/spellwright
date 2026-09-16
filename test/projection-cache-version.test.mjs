@@ -7,8 +7,8 @@ const featureJs = await readFile(new URL('../docs/projection-features.js', impor
 const guideJs = await readFile(new URL('../docs/projection-feature-guides.js', import.meta.url), 'utf8');
 
 test('loads refreshed projection feature, guide, and geometry bundles', () => {
-  assert.match(indexHtml, /projection-features\.js\?v=projection-tags-20260916-1/);
-  assert.match(indexHtml, /projection-feature-guides\.js\?v=projection-guides-20260916-1/);
-  assert.match(featureJs, /projection-geometry-analysis\.js\?v=radial-bands-20260916-1/);
-  assert.match(guideJs, /projection-geometry-analysis\.js\?v=radial-bands-20260916-1/);
+  assert.match(indexHtml, /projection-features\.js\?v=projection-tags-20260916-2/);
+  assert.match(indexHtml, /projection-feature-guides\.js\?v=projection-guides-20260916-2/);
+  assert.match(featureJs, /projection-geometry-analysis\.js\?v=projection-symmetry-20260916-2/);
+  assert.match(guideJs, /projection-geometry-analysis\.js\?v=projection-symmetry-20260916-2/);
 });
