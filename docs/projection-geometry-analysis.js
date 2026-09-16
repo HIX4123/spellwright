@@ -1,6 +1,7 @@
 import { projectVertices, projectionEvents } from './projection-core.js';
 
 const TAU = Math.PI * 2;
+const RADIAL_TOLERANCE_FACTOR = 0.002;
 const ROTATION_TOLERANCE_FACTOR = 0.006;
 const REFLECTION_TOLERANCE_FACTOR = 0.02;
 const AXIS_CLUSTER_TOLERANCE = Math.PI / 360;
@@ -96,20 +97,28 @@ function convexHullIndices(nodes, indices, areaTolerance) {
   return [...lower.slice(0, -1), ...upper.slice(0, -1)];
 }
 
-function nestedConvexLayers(nodes, scale) {
-  let remaining = nodes.map((_, index) => index);
-  const outerToInner = [];
-  const areaTolerance = scale * scale * 1e-8;
+function concentricRadialLayers(nodes, scale) {
+  const tolerance = scale * RADIAL_TOLERANCE_FACTOR;
+  const sorted = nodes
+    .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
+    .sort((a, b) => a.radius - b.radius);
+  const bands = [];
 
-  while (remaining.length) {
-    const hull = convexHullIndices(nodes, remaining, areaTolerance);
-    const layer = hull.length ? hull : remaining.slice(0, 1);
-    outerToInner.push(layer);
-    const removed = new Set(layer);
-    remaining = remaining.filter(index => !removed.has(index));
+  for (const item of sorted) {
+    const current = bands.at(-1);
+    if (!current || Math.abs(item.radius - current.radius) > tolerance) {
+      bands.push({ radius: item.radius, nodeIndices: [item.index], radii: [item.radius] });
+      continue;
+    }
+    current.nodeIndices.push(item.index);
+    current.radii.push(item.radius);
+    current.radius = current.radii.reduce((sum, value) => sum + value, 0) / current.radii.length;
   }
 
-  return outerToInner.reverse();
+  return {
+    layers: bands.map(band => band.nodeIndices),
+    radii: bands.map(band => band.radius)
+  };
 }
 
 function reflectionTransform(axisAngle) {
@@ -224,85 +233,14 @@ function silhouetteReflectionAxes(nodes, outerLayer, rotationalOrder, tolerance)
   return result;
 }
 
-function solveLinearSystem(matrix, vector) {
-  const size = vector.length;
-  const augmented = matrix.map((row, index) => [...row, vector[index]]);
-  for (let column = 0; column < size; column += 1) {
-    let pivot = column;
-    for (let row = column + 1; row < size; row += 1) {
-      if (Math.abs(augmented[row][column]) > Math.abs(augmented[pivot][column])) pivot = row;
-    }
-    if (Math.abs(augmented[pivot][column]) < 1e-11) return null;
-    [augmented[column], augmented[pivot]] = [augmented[pivot], augmented[column]];
-    const divisor = augmented[column][column];
-    for (let value = column; value <= size; value += 1) augmented[column][value] /= divisor;
-    for (let row = 0; row < size; row += 1) {
-      if (row === column) continue;
-      const factor = augmented[row][column];
-      if (Math.abs(factor) < 1e-15) continue;
-      for (let value = column; value <= size; value += 1) {
-        augmented[row][value] -= factor * augmented[column][value];
-      }
-    }
-  }
-  return augmented.map(row => row[size]);
-}
-
-function fitConcentricCircles(nodes, layers, scale) {
-  if (!layers.length) return { center: [0, 0], radii: [] };
-  const unknownCount = 2 + layers.length;
-  const normal = Array.from({ length: unknownCount }, () => Array(unknownCount).fill(0));
-  const rhs = Array(unknownCount).fill(0);
-
-  layers.forEach((layer, layerIndex) => {
-    layer.forEach(nodeIndex => {
-      const [x, y] = nodes[nodeIndex].xy;
-      const row = Array(unknownCount).fill(0);
-      row[0] = -2 * x;
-      row[1] = -2 * y;
-      row[2 + layerIndex] = 1;
-      const value = -(x * x + y * y);
-      for (let first = 0; first < unknownCount; first += 1) {
-        rhs[first] += row[first] * value;
-        for (let second = 0; second < unknownCount; second += 1) {
-          normal[first][second] += row[first] * row[second];
-        }
-      }
-    });
-  });
-
-  const ridge = scale * scale * 1e-10;
-  for (let index = 0; index < unknownCount; index += 1) normal[index][index] += ridge;
-  const solution = solveLinearSystem(normal, rhs);
-  let center;
-  if (solution) {
-    center = [solution[0], solution[1]];
-  } else {
-    const outer = layers.at(-1).map(index => nodes[index].xy);
-    center = [
-      outer.reduce((sum, point) => sum + point[0], 0) / outer.length,
-      outer.reduce((sum, point) => sum + point[1], 0) / outer.length
-    ];
-  }
-
-  let previousRadius = 0;
-  const radii = layers.map(layer => {
-    const rawRadius = Math.max(...layer.map(index => Math.hypot(
-      nodes[index].xy[0] - center[0],
-      nodes[index].xy[1] - center[1]
-    )));
-    const radius = Math.max(previousRadius, rawRadius);
-    previousRadius = radius;
-    return radius;
-  });
-  return { center, radii };
-}
-
 export function analyzeProjectionStructure(vertices, edges, frame) {
   const arrangement = projectedArrangement(vertices, edges, frame);
-  const layers = nestedConvexLayers(arrangement.nodes, arrangement.scale);
-  const circles = fitConcentricCircles(arrangement.nodes, layers, arrangement.scale);
-  const outerLayer = layers.at(-1) || [];
+  const radial = concentricRadialLayers(arrangement.nodes, arrangement.scale);
+  const outerLayer = convexHullIndices(
+    arrangement.nodes,
+    arrangement.nodes.map((_, index) => index),
+    arrangement.scale * arrangement.scale * 1e-8
+  );
   const rotationalOrder = silhouetteRotationalOrder(
     arrangement.nodes,
     outerLayer,
@@ -319,10 +257,10 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     points: arrangement.points,
     nodes: arrangement.nodes,
     segments: arrangement.segments,
-    layers,
-    layerPointCounts: layers.map(layer => layer.length),
-    circleCenter: circles.center,
-    circleRadii: circles.radii,
+    layers: radial.layers,
+    layerPointCounts: radial.layers.map(layer => layer.length),
+    circleCenter: [0, 0],
+    circleRadii: radial.radii,
     symmetryAxisAngles,
     rotationalOrder
   };
