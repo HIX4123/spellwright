@@ -4,7 +4,7 @@ import {
   projectionEvents,
   viewFrame
 } from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=radial-bands-20260916-1';
 
 const TAU = Math.PI * 2;
 const ANGLE_TOLERANCE = 0.012;

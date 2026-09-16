@@ -60,43 +60,49 @@ test('all 43 projections expose six stable geometry tags from every visible poin
   assert.equal(count, 43);
 });
 
-test('radial layers peel all visible points, including edge crossings', () => {
+test('radial layers group all visible points by distance from the projection center', () => {
   const cases = [
-    ['정사면체', 3, 1, [3]],
-    ['정사면체', 4, 2, [1, 3]],
-    ['정사면체', 2, 2, [1, 4]],
-    ['정팔면체', 1, 1, [4]],
-    ['정십이면체', 4, 4, [2, 2, 6, 10]],
-    ['정십이면체', 6, 4, [2, 4, 6, 10]],
-    ['정십이면체', 7, 5, [2, 4, 4, 6, 8]],
-    ['정십이면체', 8, 4, [2, 6, 6, 10]],
-    ['정십이면체', 10, 4, [6, 4, 6, 10]],
-    ['정십이면체', 9, 5, [2, 2, 4, 6, 12]],
-    ['정십이면체', 12, 3, [8, 8, 10]],
-    ['정십이면체', 14, 4, [2, 8, 8, 10]],
-    ['정십이면체', 1, 3, [2, 4, 6]],
-    ['정이십면체', 1, 2, [2, 6]],
-    ['정이십면체', 4, 3, [4, 6, 6]],
-    ['정이십면체', 5, 5, [4, 4, 6, 6, 6]],
-    ['정이십면체', 7, 5, [4, 4, 6, 6, 6]],
-    ['정이십면체', 8, 4, [4, 8, 8, 8]],
-    ['정이십면체', 9, 4, [4, 8, 8, 8]],
-    ['정이십면체', 10, 5, [4, 4, 8, 8, 8]],
-    ['정이십면체', 11, 5, [4, 4, 8, 8, 8]],
-    ['정이십면체', 12, 4, [4, 10, 10, 10]]
+    ['정사면체', 3, [1, 2]],
+    ['정사면체', 4, [1, 2, 1]],
+    ['정사면체', 2, [1, 4]],
+    ['정육면체', 6, [2, 2, 4]],
+    ['정팔면체', 1, [2, 2]],
+    ['정십이면체', 4, [2, 2, 2, 4, 2, 4, 4]],
+    ['정십이면체', 6, [2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
+    ['정십이면체', 7, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
+    ['정십이면체', 8, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]],
+    ['정십이면체', 10, [6, 12, 4, 4]],
+    ['정십이면체', 9, [2, 2, 4, 4, 4, 2, 4, 4]],
+    ['정십이면체', 12, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
+    ['정십이면체', 14, [2, 10, 2, 4, 2, 4, 4]],
+    ['정십이면체', 1, [2, 4, 2, 4]],
+    ['정이십면체', 1, [2, 2, 4]],
+    ['정이십면체', 4, [2, 2, 2, 2, 2, 2, 2, 2]],
+    ['정이십면체', 5, [2, 2, 4, 2, 4, 2, 4, 4, 2]],
+    ['정이십면체', 7, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
+    ['정이십면체', 8, [2, 2, 4, 4, 4, 2, 2, 4, 4]],
+    ['정이십면체', 9, [2, 4, 2, 2, 4, 4, 2, 4, 4]],
+    ['정이십면체', 10, [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
+    ['정이십면체', 11, [12, 16, 4]],
+    ['정이십면체', 12, [2, 2, 4, 4, 4, 2, 4, 2, 2, 4, 4]]
   ];
 
-  for (const [solidName, classId, expectedLayers, expectedCounts] of cases) {
+  for (const [solidName, classId, expectedCounts] of cases) {
     const features = featuresFor(solidName, classId);
-    assert.equal(features.radialLayers, expectedLayers, `${solidName} class ${classId} layer count`);
+    assert.equal(features.radialLayers, expectedCounts.length, `${solidName} class ${classId} layer count`);
     assert.deepEqual(features.layerPointCounts, expectedCounts, `${solidName} class ${classId} layer signature`);
   }
 
-  const fiveLayer = projectionHashtags(featuresFor('정십이면체', 7));
-  assert.ok(fiveLayer.includes('#저층형'));
-  assert.ok(!fiveLayer.includes('#극저층형'));
-  const threeLayer = projectionHashtags(featuresFor('정십이면체', 1));
+  assert.deepEqual(featuresFor('정육면체', 6).layerPointCounts, [2, 2, 4], '소외-전이 stays 2-2-4');
+
+  const threeLayer = projectionHashtags(featuresFor('정육면체', 6));
   assert.ok(threeLayer.includes('#극저층형'));
+  const fourLayer = projectionHashtags(featuresFor('정십이면체', 1));
+  assert.ok(fourLayer.includes('#저층형'));
+  assert.ok(!fourLayer.includes('#극저층형'));
+  const sevenLayer = projectionHashtags(featuresFor('정십이면체', 4));
+  assert.ok(!sevenLayer.includes('#저층형'));
+  assert.ok(!sevenLayer.includes('#극저층형'));
 });
 
 test('silhouette symmetry regressions cover reported and audit-discovered cases', () => {
