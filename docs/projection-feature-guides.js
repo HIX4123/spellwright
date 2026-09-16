@@ -1,5 +1,5 @@
 import { geometryForSolid, viewFrame } from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=radial-bands-20260916-1';
 
 const attachedRoots = new WeakSet();
 const activeGuideByRoot = new WeakMap();
