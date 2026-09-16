@@ -3,7 +3,7 @@ import { projectVertices, projectionEvents } from './projection-core.js';
 const TAU = Math.PI * 2;
 const RADIAL_TOLERANCE_FACTOR = 0.002;
 const ROTATION_TOLERANCE_FACTOR = 0.006;
-const REFLECTION_TOLERANCE_FACTOR = 0.02;
+const REFLECTION_TOLERANCE_FACTOR = 0.005;
 const AXIS_CLUSTER_TOLERANCE = Math.PI / 360;
 
 function edgeKey(a, b) {
@@ -200,7 +200,7 @@ function silhouetteRotationalOrder(nodes, outerLayer, tolerance) {
   return 1;
 }
 
-function silhouetteReflectionAxes(nodes, outerLayer, rotationalOrder, tolerance) {
+function arrangementReflectionAxes(nodes, outerLayer, validationIndices, rotationalOrder, tolerance) {
   const candidates = candidateReflectionAxes(nodes, outerLayer);
   if (!candidates.length) return [];
   let best = null;
@@ -211,7 +211,7 @@ function silhouetteReflectionAxes(nodes, outerLayer, rotationalOrder, tolerance)
     let rmsError = 0;
     for (let index = 0; index < rotationalOrder; index += 1) {
       const angle = normalizeAxisAngle(baseAngle + index * Math.PI / rotationalOrder);
-      const error = transformMatchError(nodes, outerLayer, reflectionTransform(angle));
+      const error = transformMatchError(nodes, validationIndices, reflectionTransform(angle));
       maximumError = Math.max(maximumError, error.maximum);
       rmsError += error.rms;
       family.push(angle);
@@ -236,9 +236,10 @@ function silhouetteReflectionAxes(nodes, outerLayer, rotationalOrder, tolerance)
 export function analyzeProjectionStructure(vertices, edges, frame) {
   const arrangement = projectedArrangement(vertices, edges, frame);
   const radial = concentricRadialLayers(arrangement.nodes, arrangement.scale);
+  const allNodeIndices = arrangement.nodes.map((_, index) => index);
   const outerLayer = convexHullIndices(
     arrangement.nodes,
-    arrangement.nodes.map((_, index) => index),
+    allNodeIndices,
     arrangement.scale * arrangement.scale * 1e-8
   );
   const rotationalOrder = silhouetteRotationalOrder(
@@ -246,9 +247,10 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     outerLayer,
     arrangement.scale * ROTATION_TOLERANCE_FACTOR
   );
-  const symmetryAxisAngles = silhouetteReflectionAxes(
+  const symmetryAxisAngles = arrangementReflectionAxes(
     arrangement.nodes,
     outerLayer,
+    allNodeIndices,
     rotationalOrder,
     arrangement.scale * REFLECTION_TOLERANCE_FACTOR
   );
