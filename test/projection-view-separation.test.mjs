@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
+const minimumBySolid = new Map([
+  ['정사면체', 54.0],
+  ['정육면체', 46.0],
+  ['정팔면체', 44.9],
+  ['정십이면체', 32.0],
+  ['정이십면체', 31.0]
+]);
 
 function normalize(vector) {
   const length = Math.hypot(...vector);
@@ -18,24 +25,39 @@ function projectiveAngleDegrees(first, second) {
 
 function directionFor(solidName, classId) {
   const solid = views.solids.find(item => item.name === solidName);
-  return solid.views.find(item => item.classId === classId).viewDirection;
+  const view = solid?.views.find(item => item.classId === classId);
+  assert.ok(view, `${solidName} class ${classId} representative exists`);
+  return view.viewDirection;
 }
 
-function assertSeparated(solidName, firstId, secondId, minimumDegrees, label) {
-  const angle = projectiveAngleDegrees(
-    directionFor(solidName, firstId),
-    directionFor(solidName, secondId)
+test('all representative directions stay globally separated within each solid', () => {
+  for (const solid of views.solids) {
+    const minimum = minimumBySolid.get(solid.name);
+    assert.ok(minimum, `${solid.name} separation threshold`);
+    for (let first = 0; first < solid.views.length; first += 1) {
+      for (let second = first + 1; second < solid.views.length; second += 1) {
+        const a = solid.views[first];
+        const b = solid.views[second];
+        const angle = projectiveAngleDegrees(a.viewDirection, b.viewDirection);
+        assert.ok(
+          angle >= minimum,
+          `${solid.name} classes ${a.classId}/${b.classId}: ${angle.toFixed(3)}° should be >= ${minimum}°`
+        );
+      }
+    }
+  }
+});
+
+test('formerly collapsed representative pairs stay visibly separated', () => {
+  const bindingExchange = projectiveAngleDegrees(
+    directionFor('정십이면체', 1),
+    directionFor('정십이면체', 10)
   );
-  assert.ok(angle >= minimumDegrees, `${label}: ${angle.toFixed(3)}° should be >= ${minimumDegrees}°`);
-}
+  assert.ok(bindingExchange >= 75, `고착 결속-교환: ${bindingExchange.toFixed(3)}° should be >= 75°`);
 
-test('general-cell representatives stay visibly away from formerly collapsed neighbors', () => {
-  assertSeparated('정십이면체', 1, 10, 10, '고착 결속-교환');
-  assertSeparated('정십이면체', 10, 11, 8, '고착 교환-연쇄');
-  assertSeparated('정십이면체', 11, 13, 6, '고착 연쇄-다중 종속');
-  assertSeparated('정십이면체', 4, 14, 5, '고착 고정-관계망');
-
-  assertSeparated('정이십면체', 1, 6, 10, '반추 보존-치환');
-  assertSeparated('정이십면체', 6, 11, 7, '반추 치환-재합류');
-  assertSeparated('정이십면체', 3, 13, 5, '반추 확산-확정');
+  const emissionDistribution = projectiveAngleDegrees(
+    directionFor('정팔면체', 2),
+    directionFor('정팔면체', 4)
+  );
+  assert.ok(emissionDistribution >= 45, `초조 방출-분배: ${emissionDistribution.toFixed(3)}° should be >= 45°`);
 });
