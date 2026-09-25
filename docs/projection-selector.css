@@ -1,30 +1,51 @@
 .projection-selector {
-  padding: 0;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 238px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.projection-selector-panel, .projection-selector-content { min-width: 0; }
+.projection-selector-panel { padding: 18px 12px; }
+.projection-selector-panel h3 { margin: 5px 0 16px; font-size: 16px; }
+.projection-selector .projection-selector-content { padding: 0; overflow: hidden; }
+
+.projection-filter-label {
+  display: block;
+  margin: 15px 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.projection-filter-category, .projection-filter-search {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.projection-filter-count { margin: 18px 0 8px; color: var(--muted); font-size: 11px; }
+.projection-filter-empty { padding: 8px; color: var(--muted); font-size: 11px; }
+.projection-filter-category:focus-visible, .projection-filter-search:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .projection-selector-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--line);
+  min-width: 0;
 }
 
 .projection-solid-tabs {
-  min-width: 0;
-  display: flex;
+  display: grid;
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
 .projection-solid-tabs::-webkit-scrollbar,
 .projection-class-rail::-webkit-scrollbar { display: none; }
 
 .projection-solid-tab {
-  flex: 0 0 auto;
+  width: 100%;
   min-height: 44px;
   padding: 7px 10px;
   display: grid;
@@ -51,7 +72,7 @@
 }
 
 .projection-selector-instruction {
-  flex: 0 0 auto;
+  padding: 14px 18px 0;
   color: var(--muted);
   font-size: 9px;
   font-weight: 650;
@@ -77,6 +98,7 @@
   font-size: 24px;
   line-height: 1;
 }
+.projection-step:disabled { opacity: .35; cursor: default; }
 
 .projection-stage {
   position: relative;
@@ -220,27 +242,26 @@
 }
 
 .projection-class-rail {
-  display: flex;
-  gap: 5px;
-  padding: 10px 18px 12px;
-  overflow-x: auto;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  scrollbar-width: none;
+  display: grid;
+  gap: 4px;
+  max-height: 390px;
+  overflow-y: auto;
 }
 
 .projection-class-chip {
-  flex: 0 0 auto;
-  min-width: 34px;
-  min-height: 30px;
-  padding: 4px 7px;
+  width: 100%;
+  min-height: 44px;
+  padding: 7px 9px;
   border-color: transparent;
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
+  text-align: left;
 }
+.projection-class-chip span { display: block; font-size: 11px; color: var(--text); }
+.projection-class-chip small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
 
 .projection-class-chip.active {
   border-color: var(--line-strong);
@@ -294,15 +315,12 @@
 }
 
 @media (max-width: 900px) {
-  .projection-selector { padding: 0; }
-  .projection-selector-toolbar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 12px;
-  }
-  .projection-solid-tabs { width: 100%; }
-  .projection-solid-tab { min-height: 44px; }
+  .projection-selector { grid-template-columns: 1fr; }
+  .projection-selector-panel { padding: 14px 12px; }
+  .projection-solid-tabs { grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); }
+  .projection-class-rail { display: flex; overflow-x: auto; max-height: none; }
+  .projection-class-chip { flex: 0 0 128px; }
+  .projection-selector-instruction { padding: 10px 12px 0; }
   .projection-selector-stage-row {
     grid-template-columns: 40px minmax(0, 1fr) 40px;
     gap: 7px;
@@ -325,7 +343,6 @@
     padding: 4px 12px 14px;
   }
   .projection-selector-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .projection-class-rail { padding-inline: 12px; }
   .projection-role-details { padding-inline: 12px; }
   .projection-selector-note { padding-inline: 12px; }
 }

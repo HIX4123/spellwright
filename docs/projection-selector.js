@@ -14,6 +14,14 @@ const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
 export const DEFAULT_TRANSITION_DURATION_MS = 2000;
 
+export function filteredProjectionIndices(classes, category = '', query = '') {
+  const term = query.trim().toLocaleLowerCase();
+  return classes.flatMap((item, index) =>
+    (!category || item.label === category)
+      && (!term || `${item.id} ${item.label} ${item.role.name} ${item.role.structure} ${item.role.description}`.toLocaleLowerCase().includes(term))
+      ? [index] : []);
+}
+
 function escapeHtml(value = '') {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -188,10 +196,13 @@ function createSelector(entries) {
   injectRuntimeStyles();
   const root = document.createElement('section');
   root.id = SELECTOR_ID;
-  root.className = 'card projection-selector projection-selector-orthographic';
+  root.className = 'projection-selector projection-selector-orthographic';
   root.innerHTML = `
-    <div class="projection-selector-toolbar">
-      <div class="projection-solid-tabs" role="tablist" aria-label="정다면체 선택">
+    <aside class="card projection-selector-panel" aria-label="사영도 선택 및 필터">
+      <span class="detail-kicker">PROJECTION LIBRARY</span>
+      <h3>사영도 선택</h3>
+      <div class="projection-selector-toolbar">
+        <div class="projection-solid-tabs" role="tablist" aria-label="정다면체 선택">
         ${entries.map((entry, index) => `
           <button class="projection-solid-tab${index === 0 ? ' active' : ''}" type="button" role="tab"
             aria-selected="${index === 0}" data-solid-index="${index}">
@@ -199,8 +210,20 @@ function createSelector(entries) {
             <span>${escapeHtml(entry.solid.name)}</span>
           </button>`).join('')}
       </div>
-      <span class="projection-selector-instruction">ORTHOGRAPHIC · HORIZONTAL DRAG · ← →</span>
-    </div>
+      </div>
+      <label class="projection-filter-label" for="projectionCategory">사영 유형</label>
+      <select id="projectionCategory" class="projection-filter-category">
+        <option value="">모든 유형</option>
+        ${[...new Set(entries.flatMap(entry => entry.solid.classes.map(item => item.label)))].map(label =>
+          `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`).join('')}
+      </select>
+      <label class="projection-filter-label" for="projectionSearch">이름·역할 검색</label>
+      <input id="projectionSearch" class="projection-filter-search" type="search" placeholder="클래스 또는 역할 검색" />
+      <div class="projection-filter-count" aria-live="polite"></div>
+      <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
+    </aside>
+    <div class="card projection-selector-content">
+    <div class="projection-selector-instruction">ORTHOGRAPHIC · HORIZONTAL DRAG · ← →</div>
 
     <div class="projection-selector-stage-row">
       <button class="projection-step projection-step-prev" type="button" aria-label="이전 사영도">‹</button>
@@ -227,7 +250,6 @@ function createSelector(entries) {
       </dl>
     </div>
 
-    <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
     <section class="projection-role-details" aria-label="선택한 사영도의 역할">
       <div class="projection-role-heading">
         <div>
@@ -244,6 +266,7 @@ function createSelector(entries) {
     </section>
     <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그·버튼·키보드는 인접 사영으로 이동하고, 클래스 번호를 직접 선택하면 중간 클래스를 거치지 않고 목표 사영으로 바로 회전한다.</p>
     <span class="projection-selector-live" aria-live="polite"></span>
+    </div>
   `;
 
   const state = {
@@ -262,6 +285,9 @@ function createSelector(entries) {
   const stage = root.querySelector('.projection-stage');
   const canvas = root.querySelector('.projection-canvas');
   const rail = root.querySelector('.projection-class-rail');
+  const category = root.querySelector('.projection-filter-category');
+  const search = root.querySelector('.projection-filter-search');
+  const count = root.querySelector('.projection-filter-count');
   const live = root.querySelector('.projection-selector-live');
   const kicker = root.querySelector('[data-projection-kicker]');
   const title = root.querySelector('[data-projection-title]');
@@ -270,7 +296,11 @@ function createSelector(entries) {
   const currentEntry = () => entries[state.solidIndex];
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
-  const targetIndex = direction => wrapIndex(currentIndex() + direction, currentClasses().length);
+  const visibleIndices = () => filteredProjectionIndices(currentClasses(), category.value, search.value);
+  const targetIndex = direction => {
+    const visible = visibleIndices();
+    return visible.length ? visible[wrapIndex(visible.indexOf(currentIndex()) + direction, visible.length)] : currentIndex();
+  };
   const frameFor = index => {
     const item = currentClasses()[index];
     const view = currentEntry().viewsByClass.get(item.id);
@@ -282,21 +312,30 @@ function createSelector(entries) {
   }
 
   function renderRail() {
-    rail.innerHTML = currentClasses().map((item, index) => `
+    const visible = visibleIndices();
+    count.textContent = `${visible.length} / ${currentClasses().length}개 사영도`;
+    rail.innerHTML = visible.map(index => {
+      const item = currentClasses()[index];
+      return `
       <button type="button" class="projection-class-chip${index === currentIndex() ? ' active' : ''}"
         data-class-index="${index}" aria-pressed="${index === currentIndex()}">
-        ${String(item.id).padStart(2, '0')}
-      </button>`).join('');
+        <span>#${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
+        <small>${escapeHtml(item.label)}</small>
+      </button>`;
+    }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
   }
 
   function updateMetadata({ announce = false } = {}) {
     const entry = currentEntry();
     const classes = currentClasses();
     const item = classes[currentIndex()];
+    const visible = visibleIndices();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
     title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.label}`;
-    position.textContent = `${currentIndex() + 1} / ${classes.length}`;
+    position.textContent = visible.length && (category.value || search.value.trim())
+      ? `${visible.indexOf(currentIndex()) + 1} / ${visible.length} · 전체 ${classes.length}`
+      : `${currentIndex() + 1} / ${classes.length}`;
     root.querySelector('[data-metric="crossings"]').textContent = String(item.crossings);
     root.querySelector('[data-metric="vertexClusters"]').textContent = String(item.vertexClusters);
     root.querySelector('[data-metric="maxVertexOverlap"]').textContent = `×${item.maxVertexOverlap}`;
@@ -309,6 +348,9 @@ function createSelector(entries) {
     stage.setAttribute('aria-valuemax', String(classes.length));
     stage.setAttribute('aria-valuenow', String(currentIndex() + 1));
     stage.setAttribute('aria-valuetext', `Class ${item.id}, ${item.label}`);
+    stage.setAttribute('aria-disabled', String(visible.length < 2));
+    root.querySelector('.projection-step-prev').disabled = visible.length < 2;
+    root.querySelector('.projection-step-next').disabled = visible.length < 2;
 
     root.querySelectorAll('.projection-solid-tab').forEach((button, index) => {
       const active = index === state.solidIndex;
@@ -384,7 +426,7 @@ function createSelector(entries) {
   }
 
   stage.addEventListener('pointerdown', event => {
-    if (state.locked || event.button !== 0) return;
+    if (state.locked || visibleIndices().length < 2 || event.button !== 0) return;
     cancelAnimationFrame(state.animationFrame);
     state.animationFrame = 0;
     state.pointerId = event.pointerId;
@@ -453,8 +495,26 @@ function createSelector(entries) {
     const index = Number(button.dataset.solidIndex);
     if (!Number.isInteger(index) || index === state.solidIndex) return;
     state.solidIndex = index;
+    if (!visibleIndices().includes(currentIndex()) && visibleIndices().length) {
+      state.selectedBySolid.set(index, visibleIndices()[0]);
+    }
     renderStatic({ announce: true });
   });
+
+  function applyFilter() {
+    cancelAnimationFrame(state.animationFrame);
+    state.animationFrame = 0;
+    state.locked = false;
+    state.pointerId = null;
+    stage.classList.remove('is-dragging', 'is-grabbing');
+    const visible = visibleIndices();
+    if (visible.length && !visible.includes(currentIndex())) {
+      state.selectedBySolid.set(state.solidIndex, visible[0]);
+    }
+    renderStatic({ announce: true });
+  }
+  category.addEventListener('change', applyFilter);
+  search.addEventListener('input', applyFilter);
 
   rail.addEventListener('click', event => {
     const button = event.target.closest('.projection-class-chip');

@@ -10,9 +10,20 @@ import {
   viewFrame,
   wrapIndex
 } from '../docs/projection-core.js';
+import { filteredProjectionIndices } from '../docs/projection-selector.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
 const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
+
+test('category and role search filter the actual projection classes in their original order', () => {
+  const classes = projections.solids.find(solid => solid.name === '정십이면체').classes;
+  assert.deepEqual(filteredProjectionIndices(classes, '경계 호'),
+    classes.flatMap((item, index) => item.label === '경계 호' ? [index] : []));
+  assert.deepEqual(filteredProjectionIndices(classes, '', '교환'),
+    classes.flatMap((item, index) => item.role.name.includes('교환') || item.role.description.includes('교환') ? [index] : []));
+  assert.deepEqual(filteredProjectionIndices(classes, '면 법선', '없는 역할'), []);
+  assert.equal(filteredProjectionIndices(classes).length, classes.length);
+});
 
 test('wrapIndex cycles projection classes in both directions', () => {
   assert.equal(wrapIndex(6, 6), 0);
