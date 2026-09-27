@@ -53,6 +53,13 @@ export function availableClassificationValues(
   )].sort((a, b) => a - b);
 }
 
+export function activeProjectionEntryIndices(entryCount, selectedIndices = []) {
+  const selected = [...new Set(selectedIndices)]
+    .filter(index => Number.isInteger(index) && index >= 0 && index < entryCount)
+    .sort((a, b) => a - b);
+  return selected.length ? selected : Array.from({ length: entryCount }, (_, index) => index);
+}
+
 export function filteredProjectionTargets(entries, entryIndices, filters = {}, query = '') {
   return entryIndices.flatMap(entryIndex => {
     const entry = entries[entryIndex];
@@ -399,9 +406,10 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
-  const activeEntryIndices = () => state.selectedSolidIndices.size
-    ? [...state.selectedSolidIndices].sort((a, b) => a - b)
-    : entries.map((_, index) => index);
+  const activeEntryIndices = () => activeProjectionEntryIndices(
+    entries.length,
+    [...state.selectedSolidIndices]
+  );
   const targetEquals = (first, second) => Boolean(first && second
     && first.entryIndex === second.entryIndex
     && first.classIndex === second.classIndex);
