@@ -3,10 +3,15 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { geometryForSolid, viewFrame } from '../docs/projection-core.js';
 import { analyzeProjectionFeatures } from '../docs/projection-features.js';
-import { analyzeProjectionGuides } from '../docs/projection-feature-guides.js';
+import { analyzeProjectionGuides, screenLayerRadii } from '../docs/projection-feature-guides.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
 const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
+
+test('screen guide radii preserve computed concentric radii without visual displacement', () => {
+  assert.deepEqual(screenLayerRadii([0.65, 0.68, 0.70, 1.2], 100), [65, 68, 70, 120]);
+  assert.deepEqual(screenLayerRadii([0.01, 0.02, 0.03], 100), [1, 2, 3]);
+});
 
 test('hover guide geometry stays aligned with all 43 feature classifications', () => {
   let count = 0;
