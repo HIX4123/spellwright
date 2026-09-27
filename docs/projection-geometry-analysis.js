@@ -132,6 +132,58 @@ function convexHullIndices(nodes, indices, areaTolerance) {
   return [...lower.slice(0, -1), ...upper.slice(0, -1)];
 }
 
+function pointOnHullBoundary(point, start, end, areaTolerance) {
+  const segmentX = end[0] - start[0];
+  const segmentY = end[1] - start[1];
+  const lengthSquared = segmentX * segmentX + segmentY * segmentY;
+  if (lengthSquared <= areaTolerance) return false;
+  if (Math.abs(cross2d(start, end, point)) > areaTolerance) return false;
+  const pointX = point[0] - start[0];
+  const pointY = point[1] - start[1];
+  const projection = pointX * segmentX + pointY * segmentY;
+  return projection >= -areaTolerance && projection <= lengthSquared + areaTolerance;
+}
+
+function convexHullLayers(nodes, areaTolerance) {
+  const remaining = new Set(nodes.map((_, index) => index));
+  const layers = [];
+
+  while (remaining.size) {
+    const indices = [...remaining];
+    if (indices.length <= 2) {
+      layers.push(indices);
+      break;
+    }
+
+    const hull = convexHullIndices(nodes, indices, areaTolerance);
+    if (hull.length <= 2) {
+      layers.push(indices);
+      break;
+    }
+
+    const hullSet = new Set(hull);
+    const boundary = indices.filter(index => {
+      if (hullSet.has(index)) return true;
+      const point = nodes[index].xy;
+      return hull.some((startIndex, position) => {
+        const endIndex = hull[(position + 1) % hull.length];
+        return pointOnHullBoundary(
+          point,
+          nodes[startIndex].xy,
+          nodes[endIndex].xy,
+          areaTolerance
+        );
+      });
+    });
+
+    const layer = boundary.length ? boundary : hull;
+    layers.push(layer);
+    layer.forEach(index => remaining.delete(index));
+  }
+
+  return layers;
+}
+
 function concentricRadialLayers(nodes, scale) {
   const tolerance = scale * RADIAL_TOLERANCE_FACTOR;
   const sorted = nodes
@@ -273,10 +325,12 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
   const radial = concentricRadialLayers(arrangement.nodes, arrangement.scale);
   const euler = eulerTrailAnalysis(arrangement.nodes, arrangement.segments);
   const allNodeIndices = arrangement.nodes.map((_, index) => index);
+  const hullAreaTolerance = arrangement.scale * arrangement.scale * 1e-8;
+  const hullLayers = convexHullLayers(arrangement.nodes, hullAreaTolerance);
   const outerLayer = convexHullIndices(
     arrangement.nodes,
     allNodeIndices,
-    arrangement.scale * arrangement.scale * 1e-8
+    hullAreaTolerance
   );
   const rotationalOrder = silhouetteRotationalOrder(
     arrangement.nodes,
@@ -297,6 +351,8 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     segments: arrangement.segments,
     layers: radial.layers,
     layerPointCounts: radial.layers.map(layer => layer.length),
+    convexHullLayers: hullLayers,
+    convexHullLayerPointCounts: hullLayers.map(layer => layer.length),
     circleCenter: [0, 0],
     circleRadii: radial.radii,
     symmetryAxisAngles,
