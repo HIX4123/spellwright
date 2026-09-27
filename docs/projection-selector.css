@@ -10,11 +10,25 @@
 .projection-selector-panel h3 { margin: 5px 0 16px; font-size: 16px; }
 .projection-selector .projection-selector-content { padding: 0; overflow: hidden; }
 
+.projection-category-heading,
 .projection-filter-label {
   display: block;
   margin: 15px 0 6px;
   color: var(--muted);
   font-size: 11px;
+}
+.projection-category-heading { margin-bottom: 8px; }
+.projection-filter-grid {
+  display: grid;
+  gap: 7px;
+}
+.projection-filter-grid label {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 10px;
 }
 .projection-filter-category, .projection-filter-search {
   width: 100%;

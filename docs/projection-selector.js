@@ -9,17 +9,40 @@ import {
   viewFrame,
   wrapIndex
 } from './projection-core.js?v=projection-core-20260903-1';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=projection-symmetry-20260916-2';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
 export const DEFAULT_TRANSITION_DURATION_MS = 2000;
 
-export function filteredProjectionIndices(classes, category = '', query = '') {
+export function filteredProjectionIndices(classes, classifications = new Map(), filters = {}, query = '') {
   const term = query.trim().toLocaleLowerCase();
-  return classes.flatMap((item, index) =>
-    (!category || item.label === category)
-      && (!term || `${item.id} ${item.label} ${item.role.name} ${item.role.structure} ${item.role.description}`.toLocaleLowerCase().includes(term))
-      ? [index] : []);
+  const expected = {
+    radialLayers: filters.radialLayers === '' || filters.radialLayers == null ? null : Number(filters.radialLayers),
+    symmetryAxes: filters.symmetryAxes === '' || filters.symmetryAxes == null ? null : Number(filters.symmetryAxes),
+    rotationalOrder: filters.rotationalOrder === '' || filters.rotationalOrder == null ? null : Number(filters.rotationalOrder)
+  };
+  return classes.flatMap((item, index) => {
+    const structure = classifications.get(item.id);
+    const matchesStructure = Object.entries(expected).every(([key, value]) =>
+      value === null || structure?.[key] === value);
+    const haystack = [
+      item.id,
+      item.role.name,
+      item.role.structure,
+      item.role.description,
+      item.role.example,
+      structure ? `동심원 ${structure.radialLayers} 대칭축 ${structure.symmetryAxes} 대칭차수 ${structure.rotationalOrder}차` : ''
+    ].join(' ').toLocaleLowerCase();
+    return matchesStructure && (!term || haystack.includes(term)) ? [index] : [];
+  });
+}
+
+function classificationOptions(entries, key, suffix) {
+  const values = [...new Set(entries.flatMap(entry =>
+    [...entry.classificationsByClass.values()].map(item => item[key])
+  ))].sort((a, b) => a - b);
+  return values.map(value => `<option value="${value}">${value}${suffix}</option>`).join('');
 }
 
 function escapeHtml(value = '') {
@@ -173,7 +196,21 @@ function selectorEntries(elements, solids, viewSolids) {
     if (!solid || !viewSolid) return null;
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
     if (solid.classes.some(item => !viewsByClass.has(item.id))) return null;
-    return { element, solid, viewsByClass, geometry: geometryForSolid(solid.name) };
+    const geometry = geometryForSolid(solid.name);
+    const classificationsByClass = new Map(solid.classes.map(item => {
+      const view = viewsByClass.get(item.id);
+      const structure = analyzeProjectionStructure(
+        geometry.vertices,
+        geometry.edges,
+        viewFrame(view.viewDirection, view.rollDegrees)
+      );
+      return [item.id, {
+        radialLayers: structure.layers.length,
+        symmetryAxes: structure.symmetryAxisAngles.length,
+        rotationalOrder: structure.rotationalOrder
+      }];
+    }));
+    return { element, solid, viewsByClass, geometry, classificationsByClass };
   }).filter(Boolean);
 }
 
@@ -211,12 +248,30 @@ function createSelector(entries) {
           </button>`).join('')}
       </div>
       </div>
-      <label class="projection-filter-label" for="projectionCategory">사영 유형</label>
-      <select id="projectionCategory" class="projection-filter-category">
-        <option value="">모든 유형</option>
-        ${[...new Set(entries.flatMap(entry => entry.solid.classes.map(item => item.label)))].map(label =>
-          `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`).join('')}
-      </select>
+      <div class="projection-category-heading">구조 카테고리</div>
+      <div class="projection-filter-grid">
+        <label>
+          <span>동심원 층수</span>
+          <select id="projectionRadialLayers" class="projection-filter-category">
+            <option value="">전체</option>
+            ${classificationOptions(entries, 'radialLayers', '층')}
+          </select>
+        </label>
+        <label>
+          <span>대칭축 수</span>
+          <select id="projectionSymmetryAxes" class="projection-filter-category">
+            <option value="">전체</option>
+            ${classificationOptions(entries, 'symmetryAxes', '개')}
+          </select>
+        </label>
+        <label>
+          <span>대칭차수</span>
+          <select id="projectionRotationalOrder" class="projection-filter-category">
+            <option value="">전체</option>
+            ${classificationOptions(entries, 'rotationalOrder', '차')}
+          </select>
+        </label>
+      </div>
       <label class="projection-filter-label" for="projectionSearch">이름·역할 검색</label>
       <input id="projectionSearch" class="projection-filter-search" type="search" placeholder="클래스 또는 역할 검색" />
       <div class="projection-filter-count" aria-live="polite"></div>
@@ -285,7 +340,9 @@ function createSelector(entries) {
   const stage = root.querySelector('.projection-stage');
   const canvas = root.querySelector('.projection-canvas');
   const rail = root.querySelector('.projection-class-rail');
-  const category = root.querySelector('.projection-filter-category');
+  const radialLayers = root.querySelector('#projectionRadialLayers');
+  const symmetryAxes = root.querySelector('#projectionSymmetryAxes');
+  const rotationalOrder = root.querySelector('#projectionRotationalOrder');
   const search = root.querySelector('.projection-filter-search');
   const count = root.querySelector('.projection-filter-count');
   const live = root.querySelector('.projection-selector-live');
@@ -296,7 +353,17 @@ function createSelector(entries) {
   const currentEntry = () => entries[state.solidIndex];
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
-  const visibleIndices = () => filteredProjectionIndices(currentClasses(), category.value, search.value);
+  const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
+  const visibleIndices = () => filteredProjectionIndices(
+    currentClasses(),
+    currentEntry().classificationsByClass,
+    {
+      radialLayers: radialLayers.value,
+      symmetryAxes: symmetryAxes.value,
+      rotationalOrder: rotationalOrder.value
+    },
+    search.value
+  );
   const targetIndex = direction => {
     const visible = visibleIndices();
     return visible.length ? visible[wrapIndex(visible.indexOf(currentIndex()) + direction, visible.length)] : currentIndex();
@@ -318,9 +385,9 @@ function createSelector(entries) {
       const item = currentClasses()[index];
       return `
       <button type="button" class="projection-class-chip${index === currentIndex() ? ' active' : ''}"
-        data-class-index="${index}" aria-pressed="${index === currentIndex()}">
+        data-class-index="${index}" data-class-id="${item.id}" aria-pressed="${index === currentIndex()}">
         <span>#${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
-        <small>${escapeHtml(item.label)}</small>
+        <small>동심원 ${currentClassification(index).radialLayers}층 · 대칭축 ${currentClassification(index).symmetryAxes}개 · ${currentClassification(index).rotationalOrder}차</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
   }
@@ -332,8 +399,10 @@ function createSelector(entries) {
     const visible = visibleIndices();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
-    title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.label}`;
-    position.textContent = visible.length && (category.value || search.value.trim())
+    title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.role.name}`;
+    position.textContent = visible.length && (
+      radialLayers.value || symmetryAxes.value || rotationalOrder.value || search.value.trim()
+    )
       ? `${visible.indexOf(currentIndex()) + 1} / ${visible.length} · 전체 ${classes.length}`
       : `${currentIndex() + 1} / ${classes.length}`;
     root.querySelector('[data-metric="crossings"]').textContent = String(item.crossings);
@@ -347,7 +416,11 @@ function createSelector(entries) {
 
     stage.setAttribute('aria-valuemax', String(classes.length));
     stage.setAttribute('aria-valuenow', String(currentIndex() + 1));
-    stage.setAttribute('aria-valuetext', `Class ${item.id}, ${item.label}`);
+    const classification = currentClassification(currentIndex());
+    stage.setAttribute(
+      'aria-valuetext',
+      `Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`
+    );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
     root.querySelector('.projection-step-next').disabled = visible.length < 2;
@@ -360,7 +433,10 @@ function createSelector(entries) {
     });
 
     renderRail();
-    if (announce) live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.label}, 역할 가설 ${item.role.name}`;
+    if (announce) {
+      const classification = currentClassification(currentIndex());
+      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`;
+    }
   }
 
   function renderStatic({ announce = false } = {}) {
@@ -513,7 +589,8 @@ function createSelector(entries) {
     }
     renderStatic({ announce: true });
   }
-  category.addEventListener('change', applyFilter);
+  [radialLayers, symmetryAxes, rotationalOrder].forEach(control =>
+    control.addEventListener('change', applyFilter));
   search.addEventListener('input', applyFilter);
 
   rail.addEventListener('click', event => {
