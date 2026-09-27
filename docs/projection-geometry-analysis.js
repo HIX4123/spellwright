@@ -70,6 +70,41 @@ function projectedArrangement(vertices, edges, frame) {
   return { points, nodes, segments, scale };
 }
 
+function eulerTrailAnalysis(nodes, segments) {
+  const active = nodes
+    .map((node, index) => node.degree > 0 ? index : -1)
+    .filter(index => index >= 0);
+  if (!active.length) {
+    return { eulerTrail: true, eulerCircuit: true, oddDegreeVertices: 0 };
+  }
+
+  const adjacency = Array.from({ length: nodes.length }, () => []);
+  for (const key of segments) {
+    const [a, b] = key.split(':').map(Number);
+    adjacency[a].push(b);
+    adjacency[b].push(a);
+  }
+
+  const seen = new Set([active[0]]);
+  const stack = [active[0]];
+  while (stack.length) {
+    const current = stack.pop();
+    for (const next of adjacency[current]) {
+      if (seen.has(next)) continue;
+      seen.add(next);
+      stack.push(next);
+    }
+  }
+
+  const connected = active.every(index => seen.has(index));
+  const oddDegreeVertices = active.filter(index => nodes[index].degree % 2 === 1).length;
+  return {
+    eulerTrail: connected && (oddDegreeVertices === 0 || oddDegreeVertices === 2),
+    eulerCircuit: connected && oddDegreeVertices === 0,
+    oddDegreeVertices
+  };
+}
+
 function convexHullIndices(nodes, indices, areaTolerance) {
   if (indices.length <= 2) return indices.slice();
   const sorted = indices.slice().sort((a, b) => (
@@ -236,6 +271,7 @@ function arrangementReflectionAxes(nodes, outerLayer, validationIndices, rotatio
 export function analyzeProjectionStructure(vertices, edges, frame) {
   const arrangement = projectedArrangement(vertices, edges, frame);
   const radial = concentricRadialLayers(arrangement.nodes, arrangement.scale);
+  const euler = eulerTrailAnalysis(arrangement.nodes, arrangement.segments);
   const allNodeIndices = arrangement.nodes.map((_, index) => index);
   const outerLayer = convexHullIndices(
     arrangement.nodes,
@@ -264,6 +300,9 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     circleCenter: [0, 0],
     circleRadii: radial.radii,
     symmetryAxisAngles,
-    rotationalOrder
+    rotationalOrder,
+    eulerTrail: euler.eulerTrail,
+    eulerCircuit: euler.eulerCircuit,
+    oddDegreeVertices: euler.oddDegreeVertices
   };
 }
