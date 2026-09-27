@@ -4,7 +4,7 @@ import {
   projectionEvents,
   viewFrame
 } from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=euler-trail-20260927-1';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
 
 const TAU = Math.PI * 2;
 const ANGLE_TOLERANCE = 0.012;
@@ -123,6 +123,8 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
     rotationalOrder: structure.rotationalOrder,
     radialLayers: structure.layers.length,
     layerPointCounts: structure.layerPointCounts,
+    convexHullLayers: structure.convexHullLayers.length,
+    convexHullLayerPointCounts: structure.convexHullLayerPointCounts,
     hullVertices: convexHullVertexCount(nodes, tolerance * radiusScale * 4),
     eulerTrail: structure.eulerTrail,
     oddDegreeVertices: structure.oddDegreeVertices
@@ -139,8 +141,9 @@ export function projectionFeatureItems(features) {
     ['중심 구조', centerValue],
     ['대칭축', String(features.symmetryAxes)],
     ['회전대칭', `${features.rotationalOrder}차`],
-    ['동심원', String(features.radialLayers)],
-    ['층별 점', features.layerPointCounts.join('-')],
+    ['동심차수', `${features.radialLayers}층`],
+    ['Convex Hull', `${features.convexHullLayers}층`],
+    ['동심 층별 점', features.layerPointCounts.join('-')],
     ['외곽 꼭짓점', String(features.hullVertices)],
     ['Euler Trail', features.eulerTrail ? '가능' : '불가']
   ];
@@ -151,8 +154,10 @@ export function projectionHashtags(features) {
   if (features.centerStructure.kind === 'point') tags.push('#중심점');
   if (features.centerStructure.kind === 'regularPolygon') tags.push(`#정${features.centerStructure.sides}각핵`);
   if (features.symmetryAxes > 0) tags.push(features.symmetryAxes % 2 === 0 ? '#짝수대칭' : '#홀수대칭');
-  if (features.radialLayers <= 3) tags.push('#극저층형');
-  else if (features.radialLayers <= 5) tags.push('#저층형');
+  if (features.radialLayers <= 3) tags.push('#동심차수3층이내');
+  else if (features.radialLayers <= 5) tags.push('#동심차수5층이내');
+  if (features.convexHullLayers <= 3) tags.push('#ConvexHull3층이내');
+  else if (features.convexHullLayers <= 5) tags.push('#ConvexHull5층이내');
   return tags;
 }
 
