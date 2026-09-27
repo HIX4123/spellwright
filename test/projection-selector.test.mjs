@@ -11,18 +11,51 @@ import {
   wrapIndex
 } from '../docs/projection-core.js';
 import { filteredProjectionIndices } from '../docs/projection-selector.js';
+import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
 const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
 
-test('category and role search filter the actual projection classes in their original order', () => {
-  const classes = projections.solids.find(solid => solid.name === '정십이면체').classes;
-  assert.deepEqual(filteredProjectionIndices(classes, '경계 호'),
-    classes.flatMap((item, index) => item.label === '경계 호' ? [index] : []));
-  assert.deepEqual(filteredProjectionIndices(classes, '', '교환'),
-    classes.flatMap((item, index) => item.role.name.includes('교환') || item.role.description.includes('교환') ? [index] : []));
-  assert.deepEqual(filteredProjectionIndices(classes, '면 법선', '없는 역할'), []);
-  assert.equal(filteredProjectionIndices(classes).length, classes.length);
+test('structural categories and role search filter projection classes in their original order', () => {
+  const solid = projections.solids.find(item => item.name === '정십이면체');
+  const viewSolid = views.solids.find(item => item.name === solid.name);
+  const geometry = geometryForSolid(solid.name);
+  const classifications = new Map(solid.classes.map(item => {
+    const view = viewSolid.views.find(candidate => candidate.classId === item.id);
+    const structure = analyzeProjectionStructure(
+      geometry.vertices,
+      geometry.edges,
+      viewFrame(view.viewDirection, view.rollDegrees)
+    );
+    return [item.id, {
+      radialLayers: structure.layers.length,
+      symmetryAxes: structure.symmetryAxisAngles.length,
+      rotationalOrder: structure.rotationalOrder
+    }];
+  }));
+  const sample = classifications.get(solid.classes[0].id);
+
+  assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, { radialLayers: sample.radialLayers }),
+    solid.classes.flatMap((item, index) =>
+      classifications.get(item.id).radialLayers === sample.radialLayers ? [index] : [])
+  );
+  assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, { symmetryAxes: sample.symmetryAxes }),
+    solid.classes.flatMap((item, index) =>
+      classifications.get(item.id).symmetryAxes === sample.symmetryAxes ? [index] : [])
+  );
+  assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, { rotationalOrder: sample.rotationalOrder }),
+    solid.classes.flatMap((item, index) =>
+      classifications.get(item.id).rotationalOrder === sample.rotationalOrder ? [index] : [])
+  );
+  assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, {}, '교환'),
+    solid.classes.flatMap((item, index) =>
+      item.role.name.includes('교환') || item.role.description.includes('교환') || item.role.example.includes('교환') ? [index] : [])
+  );
+  assert.equal(filteredProjectionIndices(solid.classes, classifications).length, solid.classes.length);
 });
 
 test('wrapIndex cycles projection classes in both directions', () => {
