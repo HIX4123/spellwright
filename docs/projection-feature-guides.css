@@ -76,24 +76,23 @@
 .projection-guide-hull {
   fill: none;
   stroke: var(--primary);
-  stroke-width: 1.8;
-  stroke-dasharray: 9 4;
+  stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 
-.projection-guide-hull[data-hull-layer="2"] { opacity: .82; stroke-dasharray: 7 4; }
-.projection-guide-hull[data-hull-layer="3"] { opacity: .7; stroke-dasharray: 5 4; }
-.projection-guide-hull[data-hull-layer="4"] { opacity: .58; stroke-dasharray: 4 4; }
-.projection-guide-hull[data-hull-layer="5"] { opacity: .48; stroke-dasharray: 3 4; }
+.projection-guide-hull[data-hull-layer="2"] { opacity: .92; }
+.projection-guide-hull[data-hull-layer="3"] { opacity: .86; }
+.projection-guide-hull[data-hull-layer="4"] { opacity: .78; }
+.projection-guide-hull[data-hull-layer="5"] { opacity: .7; }
 .projection-guide-hull[data-hull-layer="6"],
 .projection-guide-hull[data-hull-layer="7"],
-.projection-guide-hull[data-hull-layer="8"] { opacity: .4; stroke-dasharray: 2 4; }
+.projection-guide-hull[data-hull-layer="8"] { opacity: .62; }
 
 .projection-guide-hull-point {
   fill: none;
   stroke: var(--primary);
-  stroke-width: 1.8;
+  stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }
 
