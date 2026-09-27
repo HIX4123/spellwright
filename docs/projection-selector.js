@@ -38,11 +38,25 @@ export function filteredProjectionIndices(classes, classifications = new Map(), 
   });
 }
 
-function classificationOptions(entries, key, suffix) {
-  const values = [...new Set(entries.flatMap(entry =>
-    [...entry.classificationsByClass.values()].map(item => item[key])
-  ))].sort((a, b) => a - b);
-  return values.map(value => `<option value="${value}">${value}${suffix}</option>`).join('');
+export function availableClassificationValues(
+  classes,
+  classifications = new Map(),
+  filters = {},
+  key,
+  query = ''
+) {
+  const relaxedFilters = { ...filters, [key]: '' };
+  return [...new Set(
+    filteredProjectionIndices(classes, classifications, relaxedFilters, query)
+      .map(index => classifications.get(classes[index].id)?.[key])
+      .filter(Number.isFinite)
+  )].sort((a, b) => a - b);
+}
+
+function optionMarkup(values, suffix) {
+  return ['<option value="">전체</option>', ...values.map(value =>
+    `<option value="${value}">${value}${suffix}</option>`
+  )].join('');
 }
 
 function escapeHtml(value = '') {
@@ -254,21 +268,18 @@ function createSelector(entries) {
           <span>동심원 층수</span>
           <select id="projectionRadialLayers" class="projection-filter-category">
             <option value="">전체</option>
-            ${classificationOptions(entries, 'radialLayers', '층')}
           </select>
         </label>
         <label>
           <span>대칭축 수</span>
           <select id="projectionSymmetryAxes" class="projection-filter-category">
             <option value="">전체</option>
-            ${classificationOptions(entries, 'symmetryAxes', '개')}
           </select>
         </label>
         <label>
           <span>대칭차수</span>
           <select id="projectionRotationalOrder" class="projection-filter-category">
             <option value="">전체</option>
-            ${classificationOptions(entries, 'rotationalOrder', '차')}
           </select>
         </label>
       </div>
@@ -354,16 +365,46 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
+  const filterControls = {
+    radialLayers: { element: radialLayers, suffix: '층' },
+    symmetryAxes: { element: symmetryAxes, suffix: '개' },
+    rotationalOrder: { element: rotationalOrder, suffix: '차' }
+  };
+  const currentFilters = () => Object.fromEntries(
+    Object.entries(filterControls).map(([key, control]) => [key, control.element.value])
+  );
   const visibleIndices = () => filteredProjectionIndices(
     currentClasses(),
     currentEntry().classificationsByClass,
-    {
-      radialLayers: radialLayers.value,
-      symmetryAxes: symmetryAxes.value,
-      rotationalOrder: rotationalOrder.value
-    },
+    currentFilters(),
     search.value
   );
+
+  function syncFilterOptions(preferredKey = null) {
+    const keys = Object.keys(filterControls);
+    const order = preferredKey && keys.includes(preferredKey)
+      ? [...keys.filter(key => key !== preferredKey), preferredKey]
+      : keys;
+    let changed = false;
+
+    for (let pass = 0; pass < 2; pass += 1) {
+      for (const key of order) {
+        const control = filterControls[key];
+        const previous = control.element.value;
+        const values = availableClassificationValues(
+          currentClasses(),
+          currentEntry().classificationsByClass,
+          currentFilters(),
+          key,
+          search.value
+        );
+        control.element.innerHTML = optionMarkup(values, control.suffix);
+        if (previous && values.includes(Number(previous))) control.element.value = previous;
+        else if (previous) changed = true;
+      }
+    }
+    return changed;
+  }
   const targetIndex = direction => {
     const visible = visibleIndices();
     return visible.length ? visible[wrapIndex(visible.indexOf(currentIndex()) + direction, visible.length)] : currentIndex();
@@ -571,27 +612,29 @@ function createSelector(entries) {
     const index = Number(button.dataset.solidIndex);
     if (!Number.isInteger(index) || index === state.solidIndex) return;
     state.solidIndex = index;
+    syncFilterOptions();
     if (!visibleIndices().includes(currentIndex()) && visibleIndices().length) {
       state.selectedBySolid.set(index, visibleIndices()[0]);
     }
     renderStatic({ announce: true });
   });
 
-  function applyFilter() {
+  function applyFilter(preferredKey = null) {
     cancelAnimationFrame(state.animationFrame);
     state.animationFrame = 0;
     state.locked = false;
     state.pointerId = null;
     stage.classList.remove('is-dragging', 'is-grabbing');
+    syncFilterOptions(preferredKey);
     const visible = visibleIndices();
     if (visible.length && !visible.includes(currentIndex())) {
       state.selectedBySolid.set(state.solidIndex, visible[0]);
     }
     renderStatic({ announce: true });
   }
-  [radialLayers, symmetryAxes, rotationalOrder].forEach(control =>
-    control.addEventListener('change', applyFilter));
-  search.addEventListener('input', applyFilter);
+  Object.entries(filterControls).forEach(([key, control]) =>
+    control.element.addEventListener('change', () => applyFilter(key)));
+  search.addEventListener('input', () => applyFilter());
 
   rail.addEventListener('click', event => {
     const button = event.target.closest('.projection-class-chip');
@@ -606,6 +649,7 @@ function createSelector(entries) {
     resizeObserver.observe(stage);
   }
 
+  syncFilterOptions();
   renderStatic();
   return root;
 }
