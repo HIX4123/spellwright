@@ -1,11 +1,9 @@
-import { geometryForSolid, viewFrame } from './projection-core.js';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
 
-const attachedRoots = new WeakSet();
 const activeGuideByRoot = new WeakMap();
+const guideByRoot = new WeakMap();
 
-export function analyzeProjectionGuides(vertices, edges, frame) {
-  const structure = analyzeProjectionStructure(vertices, edges, frame);
+export function analyzeProjectionGuides(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
   return {
     points: structure.points,
     symmetryAxisAngles: structure.symmetryAxisAngles,
@@ -75,28 +73,6 @@ function ensureOverlay(root) {
     stage.appendChild(overlay);
   }
   return overlay;
-}
-
-let guideDataPromise;
-function loadGuideData() {
-  if (!guideDataPromise) {
-    guideDataPromise = Promise.all([
-      fetch('./data/projections.json', { cache: 'no-store' }).then(response => response.json()),
-      fetch('./data/projection-views.json', { cache: 'no-store' }).then(response => response.json())
-    ]).then(([projections, views]) => ({ projections, views }));
-  }
-  return guideDataPromise;
-}
-
-function currentProjection(root, data) {
-  const solidName = root.querySelector('.projection-solid-tab.is-current span')?.textContent?.trim();
-  const classId = Number(root.querySelector('.projection-class-chip.active')?.dataset.classId);
-  if (!solidName || !Number.isInteger(classId)) return null;
-  const solid = data.projections.solids.find(item => item.name === solidName);
-  const viewSolid = data.views.solids.find(item => item.name === solidName);
-  const view = viewSolid?.views.find(candidate => candidate.classId === classId);
-  if (!solid || !view) return null;
-  return { solid, view };
 }
 
 function stageTransform(points, stage) {
@@ -204,20 +180,19 @@ function renderHullGuide(overlay, guide, transform) {
   }).join('');
 }
 
-async function showGuide(root, kind) {
+function showGuide(root, kind) {
   const overlay = ensureOverlay(root);
   const stage = root.querySelector('.projection-stage');
   if (!overlay || !stage) return;
   activeGuideByRoot.set(root, kind);
-  const data = await loadGuideData();
-  if (activeGuideByRoot.get(root) !== kind) return;
-  const selected = currentProjection(root, data);
+  const selected = guideByRoot.get(root);
   if (!selected) return;
-  const geometry = geometryForSolid(selected.solid.name);
+  const { geometry, frame, structure } = selected;
   const guide = analyzeProjectionGuides(
     geometry.vertices,
     geometry.edges,
-    viewFrame(selected.view.viewDirection, selected.view.rollDegrees)
+    frame,
+    structure
   );
   const transform = stageTransform(guide.points, stage);
   overlay.setAttribute('viewBox', `0 0 ${transform.width} ${transform.height}`);
@@ -244,17 +219,8 @@ function guideTarget(root, target) {
   return tag && root.contains(tag) ? tag : null;
 }
 
-function attachRoot(root) {
-  if (attachedRoots.has(root)) return;
-  attachedRoots.add(root);
+export function mountProjectionFeatureGuides(root) {
   ensureOverlay(root);
-
-  const sync = () => {
-    const featureLine = root.querySelector('.projection-feature-line');
-    if (featureLine) groupFeatureTags(featureLine);
-  };
-  sync();
-  new MutationObserver(sync).observe(root, { childList: true, subtree: true });
 
   root.addEventListener('pointerover', event => {
     const tag = guideTarget(root, event.target);
@@ -284,17 +250,10 @@ function attachRoot(root) {
   }
 }
 
-export function mountProjectionFeatureGuides() {
-  if (typeof document === 'undefined') return;
-  const scan = () => document.querySelectorAll('#projectionSelectorPrototype').forEach(attachRoot);
-  scan();
-  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
-}
-
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mountProjectionFeatureGuides, { once: true });
-  } else {
-    mountProjectionFeatureGuides();
-  }
+export function updateProjectionFeatureGuides(root, geometry, frame, structure) {
+  guideByRoot.set(root, { geometry, frame, structure });
+  const featureLine = root.querySelector('.projection-feature-line');
+  if (featureLine) groupFeatureTags(featureLine);
+  const kind = activeGuideByRoot.get(root);
+  if (kind) showGuide(root, kind);
 }

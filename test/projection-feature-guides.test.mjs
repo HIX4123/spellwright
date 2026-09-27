@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { geometryForSolid, viewFrame } from '../docs/projection-core.js';
 import { analyzeProjectionFeatures } from '../docs/projection-features.js';
 import { analyzeProjectionGuides, orderedHullBoundary, screenLayerRadii } from '../docs/projection-feature-guides.js';
+import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
 const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
@@ -29,8 +30,9 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
     for (const item of solid.classes) {
       const view = viewSolid.views.find(candidate => candidate.classId === item.id);
       const frame = viewFrame(view.viewDirection, view.rollDegrees);
-      const features = analyzeProjectionFeatures(geometry.vertices, geometry.edges, frame);
-      const guides = analyzeProjectionGuides(geometry.vertices, geometry.edges, frame);
+      const structure = analyzeProjectionStructure(geometry.vertices, geometry.edges, frame);
+      const features = analyzeProjectionFeatures(geometry.vertices, geometry.edges, frame, structure);
+      const guides = analyzeProjectionGuides(geometry.vertices, geometry.edges, frame, structure);
 
       assert.equal(
         guides.symmetryAxisAngles.length,
