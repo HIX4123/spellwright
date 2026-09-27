@@ -36,7 +36,8 @@ test('structural categories and role search filter projection classes in their o
     return [item.id, {
       radialLayers: structure.layers.length,
       symmetryAxes: structure.symmetryAxisAngles.length,
-      rotationalOrder: structure.rotationalOrder
+      rotationalOrder: structure.rotationalOrder,
+      eulerTrail: structure.eulerTrail
     }];
   }));
   const sample = classifications.get(solid.classes[0].id);
@@ -57,6 +58,11 @@ test('structural categories and role search filter projection classes in their o
       classifications.get(item.id).rotationalOrder === sample.rotationalOrder ? [index] : [])
   );
   assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, { eulerTrail: sample.eulerTrail }),
+    solid.classes.flatMap((item, index) =>
+      classifications.get(item.id).eulerTrail === sample.eulerTrail ? [index] : [])
+  );
+  assert.deepEqual(
     filteredProjectionIndices(solid.classes, classifications, {}, '교환'),
     solid.classes.flatMap((item, index) =>
       item.role.name.includes('교환') || item.role.description.includes('교환') || item.role.example.includes('교환') ? [index] : [])
@@ -69,6 +75,14 @@ test('structural categories and role search filter projection classes in their o
   assert.deepEqual(
     availableClassificationValues(solid.classes, classifications, {}, 'radialLayers'),
     allLayerValues
+  );
+
+  const allEulerValues = [...new Set(
+    solid.classes.map(item => classifications.get(item.id).eulerTrail)
+  )].sort((a, b) => Number(a) - Number(b));
+  assert.deepEqual(
+    availableClassificationValues(solid.classes, classifications, {}, 'eulerTrail'),
+    allEulerValues
   );
 
   const expectedAxesForLayer = [...new Set(
@@ -101,21 +115,21 @@ test('category toggles support none-as-all and multi-category result unions', ()
     {
       solid: { classes: [{ id: 1, role: role('a1') }, { id: 2, role: role('a2') }] },
       classificationsByClass: new Map([
-        [1, { radialLayers: 2, symmetryAxes: 0, rotationalOrder: 1 }],
-        [2, { radialLayers: 3, symmetryAxes: 1, rotationalOrder: 2 }]
+        [1, { radialLayers: 2, symmetryAxes: 0, rotationalOrder: 1, eulerTrail: true }],
+        [2, { radialLayers: 3, symmetryAxes: 1, rotationalOrder: 2, eulerTrail: false }]
       ])
     },
     {
       solid: { classes: [{ id: 1, role: role('b1') }] },
       classificationsByClass: new Map([
-        [1, { radialLayers: 4, symmetryAxes: 2, rotationalOrder: 2 }]
+        [1, { radialLayers: 4, symmetryAxes: 2, rotationalOrder: 2, eulerTrail: true }]
       ])
     },
     {
       solid: { classes: [{ id: 1, role: role('c1') }, { id: 2, role: role('c2') }] },
       classificationsByClass: new Map([
-        [1, { radialLayers: 2, symmetryAxes: 1, rotationalOrder: 2 }],
-        [2, { radialLayers: 5, symmetryAxes: 0, rotationalOrder: 1 }]
+        [1, { radialLayers: 2, symmetryAxes: 1, rotationalOrder: 2, eulerTrail: false }],
+        [2, { radialLayers: 5, symmetryAxes: 0, rotationalOrder: 1, eulerTrail: true }]
       ])
     }
   ];
@@ -132,6 +146,14 @@ test('category toggles support none-as-all and multi-category result unions', ()
       'radialLayers'
     ),
     [2, 3]
+  );
+  assert.deepEqual(
+    filteredProjectionTargets(entries, [0, 2], { eulerTrail: true }),
+    [{ entryIndex: 0, classIndex: 0 }, { entryIndex: 2, classIndex: 1 }]
+  );
+  assert.deepEqual(
+    availableClassificationValuesAcrossEntries(entries, [0, 2], {}, 'eulerTrail'),
+    [false, true]
   );
 });
 

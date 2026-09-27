@@ -23,7 +23,7 @@ function featuresFor(solidName, classId) {
   );
 }
 
-test('all 43 projections expose six stable geometry tags from every visible point', () => {
+test('all 43 projections expose seven stable geometry tags from every visible point', () => {
   let count = 0;
   for (const solid of projections.solids) {
     const viewSolid = views.solids.find(item => item.name === solid.name);
@@ -37,7 +37,7 @@ test('all 43 projections expose six stable geometry tags from every visible poin
         viewFrame(view.viewDirection, view.rollDegrees)
       );
       const visiblePointCount = item.vertexClusters + item.crossings;
-      assert.equal(projectionFeatureItems(features).length, 6, `${solid.name} class ${item.id}`);
+      assert.equal(projectionFeatureItems(features).length, 7, `${solid.name} class ${item.id}`);
       assert.equal(
         features.layerPointCounts.reduce((sum, value) => sum + value, 0),
         visiblePointCount,
@@ -49,6 +49,13 @@ test('all 43 projections expose six stable geometry tags from every visible poin
       assert.ok(features.hullVertices >= 2);
       assert.ok(features.rotationalOrder >= 1);
       assert.ok(features.symmetryAxes >= 0);
+      assert.equal(typeof features.eulerTrail, 'boolean');
+      assert.ok(Number.isInteger(features.oddDegreeVertices));
+      assert.equal(
+        features.eulerTrail,
+        features.oddDegreeVertices === 0 || features.oddDegreeVertices === 2,
+        `${solid.name} class ${item.id} Euler degree criterion`
+      );
 
       const tags = projectionHashtags(features);
       assert.ok(tags.filter(tag => tag === '#중심점' || /^#정\d+각핵$/.test(tag)).length <= 1);
