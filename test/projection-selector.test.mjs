@@ -11,8 +11,11 @@ import {
   wrapIndex
 } from '../docs/projection-core.js';
 import {
+  activeProjectionEntryIndices,
   availableClassificationValues,
-  filteredProjectionIndices
+  availableClassificationValuesAcrossEntries,
+  filteredProjectionIndices,
+  filteredProjectionTargets
 } from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
@@ -81,6 +84,54 @@ test('structural categories and role search filter projection classes in their o
       'symmetryAxes'
     ),
     expectedAxesForLayer
+  );
+});
+
+test('category toggles support none-as-all and multi-category result unions', () => {
+  assert.deepEqual(activeProjectionEntryIndices(5, []), [0, 1, 2, 3, 4]);
+  assert.deepEqual(activeProjectionEntryIndices(5, [3, 1, 3]), [1, 3]);
+
+  const role = name => ({
+    name,
+    structure: '',
+    description: '',
+    example: ''
+  });
+  const entries = [
+    {
+      solid: { classes: [{ id: 1, role: role('a1') }, { id: 2, role: role('a2') }] },
+      classificationsByClass: new Map([
+        [1, { radialLayers: 2, symmetryAxes: 0, rotationalOrder: 1 }],
+        [2, { radialLayers: 3, symmetryAxes: 1, rotationalOrder: 2 }]
+      ])
+    },
+    {
+      solid: { classes: [{ id: 1, role: role('b1') }] },
+      classificationsByClass: new Map([
+        [1, { radialLayers: 4, symmetryAxes: 2, rotationalOrder: 2 }]
+      ])
+    },
+    {
+      solid: { classes: [{ id: 1, role: role('c1') }, { id: 2, role: role('c2') }] },
+      classificationsByClass: new Map([
+        [1, { radialLayers: 2, symmetryAxes: 1, rotationalOrder: 2 }],
+        [2, { radialLayers: 5, symmetryAxes: 0, rotationalOrder: 1 }]
+      ])
+    }
+  ];
+
+  assert.deepEqual(
+    filteredProjectionTargets(entries, [0, 2], { radialLayers: 2 }),
+    [{ entryIndex: 0, classIndex: 0 }, { entryIndex: 2, classIndex: 0 }]
+  );
+  assert.deepEqual(
+    availableClassificationValuesAcrossEntries(
+      entries,
+      [0, 2],
+      { rotationalOrder: 2 },
+      'radialLayers'
+    ),
+    [2, 3]
   );
 });
 

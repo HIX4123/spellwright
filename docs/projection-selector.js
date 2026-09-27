@@ -53,6 +53,46 @@ export function availableClassificationValues(
   )].sort((a, b) => a - b);
 }
 
+export function activeProjectionEntryIndices(entryCount, selectedIndices = []) {
+  const selected = [...new Set(selectedIndices)]
+    .filter(index => Number.isInteger(index) && index >= 0 && index < entryCount)
+    .sort((a, b) => a - b);
+  return selected.length ? selected : Array.from({ length: entryCount }, (_, index) => index);
+}
+
+export function filteredProjectionTargets(entries, entryIndices, filters = {}, query = '') {
+  return entryIndices.flatMap(entryIndex => {
+    const entry = entries[entryIndex];
+    if (!entry) return [];
+    return filteredProjectionIndices(
+      entry.solid.classes,
+      entry.classificationsByClass,
+      filters,
+      query
+    ).map(classIndex => ({ entryIndex, classIndex }));
+  });
+}
+
+export function availableClassificationValuesAcrossEntries(
+  entries,
+  entryIndices,
+  filters = {},
+  key,
+  query = ''
+) {
+  return [...new Set(entryIndices.flatMap(entryIndex => {
+    const entry = entries[entryIndex];
+    if (!entry) return [];
+    return availableClassificationValues(
+      entry.solid.classes,
+      entry.classificationsByClass,
+      filters,
+      key,
+      query
+    );
+  }))].sort((a, b) => a - b);
+}
+
 function optionMarkup(values, suffix) {
   return ['<option value="">전체</option>', ...values.map(value =>
     `<option value="${value}">${value}${suffix}</option>`
@@ -253,10 +293,10 @@ function createSelector(entries) {
       <span class="detail-kicker">PROJECTION LIBRARY</span>
       <h3>사영도 선택</h3>
       <div class="projection-selector-toolbar">
-        <div class="projection-solid-tabs" role="tablist" aria-label="정다면체 선택">
+        <div class="projection-solid-tabs" role="group" aria-label="속성 필터 · 미선택 시 전체">
         ${entries.map((entry, index) => `
-          <button class="projection-solid-tab${index === 0 ? ' active' : ''}" type="button" role="tab"
-            aria-selected="${index === 0}" data-solid-index="${index}">
+          <button class="projection-solid-tab" type="button"
+            aria-pressed="false" data-solid-index="${index}">
             <strong>${escapeHtml(entry.element.name)}</strong>
             <span>${escapeHtml(entry.solid.name)}</span>
           </button>`).join('')}
@@ -337,6 +377,7 @@ function createSelector(entries) {
 
   const state = {
     solidIndex: 0,
+    selectedSolidIndices: new Set(),
     selectedBySolid: new Map(entries.map((_, index) => [index, 0])),
     frame: null,
     progress: 0,
@@ -365,6 +406,17 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
+  const activeEntryIndices = () => activeProjectionEntryIndices(
+    entries.length,
+    [...state.selectedSolidIndices]
+  );
+  const targetEquals = (first, second) => Boolean(first && second
+    && first.entryIndex === second.entryIndex
+    && first.classIndex === second.classIndex);
+  const currentTarget = () => ({ entryIndex: state.solidIndex, classIndex: currentIndex() });
+  const targetEntry = target => entries[target.entryIndex];
+  const targetItem = target => targetEntry(target).solid.classes[target.classIndex];
+  const targetClassification = target => targetEntry(target).classificationsByClass.get(targetItem(target).id);
   const filterControls = {
     radialLayers: { element: radialLayers, suffix: '층' },
     symmetryAxes: { element: symmetryAxes, suffix: '개' },
@@ -373,12 +425,14 @@ function createSelector(entries) {
   const currentFilters = () => Object.fromEntries(
     Object.entries(filterControls).map(([key, control]) => [key, control.element.value])
   );
-  const visibleIndices = () => filteredProjectionIndices(
-    currentClasses(),
-    currentEntry().classificationsByClass,
+  const visibleTargets = () => filteredProjectionTargets(
+    entries,
+    activeEntryIndices(),
     currentFilters(),
     search.value
   );
+  const totalActiveClasses = () => activeEntryIndices()
+    .reduce((sum, entryIndex) => sum + entries[entryIndex].solid.classes.length, 0);
 
   function syncFilterOptions(preferredKey = null) {
     const keys = Object.keys(filterControls);
@@ -391,9 +445,9 @@ function createSelector(entries) {
       for (const key of order) {
         const control = filterControls[key];
         const previous = control.element.value;
-        const values = availableClassificationValues(
-          currentClasses(),
-          currentEntry().classificationsByClass,
+        const values = availableClassificationValuesAcrossEntries(
+          entries,
+          activeEntryIndices(),
           currentFilters(),
           key,
           search.value
@@ -405,30 +459,39 @@ function createSelector(entries) {
     }
     return changed;
   }
-  const targetIndex = direction => {
-    const visible = visibleIndices();
-    return visible.length ? visible[wrapIndex(visible.indexOf(currentIndex()) + direction, visible.length)] : currentIndex();
+  const targetAtDirection = direction => {
+    const visible = visibleTargets();
+    if (!visible.length) return currentTarget();
+    const currentPosition = visible.findIndex(target => targetEquals(target, currentTarget()));
+    const origin = currentPosition >= 0 ? currentPosition : 0;
+    return visible[wrapIndex(origin + direction, visible.length)];
   };
-  const frameFor = index => {
-    const item = currentClasses()[index];
-    const view = currentEntry().viewsByClass.get(item.id);
+  const frameForTarget = target => {
+    const entry = targetEntry(target);
+    const item = targetItem(target);
+    const view = entry.viewsByClass.get(item.id);
     return viewFrame(view.viewDirection, view.rollDegrees);
   };
+  const frameFor = index => frameForTarget({ entryIndex: state.solidIndex, classIndex: index });
 
   function draw() {
     renderProjection(canvas, currentEntry().geometry, state.frame);
   }
 
   function renderRail() {
-    const visible = visibleIndices();
-    count.textContent = `${visible.length} / ${currentClasses().length}개 사영도`;
-    rail.innerHTML = visible.map(index => {
-      const item = currentClasses()[index];
+    const visible = visibleTargets();
+    count.textContent = `${visible.length} / ${totalActiveClasses()}개 사영도`;
+    rail.innerHTML = visible.map(target => {
+      const entry = targetEntry(target);
+      const item = targetItem(target);
+      const classification = targetClassification(target);
+      const active = targetEquals(target, currentTarget());
       return `
-      <button type="button" class="projection-class-chip${index === currentIndex() ? ' active' : ''}"
-        data-class-index="${index}" data-class-id="${item.id}" aria-pressed="${index === currentIndex()}">
-        <span>#${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
-        <small>동심원 ${currentClassification(index).radialLayers}층 · 대칭축 ${currentClassification(index).symmetryAxes}개 · ${currentClassification(index).rotationalOrder}차</small>
+      <button type="button" class="projection-class-chip${active ? ' active' : ''}"
+        data-solid-index="${target.entryIndex}" data-class-index="${target.classIndex}"
+        data-class-id="${item.id}" aria-pressed="${active}">
+        <span>${escapeHtml(entry.element.name)} · #${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
+        <small>동심원 ${classification.radialLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
   }
@@ -437,15 +500,21 @@ function createSelector(entries) {
     const entry = currentEntry();
     const classes = currentClasses();
     const item = classes[currentIndex()];
-    const visible = visibleIndices();
+    const visible = visibleTargets();
+    const currentPosition = visible.findIndex(target => targetEquals(target, currentTarget()));
+    const hasFilters = state.selectedSolidIndices.size
+      || radialLayers.value
+      || symmetryAxes.value
+      || rotationalOrder.value
+      || search.value.trim();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
     title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.role.name}`;
-    position.textContent = visible.length && (
-      radialLayers.value || symmetryAxes.value || rotationalOrder.value || search.value.trim()
-    )
-      ? `${visible.indexOf(currentIndex()) + 1} / ${visible.length} · 전체 ${classes.length}`
-      : `${currentIndex() + 1} / ${classes.length}`;
+    position.textContent = currentPosition >= 0
+      ? hasFilters
+        ? `${currentPosition + 1} / ${visible.length} · 전체 ${totalActiveClasses()}`
+        : `${currentPosition + 1} / ${visible.length}`
+      : `필터 결과 ${visible.length}개`;
     root.querySelector('[data-metric="crossings"]').textContent = String(item.crossings);
     root.querySelector('[data-metric="vertexClusters"]').textContent = String(item.vertexClusters);
     root.querySelector('[data-metric="maxVertexOverlap"]').textContent = `×${item.maxVertexOverlap}`;
@@ -455,27 +524,28 @@ function createSelector(entries) {
     }
     root.querySelector('[data-projection-source]').href = item.image;
 
-    stage.setAttribute('aria-valuemax', String(classes.length));
-    stage.setAttribute('aria-valuenow', String(currentIndex() + 1));
+    stage.setAttribute('aria-valuemax', String(Math.max(1, visible.length)));
+    stage.setAttribute('aria-valuenow', String(Math.max(1, currentPosition + 1)));
     const classification = currentClassification(currentIndex());
     stage.setAttribute(
       'aria-valuetext',
-      `Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`
+      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`
     );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
     root.querySelector('.projection-step-next').disabled = visible.length < 2;
 
     root.querySelectorAll('.projection-solid-tab').forEach((button, index) => {
-      const active = index === state.solidIndex;
-      button.classList.toggle('active', active);
-      button.setAttribute('aria-selected', String(active));
-      button.tabIndex = active ? 0 : -1;
+      const selected = state.selectedSolidIndices.has(index);
+      const current = index === state.solidIndex;
+      button.classList.toggle('active', selected);
+      button.classList.toggle('is-current', current);
+      button.setAttribute('aria-pressed', String(selected));
+      button.tabIndex = 0;
     });
 
     renderRail();
     if (announce) {
-      const classification = currentClassification(currentIndex());
       live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`;
     }
   }
@@ -508,7 +578,8 @@ function createSelector(entries) {
   }
 
   function finishTransition(target, targetFrame) {
-    state.selectedBySolid.set(state.solidIndex, target);
+    state.solidIndex = target.entryIndex;
+    state.selectedBySolid.set(target.entryIndex, target.classIndex);
     state.progress = 0;
     state.frame = targetFrame;
     state.locked = false;
@@ -519,15 +590,30 @@ function createSelector(entries) {
   }
 
   function commitTarget(target, duration = DEFAULT_TRANSITION_DURATION_MS) {
-    if (state.locked || target === currentIndex()) return;
+    if (state.locked || targetEquals(target, currentTarget())) return;
+
+    if (target.entryIndex !== state.solidIndex) {
+      cancelAnimationFrame(state.animationFrame);
+      state.animationFrame = 0;
+      state.solidIndex = target.entryIndex;
+      state.selectedBySolid.set(target.entryIndex, target.classIndex);
+      state.frame = frameForTarget(target);
+      state.progress = 0;
+      stage.classList.remove('is-dragging', 'is-grabbing');
+      updateMetadata({ announce: true });
+      draw();
+      stage.focus({ preventScroll: true });
+      return;
+    }
+
     state.locked = true;
-    const targetFrame = frameFor(target);
+    const targetFrame = frameForTarget(target);
     stage.classList.add('is-dragging');
     animateToFrame(targetFrame, duration, () => finishTransition(target, targetFrame));
   }
 
   function commitNeighbor(direction, duration = DEFAULT_TRANSITION_DURATION_MS) {
-    commitTarget(targetIndex(direction), duration);
+    commitTarget(targetAtDirection(direction), duration);
   }
 
   function cancelDrag() {
@@ -543,7 +629,7 @@ function createSelector(entries) {
   }
 
   stage.addEventListener('pointerdown', event => {
-    if (state.locked || visibleIndices().length < 2 || event.button !== 0) return;
+    if (state.locked || visibleTargets().length < 2 || event.button !== 0) return;
     cancelAnimationFrame(state.animationFrame);
     state.animationFrame = 0;
     state.pointerId = event.pointerId;
@@ -560,13 +646,12 @@ function createSelector(entries) {
     if (Math.abs(dx) > 4) event.preventDefault();
     const progress = dragProgress(dx, stage.clientWidth);
     const direction = progress === 0 ? state.previewDirection : Math.sign(progress);
+    const target = targetAtDirection(direction);
     state.previewDirection = direction;
     state.progress = progress;
-    state.frame = interpolateFrames(
-      frameFor(currentIndex()),
-      frameFor(targetIndex(direction)),
-      Math.abs(progress)
-    );
+    state.frame = target.entryIndex === state.solidIndex
+      ? interpolateFrames(frameFor(currentIndex()), frameForTarget(target), Math.abs(progress))
+      : frameFor(currentIndex());
     draw();
   });
 
@@ -610,11 +695,17 @@ function createSelector(entries) {
     const button = event.target.closest('.projection-solid-tab');
     if (!button || state.locked) return;
     const index = Number(button.dataset.solidIndex);
-    if (!Number.isInteger(index) || index === state.solidIndex) return;
-    state.solidIndex = index;
+    if (!Number.isInteger(index)) return;
+
+    if (state.selectedSolidIndices.has(index)) state.selectedSolidIndices.delete(index);
+    else state.selectedSolidIndices.add(index);
+
     syncFilterOptions();
-    if (!visibleIndices().includes(currentIndex()) && visibleIndices().length) {
-      state.selectedBySolid.set(index, visibleIndices()[0]);
+    const visible = visibleTargets();
+    if (visible.length && !visible.some(target => targetEquals(target, currentTarget()))) {
+      const first = visible[0];
+      state.solidIndex = first.entryIndex;
+      state.selectedBySolid.set(first.entryIndex, first.classIndex);
     }
     renderStatic({ announce: true });
   });
@@ -626,9 +717,11 @@ function createSelector(entries) {
     state.pointerId = null;
     stage.classList.remove('is-dragging', 'is-grabbing');
     syncFilterOptions(preferredKey);
-    const visible = visibleIndices();
-    if (visible.length && !visible.includes(currentIndex())) {
-      state.selectedBySolid.set(state.solidIndex, visible[0]);
+    const visible = visibleTargets();
+    if (visible.length && !visible.some(target => targetEquals(target, currentTarget()))) {
+      const first = visible[0];
+      state.solidIndex = first.entryIndex;
+      state.selectedBySolid.set(first.entryIndex, first.classIndex);
     }
     renderStatic({ announce: true });
   }
@@ -639,9 +732,10 @@ function createSelector(entries) {
   rail.addEventListener('click', event => {
     const button = event.target.closest('.projection-class-chip');
     if (!button || state.locked) return;
-    const target = Number(button.dataset.classIndex);
-    if (!Number.isInteger(target) || target === currentIndex()) return;
-    commitTarget(target);
+    const entryIndex = Number(button.dataset.solidIndex);
+    const classIndex = Number(button.dataset.classIndex);
+    if (!Number.isInteger(entryIndex) || !Number.isInteger(classIndex)) return;
+    commitTarget({ entryIndex, classIndex });
   });
 
   if (typeof ResizeObserver !== 'undefined') {

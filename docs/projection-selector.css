@@ -94,7 +94,14 @@
 .projection-solid-tab.active {
   border-color: var(--line-strong);
   background: var(--surface-2);
+}
+
+.projection-solid-tab.is-current {
   box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--primary) 70%, transparent);
+}
+
+.projection-solid-tab.active.is-current {
+  background: var(--primary-container);
 }
 
 .projection-selector-instruction {

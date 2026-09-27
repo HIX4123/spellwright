@@ -174,7 +174,7 @@ function loadFeatureData() {
 }
 
 function currentProjection(root, data) {
-  const solidName = root.querySelector('.projection-solid-tab.active span')?.textContent?.trim();
+  const solidName = root.querySelector('.projection-solid-tab.is-current span')?.textContent?.trim();
   const classId = Number(root.querySelector('.projection-class-chip.active')?.dataset.classId);
   if (!solidName || !Number.isInteger(classId)) return null;
   const solid = data.projections.solids.find(item => item.name === solidName);
