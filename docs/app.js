@@ -1,5 +1,5 @@
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=routing-20260823-1';
-import { mountProjectionSelector } from './projection-selector.js?v=projection-filter-20260925-1';
+import { mountProjectionSelector } from './projection-selector.js?v=projection-structure-20260927-1';
 
 let data;
 let relationships;
