@@ -53,6 +53,39 @@ export function availableClassificationValues(
   )].sort((a, b) => a - b);
 }
 
+export function filteredProjectionTargets(entries, entryIndices, filters = {}, query = '') {
+  return entryIndices.flatMap(entryIndex => {
+    const entry = entries[entryIndex];
+    if (!entry) return [];
+    return filteredProjectionIndices(
+      entry.solid.classes,
+      entry.classificationsByClass,
+      filters,
+      query
+    ).map(classIndex => ({ entryIndex, classIndex }));
+  });
+}
+
+export function availableClassificationValuesAcrossEntries(
+  entries,
+  entryIndices,
+  filters = {},
+  key,
+  query = ''
+) {
+  return [...new Set(entryIndices.flatMap(entryIndex => {
+    const entry = entries[entryIndex];
+    if (!entry) return [];
+    return availableClassificationValues(
+      entry.solid.classes,
+      entry.classificationsByClass,
+      filters,
+      key,
+      query
+    );
+  }))].sort((a, b) => a - b);
+}
+
 function optionMarkup(values, suffix) {
   return ['<option value="">전체</option>', ...values.map(value =>
     `<option value="${value}">${value}${suffix}</option>`
@@ -253,10 +286,10 @@ function createSelector(entries) {
       <span class="detail-kicker">PROJECTION LIBRARY</span>
       <h3>사영도 선택</h3>
       <div class="projection-selector-toolbar">
-        <div class="projection-solid-tabs" role="tablist" aria-label="정다면체 선택">
+        <div class="projection-solid-tabs" role="group" aria-label="속성 필터 · 미선택 시 전체">
         ${entries.map((entry, index) => `
-          <button class="projection-solid-tab${index === 0 ? ' active' : ''}" type="button" role="tab"
-            aria-selected="${index === 0}" data-solid-index="${index}">
+          <button class="projection-solid-tab" type="button"
+            aria-pressed="false" data-solid-index="${index}">
             <strong>${escapeHtml(entry.element.name)}</strong>
             <span>${escapeHtml(entry.solid.name)}</span>
           </button>`).join('')}
@@ -337,6 +370,7 @@ function createSelector(entries) {
 
   const state = {
     solidIndex: 0,
+    selectedSolidIndices: new Set(),
     selectedBySolid: new Map(entries.map((_, index) => [index, 0])),
     frame: null,
     progress: 0,
@@ -365,6 +399,16 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
+  const activeEntryIndices = () => state.selectedSolidIndices.size
+    ? [...state.selectedSolidIndices].sort((a, b) => a - b)
+    : entries.map((_, index) => index);
+  const targetEquals = (first, second) => Boolean(first && second
+    && first.entryIndex === second.entryIndex
+    && first.classIndex === second.classIndex);
+  const currentTarget = () => ({ entryIndex: state.solidIndex, classIndex: currentIndex() });
+  const targetEntry = target => entries[target.entryIndex];
+  const targetItem = target => targetEntry(target).solid.classes[target.classIndex];
+  const targetClassification = target => targetEntry(target).classificationsByClass.get(targetItem(target).id);
   const filterControls = {
     radialLayers: { element: radialLayers, suffix: '층' },
     symmetryAxes: { element: symmetryAxes, suffix: '개' },
@@ -373,12 +417,14 @@ function createSelector(entries) {
   const currentFilters = () => Object.fromEntries(
     Object.entries(filterControls).map(([key, control]) => [key, control.element.value])
   );
-  const visibleIndices = () => filteredProjectionIndices(
-    currentClasses(),
-    currentEntry().classificationsByClass,
+  const visibleTargets = () => filteredProjectionTargets(
+    entries,
+    activeEntryIndices(),
     currentFilters(),
     search.value
   );
+  const totalActiveClasses = () => activeEntryIndices()
+    .reduce((sum, entryIndex) => sum + entries[entryIndex].solid.classes.length, 0);
 
   function syncFilterOptions(preferredKey = null) {
     const keys = Object.keys(filterControls);
@@ -391,9 +437,9 @@ function createSelector(entries) {
       for (const key of order) {
         const control = filterControls[key];
         const previous = control.element.value;
-        const values = availableClassificationValues(
-          currentClasses(),
-          currentEntry().classificationsByClass,
+        const values = availableClassificationValuesAcrossEntries(
+          entries,
+          activeEntryIndices(),
           currentFilters(),
           key,
           search.value
@@ -405,15 +451,20 @@ function createSelector(entries) {
     }
     return changed;
   }
-  const targetIndex = direction => {
-    const visible = visibleIndices();
-    return visible.length ? visible[wrapIndex(visible.indexOf(currentIndex()) + direction, visible.length)] : currentIndex();
+  const targetAtDirection = direction => {
+    const visible = visibleTargets();
+    if (!visible.length) return currentTarget();
+    const currentPosition = visible.findIndex(target => targetEquals(target, currentTarget()));
+    const origin = currentPosition >= 0 ? currentPosition : 0;
+    return visible[wrapIndex(origin + direction, visible.length)];
   };
-  const frameFor = index => {
-    const item = currentClasses()[index];
-    const view = currentEntry().viewsByClass.get(item.id);
+  const frameForTarget = target => {
+    const entry = targetEntry(target);
+    const item = targetItem(target);
+    const view = entry.viewsByClass.get(item.id);
     return viewFrame(view.viewDirection, view.rollDegrees);
   };
+  const frameFor = index => frameForTarget({ entryIndex: state.solidIndex, classIndex: index });
 
   function draw() {
     renderProjection(canvas, currentEntry().geometry, state.frame);
