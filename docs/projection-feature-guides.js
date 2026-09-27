@@ -133,18 +133,20 @@ function renderSymmetryGuide(overlay, guide, transform) {
   }).join('') + `<circle class="projection-guide-origin" cx="${svgNumber(origin[0])}" cy="${svgNumber(origin[1])}" r="3.5" />`;
 }
 
+export function screenLayerRadii(layerRadii, scale) {
+  return layerRadii.map(radius => radius * scale);
+}
+
 function renderLayerGuide(overlay, guide, transform) {
   const center = transform.point(guide.layerCenter);
-  const renderedRadii = [];
-  guide.layerRadii.forEach((radius, index) => {
-    let screenRadius = radius * transform.scale;
-    if (screenRadius < 7) screenRadius = 7 + index * 5;
-    while (renderedRadii.some(existing => Math.abs(existing - screenRadius) < 4)) screenRadius += 5;
-    renderedRadii.push(screenRadius);
-  });
+  const renderedRadii = screenLayerRadii(guide.layerRadii, transform.scale);
+  const labelOffsets = [-9, -3, 3, 9];
+
   overlay.innerHTML = renderedRadii.map((radius, index) => `
     <circle class="projection-guide-ring" cx="${svgNumber(center[0])}" cy="${svgNumber(center[1])}" r="${svgNumber(radius)}" />
-    <text class="projection-guide-label" x="${svgNumber(center[0] + radius + 4)}" y="${svgNumber(center[1] - 4)}">${index + 1}</text>
+    <text class="projection-guide-label"
+      x="${svgNumber(center[0] + radius + 4)}"
+      y="${svgNumber(center[1] + labelOffsets[index % labelOffsets.length])}">${index + 1}</text>
   `).join('');
 }
 
