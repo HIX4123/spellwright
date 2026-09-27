@@ -1,5 +1,5 @@
 import { geometryForSolid, viewFrame } from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=projection-symmetry-20260916-2';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
 
 const attachedRoots = new WeakSet();
 const activeGuideByRoot = new WeakMap();
@@ -11,7 +11,11 @@ export function analyzeProjectionGuides(vertices, edges, frame) {
     symmetryAxisAngles: structure.symmetryAxisAngles,
     layerCenter: structure.circleCenter,
     layerRadii: structure.circleRadii,
-    layerPointCounts: structure.layerPointCounts
+    layerPointCounts: structure.layerPointCounts,
+    hullLayers: structure.convexHullLayers.map(layer => (
+      layer.map(index => structure.nodes[index].xy.slice())
+    )),
+    hullLayerPointCounts: structure.convexHullLayerPointCounts
   };
 }
 
@@ -27,7 +31,8 @@ function groupFeatureTags(featureLine) {
   const groups = [
     ['중심 구조'],
     ['대칭축', '회전대칭'],
-    ['동심원', '층별 점', '외곽 꼭짓점']
+    ['동심차수', 'Convex Hull', '동심 층별 점', '외곽 꼭짓점'],
+    ['Euler Trail']
   ];
   if (!groups.flat().every(label => byLabel.has(label))) return;
 
@@ -43,10 +48,14 @@ function groupFeatureTags(featureLine) {
         tag.dataset.guide = 'symmetry';
         tag.tabIndex = 0;
         tag.title = '호버하면 사영도에 대칭축을 표시합니다.';
-      } else if (label === '동심원') {
+      } else if (label === '동심차수') {
         tag.dataset.guide = 'layers';
         tag.tabIndex = 0;
-        tag.title = '호버하면 사영도에 동심원 층을 표시합니다.';
+        tag.title = '호버하면 사영도에 동심차수의 원형 층을 표시합니다.';
+      } else if (label === 'Convex Hull') {
+        tag.dataset.guide = 'hull';
+        tag.tabIndex = 0;
+        tag.title = '호버하면 onion decomposition의 Convex Hull 껍질을 표시합니다.';
       }
       group.appendChild(tag);
     });
@@ -150,6 +159,51 @@ function renderLayerGuide(overlay, guide, transform) {
   `).join('');
 }
 
+function hullCross(origin, first, second) {
+  return (first[0] - origin[0]) * (second[1] - origin[1])
+    - (first[1] - origin[1]) * (second[0] - origin[0]);
+}
+
+export function orderedHullBoundary(points) {
+  if (points.length <= 2) return points.map(point => point.slice());
+  const sorted = points.map(point => point.slice()).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const lower = [];
+  for (const point of sorted) {
+    while (lower.length >= 2 && hullCross(lower.at(-2), lower.at(-1), point) <= 1e-10) lower.pop();
+    lower.push(point);
+  }
+  const upper = [];
+  for (let index = sorted.length - 1; index >= 0; index -= 1) {
+    const point = sorted[index];
+    while (upper.length >= 2 && hullCross(upper.at(-2), upper.at(-1), point) <= 1e-10) upper.pop();
+    upper.push(point);
+  }
+  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+}
+
+function renderHullGuide(overlay, guide, transform) {
+  overlay.innerHTML = guide.hullLayers.map((layer, index) => {
+    const boundary = orderedHullBoundary(layer);
+    const screen = boundary.map(transform.point);
+    if (!screen.length) return '';
+    const depth = index + 1;
+    const label = `<text class="projection-guide-label projection-guide-hull-label"
+      x="${svgNumber(screen[0][0] + 5)}"
+      y="${svgNumber(screen[0][1] - 5)}">${depth}</text>`;
+    if (screen.length === 1) {
+      return `<circle class="projection-guide-hull-point" data-hull-layer="${depth}"
+        cx="${svgNumber(screen[0][0])}" cy="${svgNumber(screen[0][1])}" r="5" />${label}`;
+    }
+    if (screen.length === 2) {
+      return `<line class="projection-guide-hull" data-hull-layer="${depth}"
+        x1="${svgNumber(screen[0][0])}" y1="${svgNumber(screen[0][1])}"
+        x2="${svgNumber(screen[1][0])}" y2="${svgNumber(screen[1][1])}" />${label}`;
+    }
+    const points = screen.map(point => `${svgNumber(point[0])},${svgNumber(point[1])}`).join(' ');
+    return `<polygon class="projection-guide-hull" data-hull-layer="${depth}" points="${points}" />${label}`;
+  }).join('');
+}
+
 async function showGuide(root, kind) {
   const overlay = ensureOverlay(root);
   const stage = root.querySelector('.projection-stage');
@@ -169,6 +223,7 @@ async function showGuide(root, kind) {
   overlay.setAttribute('viewBox', `0 0 ${transform.width} ${transform.height}`);
   overlay.dataset.guide = kind;
   if (kind === 'symmetry') renderSymmetryGuide(overlay, guide, transform);
+  else if (kind === 'hull') renderHullGuide(overlay, guide, transform);
   else renderLayerGuide(overlay, guide, transform);
   overlay.classList.add('is-visible');
 }
