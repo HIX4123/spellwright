@@ -9,7 +9,7 @@ import {
   viewFrame,
   wrapIndex
 } from './projection-core.js?v=projection-core-20260903-1';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=euler-trail-20260927-1';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -19,6 +19,7 @@ export function filteredProjectionIndices(classes, classifications = new Map(), 
   const term = query.trim().toLocaleLowerCase();
   const expected = {
     radialLayers: filters.radialLayers === '' || filters.radialLayers == null ? null : Number(filters.radialLayers),
+    convexHullLayers: filters.convexHullLayers === '' || filters.convexHullLayers == null ? null : Number(filters.convexHullLayers),
     symmetryAxes: filters.symmetryAxes === '' || filters.symmetryAxes == null ? null : Number(filters.symmetryAxes),
     rotationalOrder: filters.rotationalOrder === '' || filters.rotationalOrder == null ? null : Number(filters.rotationalOrder),
     eulerTrail: filters.eulerTrail === '' || filters.eulerTrail == null ? null : String(filters.eulerTrail) === 'true'
@@ -33,7 +34,7 @@ export function filteredProjectionIndices(classes, classifications = new Map(), 
       item.role.structure,
       item.role.description,
       item.role.example,
-      structure ? `동심원 ${structure.radialLayers} 대칭축 ${structure.symmetryAxes} 대칭차수 ${structure.rotationalOrder}차 Euler Trail ${structure.eulerTrail ? '가능' : '불가'}` : ''
+      structure ? `동심차수 ${structure.radialLayers}층 Convex Hull ${structure.convexHullLayers}층 대칭축 ${structure.symmetryAxes} 대칭차수 ${structure.rotationalOrder}차 Euler Trail ${structure.eulerTrail ? '가능' : '불가'}` : ''
     ].join(' ').toLocaleLowerCase();
     return matchesStructure && (!term || haystack.includes(term)) ? [index] : [];
   });
@@ -269,6 +270,7 @@ function selectorEntries(elements, solids, viewSolids) {
       );
       return [item.id, {
         radialLayers: structure.layers.length,
+        convexHullLayers: structure.convexHullLayers.length,
         symmetryAxes: structure.symmetryAxisAngles.length,
         rotationalOrder: structure.rotationalOrder,
         eulerTrail: structure.eulerTrail
@@ -315,8 +317,14 @@ function createSelector(entries) {
       <div class="projection-category-heading">구조 카테고리</div>
       <div class="projection-filter-grid">
         <label>
-          <span>동심원 층수</span>
+          <span>동심차수</span>
           <select id="projectionRadialLayers" class="projection-filter-category">
+            <option value="">전체</option>
+          </select>
+        </label>
+        <label>
+          <span>Convex Hull</span>
+          <select id="projectionConvexHullLayers" class="projection-filter-category">
             <option value="">전체</option>
           </select>
         </label>
@@ -409,6 +417,7 @@ function createSelector(entries) {
   const canvas = root.querySelector('.projection-canvas');
   const rail = root.querySelector('.projection-class-rail');
   const radialLayers = root.querySelector('#projectionRadialLayers');
+  const convexHullLayers = root.querySelector('#projectionConvexHullLayers');
   const symmetryAxes = root.querySelector('#projectionSymmetryAxes');
   const rotationalOrder = root.querySelector('#projectionRotationalOrder');
   const eulerTrail = root.querySelector('#projectionEulerTrail');
@@ -436,6 +445,7 @@ function createSelector(entries) {
   const targetClassification = target => targetEntry(target).classificationsByClass.get(targetItem(target).id);
   const filterControls = {
     radialLayers: { element: radialLayers, suffix: '층' },
+    convexHullLayers: { element: convexHullLayers, suffix: '층' },
     symmetryAxes: { element: symmetryAxes, suffix: '개' },
     rotationalOrder: { element: rotationalOrder, suffix: '차' },
     eulerTrail: {
@@ -519,7 +529,7 @@ function createSelector(entries) {
         data-solid-index="${target.entryIndex}" data-class-index="${target.classIndex}"
         data-class-id="${item.id}" aria-pressed="${active}">
         <span>${escapeHtml(entry.element.name)} · #${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
-        <small>동심원 ${classification.radialLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차 · Euler Trail ${classification.eulerTrail ? '가능' : '불가'}</small>
+        <small>동심차수 ${classification.radialLayers}층 · Convex Hull ${classification.convexHullLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차 · Euler Trail ${classification.eulerTrail ? '가능' : '불가'}</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
   }
@@ -532,6 +542,7 @@ function createSelector(entries) {
     const currentPosition = visible.findIndex(target => targetEquals(target, currentTarget()));
     const hasFilters = state.selectedSolidIndices.size
       || radialLayers.value
+      || convexHullLayers.value
       || symmetryAxes.value
       || rotationalOrder.value
       || eulerTrail.value
@@ -558,7 +569,7 @@ function createSelector(entries) {
     const classification = currentClassification(currentIndex());
     stage.setAttribute(
       'aria-valuetext',
-      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
+      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
     );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
@@ -575,7 +586,7 @@ function createSelector(entries) {
 
     renderRail();
     if (announce) {
-      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
+      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
     }
   }
 
