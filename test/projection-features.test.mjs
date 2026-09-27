@@ -23,7 +23,7 @@ function featuresFor(solidName, classId) {
   );
 }
 
-test('all 43 projections expose seven stable geometry tags from every visible point', () => {
+test('all 43 projections expose concentric and convex-hull layer descriptors from every visible point', () => {
   let count = 0;
   for (const solid of projections.solids) {
     const viewSolid = views.solids.find(item => item.name === solid.name);
@@ -37,7 +37,7 @@ test('all 43 projections expose seven stable geometry tags from every visible po
         viewFrame(view.viewDirection, view.rollDegrees)
       );
       const visiblePointCount = item.vertexClusters + item.crossings;
-      assert.equal(projectionFeatureItems(features).length, 7, `${solid.name} class ${item.id}`);
+      assert.equal(projectionFeatureItems(features).length, 8, `${solid.name} class ${item.id}`);
       assert.equal(
         features.layerPointCounts.reduce((sum, value) => sum + value, 0),
         visiblePointCount,
@@ -46,6 +46,14 @@ test('all 43 projections expose seven stable geometry tags from every visible po
       assert.ok(features.radialLayers >= 1);
       assert.ok(features.radialLayers <= visiblePointCount);
       assert.equal(features.layerPointCounts.length, features.radialLayers);
+      assert.ok(features.convexHullLayers >= 1);
+      assert.ok(features.convexHullLayers <= visiblePointCount);
+      assert.equal(features.convexHullLayerPointCounts.length, features.convexHullLayers);
+      assert.equal(
+        features.convexHullLayerPointCounts.reduce((sum, value) => sum + value, 0),
+        visiblePointCount,
+        `${solid.name} class ${item.id} convex hull layers include projected vertices and crossings`
+      );
       assert.ok(features.hullVertices >= 2);
       assert.ok(features.rotationalOrder >= 1);
       assert.ok(features.symmetryAxes >= 0);
@@ -60,7 +68,14 @@ test('all 43 projections expose seven stable geometry tags from every visible po
       const tags = projectionHashtags(features);
       assert.ok(tags.filter(tag => tag === '#중심점' || /^#정\d+각핵$/.test(tag)).length <= 1);
       assert.ok(tags.filter(tag => tag === '#짝수대칭' || tag === '#홀수대칭').length <= 1);
-      assert.ok(tags.filter(tag => tag === '#저층형' || tag === '#극저층형').length <= 1);
+      assert.ok(tags.filter(tag => tag === '#동심차수3층이내' || tag === '#동심차수5층이내').length <= 1);
+      assert.ok(tags.filter(tag => tag === '#ConvexHull3층이내' || tag === '#ConvexHull5층이내').length <= 1);
+      if (features.radialLayers <= 3) assert.ok(tags.includes('#동심차수3층이내'));
+      else if (features.radialLayers <= 5) assert.ok(tags.includes('#동심차수5층이내'));
+      else assert.ok(!tags.some(tag => tag.startsWith('#동심차수')));
+      if (features.convexHullLayers <= 3) assert.ok(tags.includes('#ConvexHull3층이내'));
+      else if (features.convexHullLayers <= 5) assert.ok(tags.includes('#ConvexHull5층이내'));
+      else assert.ok(!tags.some(tag => tag.startsWith('#ConvexHull')));
       count += 1;
     }
   }
@@ -104,13 +119,13 @@ test('radial layers group all visible points by distance from the projection cen
   assert.deepEqual(featuresFor('정육면체', 6).layerPointCounts, [2, 2, 4], '소외-전이 stays 2-2-4');
 
   const threeLayer = projectionHashtags(featuresFor('정육면체', 6));
-  assert.ok(threeLayer.includes('#극저층형'));
+  assert.ok(threeLayer.includes('#동심차수3층이내'));
   const fourLayer = projectionHashtags(featuresFor('정십이면체', 1));
-  assert.ok(fourLayer.includes('#저층형'));
-  assert.ok(!fourLayer.includes('#극저층형'));
+  assert.ok(fourLayer.includes('#동심차수5층이내'));
+  assert.ok(!fourLayer.includes('#동심차수3층이내'));
   const sevenLayer = projectionHashtags(featuresFor('정십이면체', 4));
-  assert.ok(!sevenLayer.includes('#저층형'));
-  assert.ok(!sevenLayer.includes('#극저층형'));
+  assert.ok(!sevenLayer.includes('#동심차수5층이내'));
+  assert.ok(!sevenLayer.includes('#동심차수3층이내'));
 });
 
 test('reflection axes must preserve the full visible arrangement, not only the silhouette', () => {
