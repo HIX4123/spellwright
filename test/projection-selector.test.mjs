@@ -10,7 +10,10 @@ import {
   viewFrame,
   wrapIndex
 } from '../docs/projection-core.js';
-import { filteredProjectionIndices } from '../docs/projection-selector.js';
+import {
+  availableClassificationValues,
+  filteredProjectionIndices
+} from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
@@ -56,6 +59,29 @@ test('structural categories and role search filter projection classes in their o
       item.role.name.includes('교환') || item.role.description.includes('교환') || item.role.example.includes('교환') ? [index] : [])
   );
   assert.equal(filteredProjectionIndices(solid.classes, classifications).length, solid.classes.length);
+
+  const allLayerValues = [...new Set(
+    solid.classes.map(item => classifications.get(item.id).radialLayers)
+  )].sort((a, b) => a - b);
+  assert.deepEqual(
+    availableClassificationValues(solid.classes, classifications, {}, 'radialLayers'),
+    allLayerValues
+  );
+
+  const expectedAxesForLayer = [...new Set(
+    solid.classes
+      .filter(item => classifications.get(item.id).radialLayers === sample.radialLayers)
+      .map(item => classifications.get(item.id).symmetryAxes)
+  )].sort((a, b) => a - b);
+  assert.deepEqual(
+    availableClassificationValues(
+      solid.classes,
+      classifications,
+      { radialLayers: sample.radialLayers },
+      'symmetryAxes'
+    ),
+    expectedAxesForLayer
+  );
 });
 
 test('wrapIndex cycles projection classes in both directions', () => {
