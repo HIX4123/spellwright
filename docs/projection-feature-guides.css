@@ -74,7 +74,7 @@
 }
 
 .projection-guide-hull {
-  fill: color-mix(in srgb, var(--primary) 7%, transparent);
+  fill: none;
   stroke: var(--primary);
   stroke-width: 1.8;
   stroke-dasharray: 9 4;
@@ -91,7 +91,7 @@
 .projection-guide-hull[data-hull-layer="8"] { opacity: .4; stroke-dasharray: 2 4; }
 
 .projection-guide-hull-point {
-  fill: color-mix(in srgb, var(--primary) 30%, var(--surface));
+  fill: none;
   stroke: var(--primary);
   stroke-width: 1.8;
   vector-effect: non-scaling-stroke;
