@@ -33,7 +33,8 @@ test('structural categories and role search filter projection classes in their o
     return [item.id, {
       radialLayers: structure.layers.length,
       symmetryAxes: structure.symmetryAxisAngles.length,
-      rotationalOrder: structure.rotationalOrder
+      rotationalOrder: structure.rotationalOrder,
+      eulerTrail: structure.eulerTrail
     }];
   }));
   const sample = classifications.get(solid.classes[0].id);
@@ -54,6 +55,11 @@ test('structural categories and role search filter projection classes in their o
       classifications.get(item.id).rotationalOrder === sample.rotationalOrder ? [index] : [])
   );
   assert.deepEqual(
+    filteredProjectionIndices(solid.classes, classifications, { eulerTrail: sample.eulerTrail }),
+    solid.classes.flatMap((item, index) =>
+      classifications.get(item.id).eulerTrail === sample.eulerTrail ? [index] : [])
+  );
+  assert.deepEqual(
     filteredProjectionIndices(solid.classes, classifications, {}, '교환'),
     solid.classes.flatMap((item, index) =>
       item.role.name.includes('교환') || item.role.description.includes('교환') || item.role.example.includes('교환') ? [index] : [])
@@ -66,6 +72,14 @@ test('structural categories and role search filter projection classes in their o
   assert.deepEqual(
     availableClassificationValues(solid.classes, classifications, {}, 'radialLayers'),
     allLayerValues
+  );
+
+  const allEulerValues = [...new Set(
+    solid.classes.map(item => classifications.get(item.id).eulerTrail)
+  )].sort((a, b) => Number(a) - Number(b));
+  assert.deepEqual(
+    availableClassificationValues(solid.classes, classifications, {}, 'eulerTrail'),
+    allEulerValues
   );
 
   const expectedAxesForLayer = [...new Set(
