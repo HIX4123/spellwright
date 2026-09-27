@@ -9,7 +9,7 @@ import {
   viewFrame,
   wrapIndex
 } from './projection-core.js?v=projection-core-20260903-1';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=projection-symmetry-20260916-2';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=euler-trail-20260927-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -20,7 +20,8 @@ export function filteredProjectionIndices(classes, classifications = new Map(), 
   const expected = {
     radialLayers: filters.radialLayers === '' || filters.radialLayers == null ? null : Number(filters.radialLayers),
     symmetryAxes: filters.symmetryAxes === '' || filters.symmetryAxes == null ? null : Number(filters.symmetryAxes),
-    rotationalOrder: filters.rotationalOrder === '' || filters.rotationalOrder == null ? null : Number(filters.rotationalOrder)
+    rotationalOrder: filters.rotationalOrder === '' || filters.rotationalOrder == null ? null : Number(filters.rotationalOrder),
+    eulerTrail: filters.eulerTrail === '' || filters.eulerTrail == null ? null : String(filters.eulerTrail) === 'true'
   };
   return classes.flatMap((item, index) => {
     const structure = classifications.get(item.id);
@@ -32,10 +33,16 @@ export function filteredProjectionIndices(classes, classifications = new Map(), 
       item.role.structure,
       item.role.description,
       item.role.example,
-      structure ? `동심원 ${structure.radialLayers} 대칭축 ${structure.symmetryAxes} 대칭차수 ${structure.rotationalOrder}차` : ''
+      structure ? `동심원 ${structure.radialLayers} 대칭축 ${structure.symmetryAxes} 대칭차수 ${structure.rotationalOrder}차 Euler Trail ${structure.eulerTrail ? '가능' : '불가'}` : ''
     ].join(' ').toLocaleLowerCase();
     return matchesStructure && (!term || haystack.includes(term)) ? [index] : [];
   });
+}
+
+function compareClassificationValues(a, b) {
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  if (typeof a === 'boolean' && typeof b === 'boolean') return Number(a) - Number(b);
+  return String(a).localeCompare(String(b));
 }
 
 export function availableClassificationValues(
@@ -49,8 +56,8 @@ export function availableClassificationValues(
   return [...new Set(
     filteredProjectionIndices(classes, classifications, relaxedFilters, query)
       .map(index => classifications.get(classes[index].id)?.[key])
-      .filter(Number.isFinite)
-  )].sort((a, b) => a - b);
+      .filter(value => value !== undefined && value !== null)
+  )].sort(compareClassificationValues);
 }
 
 export function activeProjectionEntryIndices(entryCount, selectedIndices = []) {
@@ -90,13 +97,15 @@ export function availableClassificationValuesAcrossEntries(
       key,
       query
     );
-  }))].sort((a, b) => a - b);
+  }))].sort(compareClassificationValues);
 }
 
-function optionMarkup(values, suffix) {
-  return ['<option value="">전체</option>', ...values.map(value =>
-    `<option value="${value}">${value}${suffix}</option>`
-  )].join('');
+function optionMarkup(values, suffix, labels = {}, emptyLabel = '전체') {
+  return [`<option value="">${escapeHtml(emptyLabel)}</option>`, ...values.map(value => {
+    const raw = String(value);
+    const label = labels[raw] ?? `${raw}${suffix}`;
+    return `<option value="${escapeHtml(raw)}">${escapeHtml(label)}</option>`;
+  })].join('');
 }
 
 function escapeHtml(value = '') {
@@ -261,7 +270,8 @@ function selectorEntries(elements, solids, viewSolids) {
       return [item.id, {
         radialLayers: structure.layers.length,
         symmetryAxes: structure.symmetryAxisAngles.length,
-        rotationalOrder: structure.rotationalOrder
+        rotationalOrder: structure.rotationalOrder,
+        eulerTrail: structure.eulerTrail
       }];
     }));
     return { element, solid, viewsByClass, geometry, classificationsByClass };
@@ -320,6 +330,12 @@ function createSelector(entries) {
           <span>대칭차수</span>
           <select id="projectionRotationalOrder" class="projection-filter-category">
             <option value="">전체</option>
+          </select>
+        </label>
+        <label>
+          <span>Euler Trail</span>
+          <select id="projectionEulerTrail" class="projection-filter-category">
+            <option value="">미선택</option>
           </select>
         </label>
       </div>
@@ -395,6 +411,7 @@ function createSelector(entries) {
   const radialLayers = root.querySelector('#projectionRadialLayers');
   const symmetryAxes = root.querySelector('#projectionSymmetryAxes');
   const rotationalOrder = root.querySelector('#projectionRotationalOrder');
+  const eulerTrail = root.querySelector('#projectionEulerTrail');
   const search = root.querySelector('.projection-filter-search');
   const count = root.querySelector('.projection-filter-count');
   const live = root.querySelector('.projection-selector-live');
@@ -420,7 +437,13 @@ function createSelector(entries) {
   const filterControls = {
     radialLayers: { element: radialLayers, suffix: '층' },
     symmetryAxes: { element: symmetryAxes, suffix: '개' },
-    rotationalOrder: { element: rotationalOrder, suffix: '차' }
+    rotationalOrder: { element: rotationalOrder, suffix: '차' },
+    eulerTrail: {
+      element: eulerTrail,
+      suffix: '',
+      labels: { true: '가능', false: '불가' },
+      emptyLabel: '미선택'
+    }
   };
   const currentFilters = () => Object.fromEntries(
     Object.entries(filterControls).map(([key, control]) => [key, control.element.value])
@@ -452,8 +475,13 @@ function createSelector(entries) {
           key,
           search.value
         );
-        control.element.innerHTML = optionMarkup(values, control.suffix);
-        if (previous && values.includes(Number(previous))) control.element.value = previous;
+        control.element.innerHTML = optionMarkup(
+          values,
+          control.suffix,
+          control.labels,
+          control.emptyLabel
+        );
+        if (previous && values.some(value => String(value) === previous)) control.element.value = previous;
         else if (previous) changed = true;
       }
     }
@@ -491,7 +519,7 @@ function createSelector(entries) {
         data-solid-index="${target.entryIndex}" data-class-index="${target.classIndex}"
         data-class-id="${item.id}" aria-pressed="${active}">
         <span>${escapeHtml(entry.element.name)} · #${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
-        <small>동심원 ${classification.radialLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차</small>
+        <small>동심원 ${classification.radialLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차 · Euler Trail ${classification.eulerTrail ? '가능' : '불가'}</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
   }
@@ -506,6 +534,7 @@ function createSelector(entries) {
       || radialLayers.value
       || symmetryAxes.value
       || rotationalOrder.value
+      || eulerTrail.value
       || search.value.trim();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
@@ -529,7 +558,7 @@ function createSelector(entries) {
     const classification = currentClassification(currentIndex());
     stage.setAttribute(
       'aria-valuetext',
-      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`
+      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
     );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
@@ -546,7 +575,7 @@ function createSelector(entries) {
 
     renderRail();
     if (announce) {
-      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭`;
+      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심원 ${classification.radialLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
     }
   }
 
