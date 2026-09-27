@@ -27,7 +27,7 @@ function groupFeatureTags(featureLine) {
   const groups = [
     ['중심 구조'],
     ['대칭축', '회전대칭'],
-    ['방사층', '층별 점', '외곽 꼭짓점']
+    ['동심원', '층별 점', '외곽 꼭짓점']
   ];
   if (!groups.flat().every(label => byLabel.has(label))) return;
 
@@ -43,10 +43,10 @@ function groupFeatureTags(featureLine) {
         tag.dataset.guide = 'symmetry';
         tag.tabIndex = 0;
         tag.title = '호버하면 사영도에 대칭축을 표시합니다.';
-      } else if (label === '방사층') {
+      } else if (label === '동심원') {
         tag.dataset.guide = 'layers';
         tag.tabIndex = 0;
-        tag.title = '호버하면 사영도에 방사층 동심원을 표시합니다.';
+        tag.title = '호버하면 사영도에 동심원 층을 표시합니다.';
       }
       group.appendChild(tag);
     });
@@ -81,7 +81,7 @@ function loadGuideData() {
 
 function currentProjection(root, data) {
   const solidName = root.querySelector('.projection-solid-tab.active span')?.textContent?.trim();
-  const classId = Number(root.querySelector('.projection-class-chip.active')?.textContent?.trim());
+  const classId = Number(root.querySelector('.projection-class-chip.active')?.dataset.classId);
   if (!solidName || !Number.isInteger(classId)) return null;
   const solid = data.projections.solids.find(item => item.name === solidName);
   const viewSolid = data.views.solids.find(item => item.name === solidName);
