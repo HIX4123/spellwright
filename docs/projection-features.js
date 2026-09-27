@@ -4,7 +4,7 @@ import {
   projectionEvents,
   viewFrame
 } from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=projection-symmetry-20260916-2';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=euler-trail-20260927-1';
 
 const TAU = Math.PI * 2;
 const ANGLE_TOLERANCE = 0.012;
@@ -123,7 +123,9 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
     rotationalOrder: structure.rotationalOrder,
     radialLayers: structure.layers.length,
     layerPointCounts: structure.layerPointCounts,
-    hullVertices: convexHullVertexCount(nodes, tolerance * radiusScale * 4)
+    hullVertices: convexHullVertexCount(nodes, tolerance * radiusScale * 4),
+    eulerTrail: structure.eulerTrail,
+    oddDegreeVertices: structure.oddDegreeVertices
   };
 }
 
@@ -139,7 +141,8 @@ export function projectionFeatureItems(features) {
     ['회전대칭', `${features.rotationalOrder}차`],
     ['동심원', String(features.radialLayers)],
     ['층별 점', features.layerPointCounts.join('-')],
-    ['외곽 꼭짓점', String(features.hullVertices)]
+    ['외곽 꼭짓점', String(features.hullVertices)],
+    ['Euler Trail', features.eulerTrail ? '가능' : '불가']
   ];
 }
 
