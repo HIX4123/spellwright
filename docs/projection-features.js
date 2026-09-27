@@ -137,7 +137,7 @@ export function projectionFeatureItems(features) {
     ['중심 구조', centerValue],
     ['대칭축', String(features.symmetryAxes)],
     ['회전대칭', `${features.rotationalOrder}차`],
-    ['방사층', String(features.radialLayers)],
+    ['동심원', String(features.radialLayers)],
     ['층별 점', features.layerPointCounts.join('-')],
     ['외곽 꼭짓점', String(features.hullVertices)]
   ];
@@ -175,7 +175,7 @@ function loadFeatureData() {
 
 function currentProjection(root, data) {
   const solidName = root.querySelector('.projection-solid-tab.active span')?.textContent?.trim();
-  const classId = Number(root.querySelector('.projection-class-chip.active')?.textContent?.trim());
+  const classId = Number(root.querySelector('.projection-class-chip.active')?.dataset.classId);
   if (!solidName || !Number.isInteger(classId)) return null;
   const solid = data.projections.solids.find(item => item.name === solidName);
   const viewSolid = data.views.solids.find(item => item.name === solidName);
