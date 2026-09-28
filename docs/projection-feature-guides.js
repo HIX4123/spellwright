@@ -470,157 +470,379 @@ function polygonBoundarySegments(polygon) {
   ]);
 }
 
-function distanceToPolygon(point, polygon) {
-  if (!polygon.length) return Infinity;
-  if (pointInPolygon(point, polygon)) return 0;
-  return Math.min(...polygonBoundarySegments(polygon).map(([start, end]) => (
-    distanceToSegment(point, start, end)
-  )));
+
+function dualFacePoint(face) {
+  return face.dualPoint ?? face.centroid;
 }
 
-function dualEdgeVisualLength(edge, faces) {
-  if (!faces[edge.from] || !faces[edge.to]) return 0;
-  const start = faces[edge.from].dualPoint ?? faces[edge.from].centroid;
-  const end = faces[edge.to].dualPoint ?? faces[edge.to].centroid;
-  const midpoint = [
+function dualEdgeMidpoint(edge) {
+  return [
     (edge.segment[0][0] + edge.segment[1][0]) / 2,
     (edge.segment[0][1] + edge.segment[1][1]) / 2
   ];
-  return Math.hypot(midpoint[0] - start[0], midpoint[1] - start[1])
-    + Math.hypot(end[0] - midpoint[0], end[1] - midpoint[1]);
 }
 
-export function dualPropagationSchedule(
-  dualGraph,
-  arrangementNodes,
-  origin = [0, 0],
-  totalDurationMs = 300
-) {
-  const faceCount = dualGraph.faces.length;
-  if (!faceCount) {
-    return { roots: [], nodeTimes: [], edgeTimes: [], durationMs: totalDurationMs };
-  }
+function pointDistance(first, second) {
+  return Math.hypot(first[0] - second[0], first[1] - second[1]);
+}
 
-  const polygons = dualGraph.faces.map(face => (
-    face.nodeIndices.map(index => arrangementNodes[index])
+function closestPointOnSegment(point, start, end) {
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+  const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared <= 1e-18) return { point: start.slice(), t: 0, distance: pointDistance(point, start) };
+  const t = Math.max(0, Math.min(
+    1,
+    ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / lengthSquared
   ));
-  const originDistances = polygons.map(polygon => distanceToPolygon(origin, polygon));
-  const edgeWeights = dualGraph.edges.map(edge => Math.max(1e-9, dualEdgeVisualLength(edge, dualGraph.faces)));
-  const adjacency = Array.from({ length: faceCount }, () => []);
+  const nearest = [start[0] + dx * t, start[1] + dy * t];
+  return { point: nearest, t, distance: pointDistance(point, nearest) };
+}
 
+function dualGraphComponents(dualGraph) {
+  const adjacency = Array.from({ length: dualGraph.faces.length }, () => []);
   dualGraph.edges.forEach((edge, edgeIndex) => {
-    const weight = edgeWeights[edgeIndex];
-    adjacency[edge.from].push({ node: edge.to, edgeIndex, weight });
-    if (edge.to !== edge.from) {
-      adjacency[edge.to].push({ node: edge.from, edgeIndex, weight });
-    }
+    adjacency[edge.from].push({ node: edge.to, edgeIndex });
+    if (edge.to !== edge.from) adjacency[edge.to].push({ node: edge.from, edgeIndex });
   });
 
-  const componentOf = Array(faceCount).fill(-1);
+  const componentOf = Array(dualGraph.faces.length).fill(-1);
   const components = [];
-  for (let start = 0; start < faceCount; start += 1) {
+  for (let start = 0; start < dualGraph.faces.length; start += 1) {
     if (componentOf[start] >= 0) continue;
-    const componentIndex = components.length;
+    const index = components.length;
     const nodes = [];
     const stack = [start];
-    componentOf[start] = componentIndex;
+    componentOf[start] = index;
     while (stack.length) {
       const node = stack.pop();
       nodes.push(node);
       adjacency[node].forEach(({ node: neighbor }) => {
         if (componentOf[neighbor] >= 0) return;
-        componentOf[neighbor] = componentIndex;
+        componentOf[neighbor] = index;
         stack.push(neighbor);
       });
     }
     components.push(nodes);
   }
+  return { adjacency, componentOf, components };
+}
 
-  const distances = Array(faceCount).fill(Infinity);
-  const roots = [];
-  components.forEach(nodes => {
-    const minimum = Math.min(...nodes.map(node => originDistances[node]));
-    const tolerance = Math.max(1e-8, Math.abs(minimum) * 1e-6);
-    nodes.forEach(node => {
-      if (originDistances[node] <= minimum + tolerance) {
-        distances[node] = minimum;
-        roots.push(node);
-      }
+function nearestDualSeeds(dualGraph, nodeIndices, edgeIndices, origin, tolerance) {
+  let minimum = Infinity;
+  const nodeCandidates = nodeIndices.map(node => {
+    const distance = pointDistance(dualFacePoint(dualGraph.faces[node]), origin);
+    minimum = Math.min(minimum, distance);
+    return { type: 'node', node, distance };
+  });
+  const edgeCandidates = edgeIndices.map(edgeIndex => {
+    const point = dualEdgeMidpoint(dualGraph.edges[edgeIndex]);
+    const distance = pointDistance(point, origin);
+    minimum = Math.min(minimum, distance);
+    return { type: 'edge', edgeIndex, point, distance };
+  });
+  if (!Number.isFinite(minimum)) return [];
+  return [...nodeCandidates, ...edgeCandidates]
+    .filter(candidate => candidate.distance <= minimum + tolerance)
+    .map(({ distance, ...candidate }) => candidate);
+}
+
+export function dualPropagationSchedule(
+  dualGraph,
+  arrangementNodes = [],
+  origin = [0, 0],
+  totalDurationMs = 1000
+) {
+  const faceCount = dualGraph.faces.length;
+  if (!faceCount) {
+    return {
+      seeds: [],
+      seedMode: 'empty',
+      levels: [],
+      nodeTimes: [],
+      edgeTimes: [],
+      durationMs: totalDurationMs
+    };
+  }
+
+  const facePoints = dualGraph.faces.map(dualFacePoint);
+  const bendPoints = dualGraph.edges.map(dualEdgeMidpoint);
+  const graphScale = Math.max(
+    1,
+    ...facePoints.map(point => pointDistance(point, origin)),
+    ...bendPoints.map(point => pointDistance(point, origin))
+  );
+  const centerTolerance = graphScale * 1e-6;
+  const ringTolerance = Math.max(graphScale * 0.002, centerTolerance * 8);
+  const { adjacency, componentOf, components } = dualGraphComponents(dualGraph);
+
+  let seedMode = 'nearest';
+  let seeds = facePoints
+    .map((point, node) => ({ point, node, distance: pointDistance(point, origin) }))
+    .filter(candidate => candidate.distance <= centerTolerance)
+    .map(candidate => ({ type: 'node', node: candidate.node }));
+
+  if (seeds.length) {
+    seedMode = 'center-node';
+  } else {
+    const centerEdges = [];
+    dualGraph.edges.forEach((edge, edgeIndex) => {
+      const midpoint = bendPoints[edgeIndex];
+      const from = facePoints[edge.from];
+      const to = facePoints[edge.to];
+      const crossesCenter = distanceToSegment(origin, from, midpoint) <= centerTolerance
+        || distanceToSegment(origin, midpoint, to) <= centerTolerance;
+      if (crossesCenter) centerEdges.push(edgeIndex);
     });
+
+    if (centerEdges.length) {
+      seedMode = 'center-edge';
+      seeds = centerEdges.map(edgeIndex => ({
+        type: 'edge',
+        edgeIndex,
+        point: bendPoints[edgeIndex].slice()
+      }));
+    } else {
+      seeds = nearestDualSeeds(
+        dualGraph,
+        facePoints.map((_, index) => index),
+        dualGraph.edges.map((_, index) => index),
+        origin,
+        ringTolerance
+      );
+    }
+  }
+
+  const seededComponents = new Set();
+  seeds.forEach(seed => {
+    if (seed.type === 'node') {
+      seededComponents.add(componentOf[seed.node]);
+    } else {
+      const edge = dualGraph.edges[seed.edgeIndex];
+      seededComponents.add(componentOf[edge.from]);
+      seededComponents.add(componentOf[edge.to]);
+    }
+  });
+  components.forEach((nodes, componentIndex) => {
+    if (seededComponents.has(componentIndex)) return;
+    const nodeSet = new Set(nodes);
+    const edgeIndices = dualGraph.edges
+      .map((edge, index) => (
+        nodeSet.has(edge.from) && nodeSet.has(edge.to) ? index : -1
+      ))
+      .filter(index => index >= 0);
+    seeds.push(...nearestDualSeeds(dualGraph, nodes, edgeIndices, origin, ringTolerance));
   });
 
-  const settled = Array(faceCount).fill(false);
-  for (let iteration = 0; iteration < faceCount; iteration += 1) {
-    let current = -1;
-    let currentDistance = Infinity;
-    for (let node = 0; node < faceCount; node += 1) {
-      if (!settled[node] && distances[node] < currentDistance) {
-        current = node;
-        currentDistance = distances[node];
-      }
+  const levels = Array(faceCount).fill(Infinity);
+  const seedEdgeIndices = new Set();
+  seeds.forEach(seed => {
+    if (seed.type === 'node') {
+      levels[seed.node] = 0;
+      return;
     }
-    if (current < 0) break;
-    settled[current] = true;
+    seedEdgeIndices.add(seed.edgeIndex);
+    const edge = dualGraph.edges[seed.edgeIndex];
+    levels[edge.from] = Math.min(levels[edge.from], 1);
+    levels[edge.to] = Math.min(levels[edge.to], 1);
+  });
 
-    adjacency[current].forEach(({ node: neighbor, weight }) => {
-      const candidate = currentDistance + weight;
-      if (candidate + 1e-9 < distances[neighbor]) distances[neighbor] = candidate;
+  const queue = [];
+  levels.forEach((level, node) => {
+    if (Number.isFinite(level)) queue.push(node);
+  });
+  for (let head = 0; head < queue.length; head += 1) {
+    const node = queue[head];
+    adjacency[node].forEach(({ node: neighbor }) => {
+      const nextLevel = levels[node] + 1;
+      if (nextLevel >= levels[neighbor]) return;
+      levels[neighbor] = nextLevel;
+      queue.push(neighbor);
     });
   }
 
-  const baseline = Math.min(...distances.filter(Number.isFinite));
-  const shiftedDistances = distances.map(distance => (
-    Number.isFinite(distance) ? Math.max(0, distance - baseline) : 0
-  ));
+  const edgePhases = dualGraph.edges.map((edge, edgeIndex) => {
+    const fromLevel = levels[edge.from];
+    const toLevel = levels[edge.to];
 
-  const orientedEdges = dualGraph.edges.map((edge, edgeIndex) => {
-    const fromDistance = shiftedDistances[edge.from];
-    const toDistance = shiftedDistances[edge.to];
-    let source = edge.from;
-    let target = edge.to;
-    if (
-      toDistance < fromDistance - 1e-9
-      || (
-        Math.abs(toDistance - fromDistance) <= 1e-9
-        && originDistances[edge.to] < originDistances[edge.from] - 1e-9
-      )
-      || (
-        Math.abs(toDistance - fromDistance) <= 1e-9
-        && Math.abs(originDistances[edge.to] - originDistances[edge.from]) <= 1e-9
-        && edge.to < edge.from
-      )
-    ) {
-      source = edge.to;
-      target = edge.from;
+    if (seedEdgeIndices.has(edgeIndex)) {
+      const parts = [
+        {
+          side: 'from',
+          delayPhase: 0,
+          durationPhase: Math.max(1, fromLevel * 2),
+          direction: 'midpoint-to-node'
+        },
+        {
+          side: 'to',
+          delayPhase: 0,
+          durationPhase: Math.max(1, toLevel * 2),
+          direction: 'midpoint-to-node'
+        }
+      ];
+      return {
+        mode: 'split',
+        parts,
+        endPhase: Math.max(...parts.map(part => part.delayPhase + part.durationPhase))
+      };
     }
-    const startDistance = Math.min(shiftedDistances[source], shiftedDistances[target]);
+
+    if (Math.abs(fromLevel - toLevel) <= 1e-9) {
+      const delayPhase = fromLevel * 2;
+      return {
+        mode: 'meet',
+        delayPhase,
+        durationPhase: 1,
+        endPhase: delayPhase + 1
+      };
+    }
+
+    const source = fromLevel < toLevel ? edge.from : edge.to;
+    const target = source === edge.from ? edge.to : edge.from;
+    const sourceLevel = Math.min(fromLevel, toLevel);
+    const targetLevel = Math.max(fromLevel, toLevel);
     return {
+      mode: 'forward',
       source,
       target,
-      startDistance,
-      durationDistance: edgeWeights[edgeIndex],
-      endDistance: startDistance + edgeWeights[edgeIndex]
+      delayPhase: sourceLevel * 2,
+      durationPhase: Math.max(1, (targetLevel - sourceLevel) * 2),
+      endPhase: targetLevel * 2
     };
   });
 
+  const nodePhases = levels.map(level => Number.isFinite(level) ? level * 2 : 0);
   const extent = Math.max(
-    0,
-    ...shiftedDistances,
-    ...orientedEdges.map(edge => edge.endDistance)
+    1,
+    ...nodePhases,
+    ...edgePhases.map(edge => edge.endPhase)
   );
-  const scale = extent > 1e-9 ? totalDurationMs / extent : 0;
+  const scale = totalDurationMs / extent;
 
   return {
-    roots,
-    nodeTimes: shiftedDistances.map(distance => distance * scale),
-    edgeTimes: orientedEdges.map(edge => ({
-      source: edge.source,
-      target: edge.target,
-      delayMs: edge.startDistance * scale,
-      durationMs: edge.durationDistance * scale
+    seeds,
+    seedMode,
+    levels,
+    nodeTimes: nodePhases.map(phase => phase * scale),
+    edgeTimes: edgePhases.map(edge => ({
+      ...edge,
+      delayMs: (edge.delayPhase ?? 0) * scale,
+      durationMs: (edge.durationPhase ?? 0) * scale,
+      parts: edge.parts?.map(part => ({
+        ...part,
+        delayMs: part.delayPhase * scale,
+        durationMs: part.durationPhase * scale
+      }))
     })),
     durationMs: totalDurationMs
   };
+}
+
+function addMedialGraphPoint(points, point, tolerance) {
+  const existing = points.findIndex(candidate => pointDistance(candidate, point) <= tolerance);
+  if (existing >= 0) return existing;
+  points.push(point.slice());
+  return points.length - 1;
+}
+
+export function medialPropagationSchedule(
+  segments,
+  origin,
+  startTimeMs = 0,
+  totalDurationMs = 1000
+) {
+  if (!segments.length || startTimeMs >= totalDurationMs) return [];
+  const tolerance = 0.6;
+  let rootSegment = 0;
+  let rootProjection = null;
+  let rootDistance = Infinity;
+  segments.forEach(([start, end], index) => {
+    const projection = closestPointOnSegment(origin, start, end);
+    if (projection.distance < rootDistance) {
+      rootDistance = projection.distance;
+      rootProjection = projection.point;
+      rootSegment = index;
+    }
+  });
+
+  const root = origin.slice();
+  const splitSegments = [];
+  segments.forEach(([start, end], index) => {
+    if (index !== rootSegment) {
+      splitSegments.push([start.slice(), end.slice()]);
+      return;
+    }
+    if (pointDistance(root, start) > 0.25) splitSegments.push([root.slice(), start.slice()]);
+    if (pointDistance(root, end) > 0.25) splitSegments.push([root.slice(), end.slice()]);
+  });
+  if (!splitSegments.length && rootProjection) splitSegments.push([root.slice(), rootProjection.slice()]);
+
+  const points = [];
+  const graphSegments = splitSegments.map(([start, end]) => ({
+    a: addMedialGraphPoint(points, start, tolerance),
+    b: addMedialGraphPoint(points, end, tolerance),
+    start,
+    end
+  }));
+  const rootIndex = addMedialGraphPoint(points, root, tolerance);
+  const adjacency = Array.from({ length: points.length }, () => []);
+  graphSegments.forEach((segment, index) => {
+    const length = pointDistance(segment.start, segment.end);
+    adjacency[segment.a].push({ node: segment.b, segmentIndex: index, length });
+    adjacency[segment.b].push({ node: segment.a, segmentIndex: index, length });
+  });
+
+  const distances = Array(points.length).fill(Infinity);
+  const settled = Array(points.length).fill(false);
+  distances[rootIndex] = 0;
+  for (let iteration = 0; iteration < points.length; iteration += 1) {
+    let current = -1;
+    let best = Infinity;
+    distances.forEach((distance, index) => {
+      if (!settled[index] && distance < best) {
+        current = index;
+        best = distance;
+      }
+    });
+    if (current < 0) break;
+    settled[current] = true;
+    adjacency[current].forEach(({ node, length }) => {
+      const candidate = best + length;
+      if (candidate < distances[node]) distances[node] = candidate;
+    });
+  }
+
+  let finiteMax = Math.max(0, ...distances.filter(Number.isFinite));
+  distances.forEach((distance, index) => {
+    if (Number.isFinite(distance)) return;
+    distances[index] = finiteMax + pointDistance(root, points[index]);
+  });
+  finiteMax = Math.max(1e-9, ...distances);
+
+  const available = totalDurationMs - startTimeMs;
+  const scale = available / finiteMax;
+  return graphSegments.flatMap(segment => {
+    const firstDistance = distances[segment.a];
+    const secondDistance = distances[segment.b];
+    if (Math.abs(firstDistance - secondDistance) <= 0.6) {
+      const midpoint = [
+        (segment.start[0] + segment.end[0]) / 2,
+        (segment.start[1] + segment.end[1]) / 2
+      ];
+      const delayMs = startTimeMs + Math.min(firstDistance, secondDistance) * scale;
+      const durationMs = Math.max(1, pointDistance(segment.start, midpoint) * scale);
+      return [
+        { start: segment.start, end: midpoint, delayMs, durationMs },
+        { start: segment.end, end: midpoint, delayMs, durationMs }
+      ];
+    }
+    const forward = firstDistance < secondDistance;
+    const start = forward ? segment.start : segment.end;
+    const end = forward ? segment.end : segment.start;
+    const delayMs = startTimeMs + Math.min(firstDistance, secondDistance) * scale;
+    const durationMs = Math.max(1, pointDistance(start, end) * scale);
+    return [{ start, end, delayMs, durationMs }];
+  });
 }
 
 function nearestBoundaryFeature(point, boundarySegments) {
