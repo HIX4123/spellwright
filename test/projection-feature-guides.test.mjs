@@ -6,6 +6,7 @@ import { analyzeProjectionFeatures } from '../docs/projection-features.js';
 import {
   analyzeProjectionGuides,
   distanceToSegment,
+  dualPropagationSchedule,
   medialAxisSegmentsForPolygon,
   orderedHullBoundary,
   planarDualFromStructure,
@@ -64,6 +65,56 @@ test('planar dual omits the exterior face and every edge incident to it', () => 
     [splitDual.edges[0].from, splitDual.edges[0].to].sort((a, b) => a - b),
     [0, 1]
   );
+});
+
+
+test('dual propagation follows graph distance instead of radial node distance', () => {
+  const arrangementNodes = [
+    [-0.4, -0.4], [0.4, -0.4], [0.4, 0.4], [-0.4, 0.4],
+    [9.6, -0.4], [10.4, -0.4], [10.4, 0.4], [9.6, 0.4],
+    [0.8, -0.2], [1.2, -0.2], [1.2, 0.2], [0.8, 0.2]
+  ];
+  const dualGraph = {
+    faces: [
+      { nodeIndices: [0, 1, 2, 3], centroid: [0, 0] },
+      { nodeIndices: [4, 5, 6, 7], centroid: [10, 0] },
+      { nodeIndices: [8, 9, 10, 11], centroid: [1, 0] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[5, -0.2], [5, 0.2]] },
+      { from: 1, to: 2, segment: [[5.5, -0.2], [5.5, 0.2]] }
+    ]
+  };
+
+  const schedule = dualPropagationSchedule(dualGraph, arrangementNodes, [0, 0], 300);
+  assert.equal(schedule.nodeTimes[0], 0);
+  assert.ok(schedule.nodeTimes[1] > 0);
+  assert.ok(
+    schedule.nodeTimes[2] > schedule.nodeTimes[1],
+    'concave/near-center node should wait for its graph path to reach it'
+  );
+  assert.ok(Math.max(...schedule.nodeTimes) <= 300 + 1e-8);
+  assert.ok(schedule.edgeTimes.every(edge => edge.delayMs + edge.durationMs <= 300 + 1e-8));
+});
+
+test('dual propagation uses every face touching the projection center as a root', () => {
+  const arrangementNodes = [
+    [-1, -1], [0, -1], [0, 1], [-1, 1],
+    [1, -1], [1, 1]
+  ];
+  const dualGraph = {
+    faces: [
+      { nodeIndices: [0, 1, 2, 3], centroid: [-0.5, 0] },
+      { nodeIndices: [1, 4, 5, 2], centroid: [0.5, 0] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[0, -1], [0, 1]] }
+    ]
+  };
+
+  const schedule = dualPropagationSchedule(dualGraph, arrangementNodes, [0, 0], 300);
+  assert.deepEqual(schedule.roots.sort((a, b) => a - b), [0, 1]);
+  assert.deepEqual(schedule.nodeTimes, [0, 0]);
 });
 
 test('distance field uses Euclidean distance to the nearest point on a segment', () => {
@@ -141,6 +192,36 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
           && edge.to < guides.dualGraph.faces.length
         )),
         `${solid.name} class ${item.id} dual edges reference only finite faces`
+      );
+      const propagation = dualPropagationSchedule(
+        guides.dualGraph,
+        guides.arrangementNodes,
+        [0, 0],
+        300
+      );
+      assert.equal(
+        propagation.nodeTimes.length,
+        guides.dualGraph.faces.length,
+        `${solid.name} class ${item.id} dual propagation node timing count`
+      );
+      assert.equal(
+        propagation.edgeTimes.length,
+        guides.dualGraph.edges.length,
+        `${solid.name} class ${item.id} dual propagation edge timing count`
+      );
+      assert.ok(
+        propagation.nodeTimes.every(time => Number.isFinite(time) && time >= 0 && time <= 300 + 1e-8),
+        `${solid.name} class ${item.id} dual propagation node timings stay within 300ms`
+      );
+      assert.ok(
+        propagation.edgeTimes.every(({ delayMs, durationMs }) => (
+          Number.isFinite(delayMs)
+          && Number.isFinite(durationMs)
+          && delayMs >= 0
+          && durationMs >= 0
+          && delayMs + durationMs <= 300 + 1e-8
+        )),
+        `${solid.name} class ${item.id} dual propagation edge timings stay within 300ms`
       );
       assert.ok(guides.layerRadii.every((radius, index, radii) => (
         radius >= 0 && (index === 0 || radius >= radii[index - 1] - 1e-8)
