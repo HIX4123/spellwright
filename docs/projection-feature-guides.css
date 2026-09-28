@@ -26,17 +26,38 @@
   background: var(--line-strong);
 }
 
-.projection-feature-tag[data-guide] {
+.projection-feature-tag[data-guide],
+.projection-guide-button[data-guide] {
   cursor: help;
   outline: none;
   transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
 }
 
 .projection-feature-tag[data-guide]:hover,
-.projection-feature-tag[data-guide]:focus-visible {
+.projection-feature-tag[data-guide]:focus-visible,
+.projection-guide-button[data-guide]:hover,
+.projection-guide-button[data-guide]:focus-visible {
   border-color: color-mix(in srgb, var(--primary) 62%, var(--line));
   background: color-mix(in srgb, var(--primary-container) 52%, var(--surface-2));
   color: var(--text);
+}
+
+.projection-guide-tool-group {
+  align-items: stretch;
+}
+
+.projection-feature-line .projection-guide-button {
+  appearance: none;
+  min-height: 25px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-2) 88%, var(--primary-container));
+  color: var(--secondary);
+  box-shadow: none;
+  font: 700 9px/1.2 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .015em;
+  white-space: nowrap;
 }
 
 .projection-canvas {
@@ -44,7 +65,9 @@
 }
 
 .projection-selector:has(.projection-feature-tag[data-guide]:hover) .projection-canvas,
-.projection-selector:has(.projection-feature-tag[data-guide]:focus-visible) .projection-canvas {
+.projection-selector:has(.projection-feature-tag[data-guide]:focus-visible) .projection-canvas,
+.projection-selector:has(.projection-guide-button[data-guide]:hover) .projection-canvas,
+.projection-selector:has(.projection-guide-button[data-guide]:focus-visible) .projection-canvas {
   opacity: .38;
 }
 
@@ -109,6 +132,53 @@
   font-size: 10px;
 }
 
+.projection-guide-dual-edge {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .82;
+  vector-effect: non-scaling-stroke;
+}
+
+.projection-guide-dual-loop {
+  opacity: .68;
+}
+
+.projection-guide-dual-node {
+  fill: var(--projection-stage-bg);
+  stroke: var(--primary);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.projection-guide-dual-node.is-outer {
+  stroke-dasharray: 3 2;
+}
+
+.projection-guide-dual-label {
+  font-size: 9px;
+}
+
+.projection-distance-field {
+  pointer-events: none;
+}
+
+.projection-distance-cell {
+  fill: var(--primary);
+}
+
+.projection-guide-caption {
+  fill: var(--secondary);
+  paint-order: stroke;
+  stroke: var(--projection-stage-bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  font: 700 9px/1 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .02em;
+}
+
 .projection-guide-origin {
   fill: var(--primary);
   stroke: var(--surface);
@@ -133,5 +203,10 @@
   .projection-feature-group + .projection-feature-group {
     margin-left: 8px;
     padding-left: 9px;
+  }
+
+  .projection-feature-line .projection-guide-button {
+    padding: 5px 7px;
+    font-size: 9px;
   }
 }

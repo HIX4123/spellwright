@@ -4,6 +4,11 @@ const activeGuideByRoot = new WeakMap();
 const guideByRoot = new WeakMap();
 
 export function analyzeProjectionGuides(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
+  const arrangementNodes = structure.nodes.map(node => node.xy.slice());
+  const arrangementSegments = [...structure.segments].map(key => {
+    const [a, b] = key.split(':').map(Number);
+    return [arrangementNodes[a].slice(), arrangementNodes[b].slice()];
+  });
   return {
     points: structure.points,
     symmetryAxisAngles: structure.symmetryAxisAngles,
@@ -13,7 +18,10 @@ export function analyzeProjectionGuides(vertices, edges, frame, structure = anal
     hullLayers: structure.convexHullLayers.map(layer => (
       layer.map(index => structure.nodes[index].xy.slice())
     )),
-    hullLayerPointCounts: structure.convexHullLayerPointCounts
+    hullLayerPointCounts: structure.convexHullLayerPointCounts,
+    arrangementNodes,
+    arrangementSegments,
+    dualGraph: planarDualFromStructure(structure)
   };
 }
 
@@ -59,6 +67,23 @@ function groupFeatureTags(featureLine) {
     });
     fragment.appendChild(group);
   });
+
+  const guideGroup = document.createElement('span');
+  guideGroup.className = 'projection-feature-group projection-guide-tool-group';
+  guideGroup.dataset.featureGroup = 'guides';
+  [
+    ['dual', '쌍대그래프', '호버하면 교차점을 포함해 평면 분할한 사영도의 쌍대그래프를 표시합니다.'],
+    ['distance', '거리장', '호버하면 각 위치에서 가장 가까운 사영 선분까지의 유클리드 거리장을 표시합니다.']
+  ].forEach(([kind, label, title]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'projection-guide-button';
+    button.dataset.guide = kind;
+    button.title = title;
+    button.textContent = label;
+    guideGroup.appendChild(button);
+  });
+  fragment.appendChild(guideGroup);
   featureLine.replaceChildren(fragment);
 }
 
@@ -157,6 +182,166 @@ export function orderedHullBoundary(points) {
   return [...lower.slice(0, -1), ...upper.slice(0, -1)];
 }
 
+function directedEdgeKey(from, to) {
+  return `${from}>${to}`;
+}
+
+function polygonSignedArea(points) {
+  let doubleArea = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    doubleArea += current[0] * next[1] - next[0] * current[1];
+  }
+  return doubleArea / 2;
+}
+
+function polygonCentroid(points) {
+  if (!points.length) return [0, 0];
+  let crossSum = 0;
+  let xSum = 0;
+  let ySum = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    const cross = current[0] * next[1] - next[0] * current[1];
+    crossSum += cross;
+    xSum += (current[0] + next[0]) * cross;
+    ySum += (current[1] + next[1]) * cross;
+  }
+  if (Math.abs(crossSum) < 1e-12) {
+    return [
+      points.reduce((sum, point) => sum + point[0], 0) / points.length,
+      points.reduce((sum, point) => sum + point[1], 0) / points.length
+    ];
+  }
+  return [xSum / (3 * crossSum), ySum / (3 * crossSum)];
+}
+
+export function planarDualFromStructure(structure) {
+  const nodes = structure.nodes.map(node => node.xy.slice());
+  const segments = [...structure.segments].map(key => key.split(':').map(Number));
+  const adjacency = Array.from({ length: nodes.length }, () => []);
+
+  segments.forEach(([a, b]) => {
+    adjacency[a].push(b);
+    adjacency[b].push(a);
+  });
+  adjacency.forEach((neighbors, nodeIndex) => {
+    neighbors.sort((first, second) => (
+      Math.atan2(nodes[first][1] - nodes[nodeIndex][1], nodes[first][0] - nodes[nodeIndex][0])
+      - Math.atan2(nodes[second][1] - nodes[nodeIndex][1], nodes[second][0] - nodes[nodeIndex][0])
+    ));
+  });
+
+  const visited = new Set();
+  const rawFaces = [];
+  const halfEdgeRawFace = new Map();
+  const areaTolerance = Math.max(1, structure.scale || 1) ** 2 * 1e-9;
+  const guardLimit = Math.max(8, segments.length * 2 + nodes.length + 4);
+
+  for (let from = 0; from < adjacency.length; from += 1) {
+    for (const to of adjacency[from]) {
+      if (visited.has(directedEdgeKey(from, to))) continue;
+
+      const cycle = [];
+      const traversed = [];
+      let currentFrom = from;
+      let currentTo = to;
+      let closed = false;
+
+      for (let guard = 0; guard < guardLimit; guard += 1) {
+        const key = directedEdgeKey(currentFrom, currentTo);
+        if (visited.has(key)) {
+          closed = currentFrom === from && currentTo === to;
+          break;
+        }
+        visited.add(key);
+        traversed.push([currentFrom, currentTo]);
+        cycle.push(currentFrom);
+
+        const around = adjacency[currentTo];
+        const reverseIndex = around.indexOf(currentFrom);
+        if (reverseIndex < 0 || !around.length) break;
+        const next = around[(reverseIndex - 1 + around.length) % around.length];
+        currentFrom = currentTo;
+        currentTo = next;
+
+        if (currentFrom === from && currentTo === to) {
+          closed = true;
+          break;
+        }
+      }
+
+      if (!closed || cycle.length < 3) continue;
+      const points = cycle.map(index => nodes[index]);
+      const area = polygonSignedArea(points);
+      if (Math.abs(area) <= areaTolerance) continue;
+
+      const rawFaceIndex = rawFaces.length;
+      rawFaces.push({
+        nodeIndices: cycle,
+        area,
+        centroid: polygonCentroid(points)
+      });
+      traversed.forEach(([a, b]) => halfEdgeRawFace.set(directedEdgeKey(a, b), rawFaceIndex));
+    }
+  }
+
+  const boundedRaw = rawFaces
+    .map((face, index) => ({ face, index }))
+    .filter(item => item.face.area > areaTolerance);
+  const outerRaw = rawFaces
+    .map((face, index) => ({ face, index }))
+    .filter(item => item.face.area < -areaTolerance);
+  const rawToFace = new Map();
+  const faces = boundedRaw.map(({ face, index }, faceIndex) => {
+    rawToFace.set(index, faceIndex);
+    return {
+      nodeIndices: face.nodeIndices.slice(),
+      centroid: face.centroid.slice(),
+      area: face.area,
+      isOuter: false
+    };
+  });
+
+  const outerIndex = faces.length;
+  faces.push({
+    nodeIndices: outerRaw.flatMap(item => item.face.nodeIndices),
+    centroid: [0, 0],
+    area: outerRaw.reduce((sum, item) => sum + item.face.area, 0),
+    isOuter: true
+  });
+  outerRaw.forEach(({ index }) => rawToFace.set(index, outerIndex));
+
+  const edges = segments.map(([a, b]) => {
+    const forwardRaw = halfEdgeRawFace.get(directedEdgeKey(a, b));
+    const reverseRaw = halfEdgeRawFace.get(directedEdgeKey(b, a));
+    const from = rawToFace.get(forwardRaw) ?? outerIndex;
+    const to = rawToFace.get(reverseRaw) ?? outerIndex;
+    return {
+      from,
+      to,
+      segment: [nodes[a].slice(), nodes[b].slice()]
+    };
+  });
+
+  return { faces, edges };
+}
+
+export function distanceToSegment(point, start, end) {
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+  const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared <= 1e-18) return Math.hypot(point[0] - start[0], point[1] - start[1]);
+  const t = Math.max(0, Math.min(
+    1,
+    ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / lengthSquared
+  ));
+  const nearest = [start[0] + dx * t, start[1] + dy * t];
+  return Math.hypot(point[0] - nearest[0], point[1] - nearest[1]);
+}
+
 function renderHullGuide(overlay, guide, transform) {
   overlay.innerHTML = guide.hullLayers.map((layer, index) => {
     const boundary = orderedHullBoundary(layer);
@@ -180,6 +365,82 @@ function renderHullGuide(overlay, guide, transform) {
   }).join('');
 }
 
+
+function renderDualGuide(overlay, guide, transform) {
+  const arrangementScreen = guide.arrangementNodes.map(transform.point);
+  const maxX = arrangementScreen.length ? Math.max(...arrangementScreen.map(point => point[0])) : transform.width / 2;
+  const minY = arrangementScreen.length ? Math.min(...arrangementScreen.map(point => point[1])) : transform.height / 2;
+  const outerPoint = [
+    Math.min(transform.width - 18, maxX + 24),
+    Math.max(18, minY - 18)
+  ];
+  const facePoints = guide.dualGraph.faces.map(face => (
+    face.isOuter ? outerPoint : transform.point(face.centroid)
+  ));
+
+  const edgeMarkup = guide.dualGraph.edges.map(edge => {
+    const start = facePoints[edge.from];
+    const end = facePoints[edge.to];
+    const midpoint = transform.point([
+      (edge.segment[0][0] + edge.segment[1][0]) / 2,
+      (edge.segment[0][1] + edge.segment[1][1]) / 2
+    ]);
+    if (edge.from === edge.to) {
+      const radius = 7;
+      return `<circle class="projection-guide-dual-edge projection-guide-dual-loop"
+        cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="${radius}" />`;
+    }
+    return `<polyline class="projection-guide-dual-edge"
+      points="${svgNumber(start[0])},${svgNumber(start[1])} ${svgNumber(midpoint[0])},${svgNumber(midpoint[1])} ${svgNumber(end[0])},${svgNumber(end[1])}" />`;
+  }).join('');
+
+  const nodeMarkup = guide.dualGraph.faces.map((face, index) => {
+    const point = facePoints[index];
+    const label = face.isOuter ? '∞' : `F${index + 1}`;
+    return `
+      <circle class="projection-guide-dual-node${face.isOuter ? ' is-outer' : ''}"
+        cx="${svgNumber(point[0])}" cy="${svgNumber(point[1])}" r="4.5" />
+      <text class="projection-guide-label projection-guide-dual-label"
+        x="${svgNumber(point[0] + 7)}" y="${svgNumber(point[1] - 7)}">${label}</text>
+    `;
+  }).join('');
+
+  overlay.innerHTML = edgeMarkup + nodeMarkup
+    + '<text class="projection-guide-caption" x="12" y="18">면 → 노드 · 공유 선분 → 간선</text>';
+}
+
+function renderDistanceGuide(overlay, guide, transform) {
+  const segments = guide.arrangementSegments.map(segment => segment.map(transform.point));
+  if (!segments.length) {
+    overlay.replaceChildren();
+    return;
+  }
+
+  const columns = 32;
+  const rows = Math.max(18, Math.round(columns * transform.height / transform.width));
+  const cellWidth = transform.width / columns;
+  const cellHeight = transform.height / rows;
+  const cutoff = Math.max(24, Math.min(transform.width, transform.height) * 0.22);
+  let cells = '';
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const center = [(column + 0.5) * cellWidth, (row + 0.5) * cellHeight];
+      const distance = Math.min(...segments.map(([start, end]) => distanceToSegment(center, start, end)));
+      const normalized = Math.min(1, distance / cutoff);
+      const intensity = Math.exp(-3.2 * normalized * normalized);
+      const opacity = 0.025 + intensity * 0.36;
+      cells += `<rect class="projection-distance-cell"
+        x="${svgNumber(column * cellWidth)}" y="${svgNumber(row * cellHeight)}"
+        width="${svgNumber(cellWidth + 0.35)}" height="${svgNumber(cellHeight + 0.35)}"
+        fill-opacity="${opacity.toFixed(3)}" />`;
+    }
+  }
+
+  overlay.innerHTML = `<g class="projection-distance-field">${cells}</g>
+    <text class="projection-guide-caption" x="12" y="18">선분까지 거리 · 밝을수록 가까움</text>`;
+}
+
 function showGuide(root, kind) {
   const overlay = ensureOverlay(root);
   const stage = root.querySelector('.projection-stage');
@@ -199,6 +460,8 @@ function showGuide(root, kind) {
   overlay.dataset.guide = kind;
   if (kind === 'symmetry') renderSymmetryGuide(overlay, guide, transform);
   else if (kind === 'hull') renderHullGuide(overlay, guide, transform);
+  else if (kind === 'dual') renderDualGuide(overlay, guide, transform);
+  else if (kind === 'distance') renderDistanceGuide(overlay, guide, transform);
   else renderLayerGuide(overlay, guide, transform);
   overlay.classList.add('is-visible');
 }
@@ -215,7 +478,7 @@ function hideGuide(root, kind = null) {
 
 function guideTarget(root, target) {
   if (!(target instanceof Element)) return null;
-  const tag = target.closest('.projection-feature-tag[data-guide]');
+  const tag = target.closest('.projection-feature-tag[data-guide], .projection-guide-button[data-guide]');
   return tag && root.contains(tag) ? tag : null;
 }
 
