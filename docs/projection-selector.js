@@ -10,7 +10,7 @@ import {
   wrapIndex
 } from './projection-core.js?v=projection-core-20260903-1';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
-import { renderProjectionFeatureTags } from './projection-features.js?v=refactor-20260927-1';
+import { renderProjectionFeatureTags } from './projection-features.js?v=category-readability-20260928-1';
 import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=refactor-20260927-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
