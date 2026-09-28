@@ -10,6 +10,8 @@ import {
   wrapIndex
 } from './projection-core.js?v=projection-core-20260903-1';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
+import { renderProjectionFeatureTags } from './projection-features.js?v=refactor-20260927-1';
+import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=refactor-20260927-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -269,6 +271,7 @@ function selectorEntries(elements, solids, viewSolids) {
         viewFrame(view.viewDirection, view.rollDegrees)
       );
       return [item.id, {
+        structure,
         radialLayers: structure.layers.length,
         convexHullLayers: structure.convexHullLayers.length,
         symmetryAxes: structure.symmetryAxisAngles.length,
@@ -585,6 +588,9 @@ function createSelector(entries) {
     });
 
     renderRail();
+    const frame = frameFor(currentIndex());
+    renderProjectionFeatureTags(root, entry.geometry, frame, classification.structure);
+    updateProjectionFeatureGuides(root, entry.geometry, frame, classification.structure);
     if (announce) {
       live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
     }
@@ -783,6 +789,7 @@ function createSelector(entries) {
     resizeObserver.observe(stage);
   }
 
+  mountProjectionFeatureGuides(root);
   syncFilterOptions();
   renderStatic();
   return root;

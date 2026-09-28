@@ -94,6 +94,12 @@
       "type": "stat",
       "order": 7,
       "note": "잠재력은 캐릭터 스탯의 성장 축이다."
+    },
+    {
+      "parent": "projection-system",
+      "child": "projection-operator",
+      "type": "subtype",
+      "note": "사영 연산자는 사영도의 세부 역할을 정의하는 하위 설계 모델이다."
     }
   ],
   "sequence": [
@@ -149,19 +155,61 @@
     "resonance"
   ],
   "suppressedDependencies": [
-    {"from": "karma", "to": "engraving"},
-    {"from": "engraving", "to": "karma"},
-    {"from": "five-elements", "to": "projection-system"},
-    {"from": "karma", "to": "projection-abilities"},
-    {"from": "projection-system", "to": "projection-abilities"},
-    {"from": "integrity", "to": "mental-strength"},
-    {"from": "mental-strength", "to": "health"},
-    {"from": "circle", "to": "mana"},
-    {"from": "mental-strength", "to": "mana"},
-    {"from": "circle", "to": "engraving-capacity"},
-    {"from": "engraving", "to": "engraving-capacity"},
-    {"from": "engraving-capacity", "to": "engraving"},
-    {"from": "mental-strength", "to": "engraving-capacity"},
-    {"from": "mental-strength", "to": "insight"}
+    {
+      "from": "karma",
+      "to": "engraving"
+    },
+    {
+      "from": "engraving",
+      "to": "karma"
+    },
+    {
+      "from": "five-elements",
+      "to": "projection-system"
+    },
+    {
+      "from": "karma",
+      "to": "projection-abilities"
+    },
+    {
+      "from": "projection-system",
+      "to": "projection-abilities"
+    },
+    {
+      "from": "integrity",
+      "to": "mental-strength"
+    },
+    {
+      "from": "mental-strength",
+      "to": "health"
+    },
+    {
+      "from": "circle",
+      "to": "mana"
+    },
+    {
+      "from": "mental-strength",
+      "to": "mana"
+    },
+    {
+      "from": "circle",
+      "to": "engraving-capacity"
+    },
+    {
+      "from": "engraving",
+      "to": "engraving-capacity"
+    },
+    {
+      "from": "engraving-capacity",
+      "to": "engraving"
+    },
+    {
+      "from": "mental-strength",
+      "to": "engraving-capacity"
+    },
+    {
+      "from": "mental-strength",
+      "to": "insight"
+    }
   ]
 }

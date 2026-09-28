@@ -6,14 +6,10 @@ import { buildGraphModel, edgePath, layoutGraph } from '../docs/graph-model.mjs'
 const readJson = path => JSON.parse(readFileSync(new URL(path, import.meta.url)));
 const project = readJson('../docs/data/project.json');
 const relationships = readJson('../docs/data/relationships.json');
-const theory = readJson('../docs/data/theory.json');
 
 const HIERARCHY_TYPES = new Set(['subtype', 'crosscutting', 'stage', 'stat']);
-const effectiveSystems = [...project.systems, ...theory.systems];
-const effectiveRelationships = {
-  ...relationships,
-  hierarchy: [...relationships.hierarchy, ...theory.hierarchy]
-};
+const effectiveSystems = project.systems;
+const effectiveRelationships = relationships;
 
 function uniqueKeys(edges, makeKey, label) {
   const seen = new Set();
@@ -116,9 +112,7 @@ test('all graph endpoints and functional dependencies resolve', () => {
 });
 
 test('review-stage theory nodes follow the minimal relationship chain', () => {
-  assert.equal(theory.schemaVersion, 1);
-  assert.equal(theory.status, 'review');
-  assert.deepEqual(theory.hierarchy, [
+  assert.deepEqual(relationships.hierarchy.filter(edge => edge.child === 'projection-operator'), [
     {
       parent: 'projection-system',
       child: 'projection-operator',
@@ -127,7 +121,7 @@ test('review-stage theory nodes follow the minimal relationship chain', () => {
     }
   ]);
 
-  const byId = new Map(theory.systems.map(system => [system.id, system]));
+  const byId = new Map(project.systems.map(system => [system.id, system]));
   assert.deepEqual(byId.get('spell-grammar').dependencies, ['engraving', 'projection-operator']);
   assert.deepEqual(byId.get('effect-graph').dependencies, ['spell-grammar']);
   assert.deepEqual(byId.get('structural-counterplay').dependencies, ['effect-graph']);

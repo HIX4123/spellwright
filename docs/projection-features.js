@@ -1,8 +1,6 @@
 import {
-  geometryForSolid,
   projectVertices,
-  projectionEvents,
-  viewFrame
+  projectionEvents
 } from './projection-core.js';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
 
@@ -100,7 +98,7 @@ function convexHullVertexCount(nodes, tolerance) {
   return Math.max(1, lower.length + upper.length - 2);
 }
 
-export function analyzeProjectionFeatures(vertices, edges, frame) {
+export function analyzeProjectionFeatures(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
   const { nodes, edgeCounts } = projectedVertexGraph(vertices, edges, frame);
   const radiusScale = Math.max(1, ...nodes.map(node => Math.hypot(node.xy[0], node.xy[1])));
   const tolerance = radiusScale * POSITION_TOLERANCE_FACTOR;
@@ -115,7 +113,6 @@ export function analyzeProjectionFeatures(vertices, edges, frame) {
     : polygonSides >= 3
       ? { kind: 'regularPolygon', sides: polygonSides }
       : { kind: 'none' };
-  const structure = analyzeProjectionStructure(vertices, edges, frame);
 
   return {
     centerStructure,
@@ -170,29 +167,6 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#039;');
 }
 
-let featureDataPromise;
-function loadFeatureData() {
-  if (!featureDataPromise) {
-    featureDataPromise = Promise.all([
-      fetch('./data/projections.json', { cache: 'no-store' }).then(response => response.json()),
-      fetch('./data/projection-views.json', { cache: 'no-store' }).then(response => response.json())
-    ]).then(([projections, views]) => ({ projections, views }));
-  }
-  return featureDataPromise;
-}
-
-function currentProjection(root, data) {
-  const solidName = root.querySelector('.projection-solid-tab.is-current span')?.textContent?.trim();
-  const classId = Number(root.querySelector('.projection-class-chip.active')?.dataset.classId);
-  if (!solidName || !Number.isInteger(classId)) return null;
-  const solid = data.projections.solids.find(item => item.name === solidName);
-  const viewSolid = data.views.solids.find(item => item.name === solidName);
-  const item = solid?.classes.find(candidate => candidate.id === classId);
-  const view = viewSolid?.views.find(candidate => candidate.classId === classId);
-  if (!solid || !item || !view) return null;
-  return { solid, item, view };
-}
-
 function ensureFeatureUi(root) {
   let featureLine = root.querySelector('.projection-feature-line');
   if (!featureLine) {
@@ -211,15 +185,8 @@ function ensureFeatureUi(root) {
   return { featureLine, hashtagBlock };
 }
 
-function renderFeatureUi(root, data) {
-  const selected = currentProjection(root, data);
-  if (!selected) return;
-  const geometry = geometryForSolid(selected.solid.name);
-  const features = analyzeProjectionFeatures(
-    geometry.vertices,
-    geometry.edges,
-    viewFrame(selected.view.viewDirection, selected.view.rollDegrees)
-  );
+export function renderProjectionFeatureTags(root, geometry, frame, structure) {
+  const features = analyzeProjectionFeatures(geometry.vertices, geometry.edges, frame, structure);
   const { featureLine, hashtagBlock } = ensureFeatureUi(root);
   featureLine.innerHTML = projectionFeatureItems(features).map(([label, value]) => `
     <span class="projection-feature-tag"><b>${escapeHtml(label)}</b><span>${escapeHtml(value)}</span></span>
@@ -227,42 +194,4 @@ function renderFeatureUi(root, data) {
   const hashtags = projectionHashtags(features);
   hashtagBlock.innerHTML = hashtags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('');
   hashtagBlock.hidden = hashtags.length === 0;
-}
-
-const attachedSelectors = new WeakSet();
-function attachSelector(root, data) {
-  if (attachedSelectors.has(root)) return;
-  attachedSelectors.add(root);
-  let queued = false;
-  const update = () => {
-    if (queued) return;
-    queued = true;
-    queueMicrotask(() => {
-      queued = false;
-      renderFeatureUi(root, data);
-    });
-  };
-  const stage = root.querySelector('.projection-stage');
-  const tabs = root.querySelector('.projection-solid-tabs');
-  const rail = root.querySelector('.projection-class-rail');
-  if (stage) new MutationObserver(update).observe(stage, { attributes: true, attributeFilter: ['aria-valuetext'] });
-  if (tabs) new MutationObserver(update).observe(tabs, { attributes: true, subtree: true, attributeFilter: ['aria-selected'] });
-  if (rail) new MutationObserver(update).observe(rail, { childList: true });
-  update();
-}
-
-export async function mountProjectionFeatureTags() {
-  if (typeof document === 'undefined') return;
-  const data = await loadFeatureData();
-  const scan = () => document.querySelectorAll('#projectionSelectorPrototype').forEach(root => attachSelector(root, data));
-  scan();
-  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
-}
-
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => mountProjectionFeatureTags(), { once: true });
-  } else {
-    mountProjectionFeatureTags();
-  }
 }
