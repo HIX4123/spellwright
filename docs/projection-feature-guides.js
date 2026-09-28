@@ -73,7 +73,7 @@ function groupFeatureTags(featureLine) {
   guideGroup.dataset.featureGroup = 'guides';
   [
     ['dual', '쌍대그래프', '호버하면 교차점을 포함해 평면 분할한 사영도의 쌍대그래프를 표시합니다.'],
-    ['distance', '거리장', '호버하면 각 위치에서 가장 가까운 사영 선분까지의 유클리드 거리장을 표시합니다.']
+    ['medial', 'Medial Axis', '호버하면 각 내부 면의 경계 선분들로부터 얻은 medial axis를 표시합니다.']
   ].forEach(([kind, label, title]) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -330,6 +330,147 @@ export function distanceToSegment(point, start, end) {
   return Math.hypot(point[0] - nearest[0], point[1] - nearest[1]);
 }
 
+function pointInPolygon(point, polygon) {
+  if (polygon.length < 3) return false;
+  for (let index = 0; index < polygon.length; index += 1) {
+    const start = polygon[index];
+    const end = polygon[(index + 1) % polygon.length];
+    if (distanceToSegment(point, start, end) <= 1e-7) return true;
+  }
+
+  let inside = false;
+  for (let current = 0, previous = polygon.length - 1; current < polygon.length; previous = current++) {
+    const a = polygon[current];
+    const b = polygon[previous];
+    const crosses = (a[1] > point[1]) !== (b[1] > point[1]);
+    if (!crosses) continue;
+    const xAtY = (b[0] - a[0]) * (point[1] - a[1]) / (b[1] - a[1]) + a[0];
+    if (point[0] < xAtY) inside = !inside;
+  }
+  return inside;
+}
+
+function polygonBoundarySegments(polygon) {
+  return polygon.map((point, index) => [
+    point,
+    polygon[(index + 1) % polygon.length]
+  ]);
+}
+
+function nearestBoundaryFeature(point, boundarySegments) {
+  let edgeIndex = -1;
+  let distance = Infinity;
+  boundarySegments.forEach((segment, index) => {
+    const candidate = distanceToSegment(point, segment[0], segment[1]);
+    if (candidate < distance) {
+      edgeIndex = index;
+      distance = candidate;
+    }
+  });
+  return { edgeIndex, distance };
+}
+
+function medialCrossing(first, second, firstLabel, secondLabel, boundarySegments) {
+  const firstA = distanceToSegment(first, ...boundarySegments[firstLabel]);
+  const firstB = distanceToSegment(first, ...boundarySegments[secondLabel]);
+  const secondA = distanceToSegment(second, ...boundarySegments[firstLabel]);
+  const secondB = distanceToSegment(second, ...boundarySegments[secondLabel]);
+  const firstDifference = firstA - firstB;
+  const secondDifference = secondA - secondB;
+  const denominator = firstDifference - secondDifference;
+  const t = Math.abs(denominator) <= 1e-9
+    ? 0.5
+    : Math.max(0, Math.min(1, firstDifference / denominator));
+  return [
+    first[0] + (second[0] - first[0]) * t,
+    first[1] + (second[1] - first[1]) * t
+  ];
+}
+
+function uniquePoints(points, tolerance = 0.35) {
+  const unique = [];
+  for (const point of points) {
+    if (unique.some(existing => Math.hypot(
+      existing[0] - point[0],
+      existing[1] - point[1]
+    ) <= tolerance)) continue;
+    unique.push(point);
+  }
+  return unique;
+}
+
+export function medialAxisSegmentsForPolygon(polygon, requestedSpacing = 5) {
+  if (polygon.length < 3) return [];
+  const boundarySegments = polygonBoundarySegments(polygon);
+  const minX = Math.min(...polygon.map(point => point[0]));
+  const maxX = Math.max(...polygon.map(point => point[0]));
+  const minY = Math.min(...polygon.map(point => point[1]));
+  const maxY = Math.max(...polygon.map(point => point[1]));
+  const width = maxX - minX;
+  const height = maxY - minY;
+  if (width <= 1e-6 || height <= 1e-6) return [];
+
+  const spacing = Math.max(2.5, requestedSpacing);
+  const columns = Math.max(2, Math.ceil(width / spacing));
+  const rows = Math.max(2, Math.ceil(height / spacing));
+  const stepX = width / columns;
+  const stepY = height / rows;
+  const clearanceFloor = Math.min(stepX, stepY) * 0.32;
+  const samples = Array.from({ length: rows + 1 }, (_, row) => (
+    Array.from({ length: columns + 1 }, (_, column) => {
+      const point = [minX + column * stepX, minY + row * stepY];
+      if (!pointInPolygon(point, polygon)) return { point, inside: false, edgeIndex: -1, distance: 0 };
+      const nearest = nearestBoundaryFeature(point, boundarySegments);
+      return { point, inside: true, ...nearest };
+    })
+  ));
+
+  const segments = [];
+  const cellEdges = [[0, 1], [1, 2], [2, 3], [3, 0]];
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const corners = [
+        samples[row][column],
+        samples[row][column + 1],
+        samples[row + 1][column + 1],
+        samples[row + 1][column]
+      ];
+      const crossings = [];
+
+      for (const [firstIndex, secondIndex] of cellEdges) {
+        const first = corners[firstIndex];
+        const second = corners[secondIndex];
+        if (!first.inside || !second.inside) continue;
+        if (first.edgeIndex < 0 || second.edgeIndex < 0 || first.edgeIndex === second.edgeIndex) continue;
+        if (Math.max(first.distance, second.distance) < clearanceFloor) continue;
+        crossings.push(medialCrossing(
+          first.point,
+          second.point,
+          first.edgeIndex,
+          second.edgeIndex,
+          boundarySegments
+        ));
+      }
+
+      const points = uniquePoints(crossings);
+      if (points.length === 2) {
+        segments.push([points[0], points[1]]);
+      } else if (points.length > 2) {
+        const hub = [
+          points.reduce((sum, point) => sum + point[0], 0) / points.length,
+          points.reduce((sum, point) => sum + point[1], 0) / points.length
+        ];
+        points.forEach(point => segments.push([point, hub]));
+      }
+    }
+  }
+
+  return segments.filter(([start, end]) => (
+    Math.hypot(end[0] - start[0], end[1] - start[1]) > 0.45
+  ));
+}
+
 function renderHullGuide(overlay, guide, transform) {
   overlay.innerHTML = guide.hullLayers.map((layer, index) => {
     const boundary = orderedHullBoundary(layer);
@@ -387,36 +528,21 @@ function renderDualGuide(overlay, guide, transform) {
     + '<text class="projection-guide-caption" x="12" y="18">내부 면 → 노드 · 내부 공유 선분 → 간선</text>';
 }
 
-function renderDistanceGuide(overlay, guide, transform) {
-  const segments = guide.arrangementSegments.map(segment => segment.map(transform.point));
-  if (!segments.length) {
-    overlay.replaceChildren();
-    return;
-  }
+function renderMedialAxisGuide(overlay, guide, transform) {
+  const spacing = Math.max(3.5, Math.min(6, Math.min(transform.width, transform.height) / 72));
+  const segments = guide.dualGraph.faces.flatMap(face => {
+    const polygon = face.nodeIndices.map(index => transform.point(guide.arrangementNodes[index]));
+    return medialAxisSegmentsForPolygon(polygon, spacing);
+  });
 
-  const columns = 32;
-  const rows = Math.max(18, Math.round(columns * transform.height / transform.width));
-  const cellWidth = transform.width / columns;
-  const cellHeight = transform.height / rows;
-  const cutoff = Math.max(24, Math.min(transform.width, transform.height) * 0.22);
-  let cells = '';
+  const path = segments.map(([start, end]) => (
+    `M ${svgNumber(start[0])} ${svgNumber(start[1])} L ${svgNumber(end[0])} ${svgNumber(end[1])}`
+  )).join(' ');
 
-  for (let row = 0; row < rows; row += 1) {
-    for (let column = 0; column < columns; column += 1) {
-      const center = [(column + 0.5) * cellWidth, (row + 0.5) * cellHeight];
-      const distance = Math.min(...segments.map(([start, end]) => distanceToSegment(center, start, end)));
-      const normalized = Math.min(1, distance / cutoff);
-      const intensity = Math.exp(-3.2 * normalized * normalized);
-      const opacity = 0.025 + intensity * 0.36;
-      cells += `<rect class="projection-distance-cell"
-        x="${svgNumber(column * cellWidth)}" y="${svgNumber(row * cellHeight)}"
-        width="${svgNumber(cellWidth + 0.35)}" height="${svgNumber(cellHeight + 0.35)}"
-        fill-opacity="${opacity.toFixed(3)}" />`;
-    }
-  }
-
-  overlay.innerHTML = `<g class="projection-distance-field">${cells}</g>
-    <text class="projection-guide-caption" x="12" y="18">선분까지 거리 · 밝을수록 가까움</text>`;
+  overlay.innerHTML = path
+    ? `<path class="projection-guide-medial-axis" d="${path}" />
+       <text class="projection-guide-caption" x="12" y="18">Medial Axis · 내부 면 경계의 등거리 중심축</text>`
+    : '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 추출 가능한 내부 면이 없음</text>';
 }
 
 function showGuide(root, kind) {
@@ -439,7 +565,7 @@ function showGuide(root, kind) {
   if (kind === 'symmetry') renderSymmetryGuide(overlay, guide, transform);
   else if (kind === 'hull') renderHullGuide(overlay, guide, transform);
   else if (kind === 'dual') renderDualGuide(overlay, guide, transform);
-  else if (kind === 'distance') renderDistanceGuide(overlay, guide, transform);
+  else if (kind === 'medial') renderMedialAxisGuide(overlay, guide, transform);
   else renderLayerGuide(overlay, guide, transform);
   overlay.classList.add('is-visible');
 }
