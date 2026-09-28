@@ -1,14 +1,11 @@
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
+import { projectionScreenTransform } from './projection-core.js?v=ponytail-20260928-1';
+import { analyzeProjectionStructure, convexHullIndices } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 
 const activeGuideByRoot = new WeakMap();
 const guideByRoot = new WeakMap();
 
 export function analyzeProjectionGuides(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
   const arrangementNodes = structure.nodes.map(node => node.xy.slice());
-  const arrangementSegments = [...structure.segments].map(key => {
-    const [a, b] = key.split(':').map(Number);
-    return [arrangementNodes[a].slice(), arrangementNodes[b].slice()];
-  });
   return {
     points: structure.points,
     symmetryAxisAngles: structure.symmetryAxisAngles,
@@ -20,7 +17,6 @@ export function analyzeProjectionGuides(vertices, edges, frame, structure = anal
     )),
     hullLayerPointCounts: structure.convexHullLayerPointCounts,
     arrangementNodes,
-    arrangementSegments,
     dualGraph: planarDualFromStructure(structure)
   };
 }
@@ -101,34 +97,6 @@ function ensureOverlay(root) {
   return overlay;
 }
 
-function stageTransform(points, stage) {
-  const rect = stage.getBoundingClientRect();
-  const width = Math.max(1, rect.width);
-  const height = Math.max(1, rect.height);
-  const minX = Math.min(...points.map(point => point[0]));
-  const maxX = Math.max(...points.map(point => point[0]));
-  const minY = Math.min(...points.map(point => point[1]));
-  const maxY = Math.max(...points.map(point => point[1]));
-  const span = Math.max(maxX - minX, maxY - minY, 1e-9);
-  const padding = span * 0.15;
-  const scale = Math.min(
-    width / (maxX - minX + padding * 2),
-    height / (maxY - minY + padding * 2)
-  );
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  return {
-    width,
-    height,
-    span,
-    scale,
-    point: ([x, y]) => [
-      width / 2 + (x - centerX) * scale,
-      height / 2 - (y - centerY) * scale
-    ]
-  };
-}
-
 function svgNumber(value) {
   return Number(value.toFixed(2));
 }
@@ -161,26 +129,10 @@ function renderLayerGuide(overlay, guide, transform) {
   `).join('');
 }
 
-function hullCross(origin, first, second) {
-  return (first[0] - origin[0]) * (second[1] - origin[1])
-    - (first[1] - origin[1]) * (second[0] - origin[0]);
-}
-
 export function orderedHullBoundary(points) {
-  if (points.length <= 2) return points.map(point => point.slice());
-  const sorted = points.map(point => point.slice()).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const lower = [];
-  for (const point of sorted) {
-    while (lower.length >= 2 && hullCross(lower.at(-2), lower.at(-1), point) <= 1e-10) lower.pop();
-    lower.push(point);
-  }
-  const upper = [];
-  for (let index = sorted.length - 1; index >= 0; index -= 1) {
-    const point = sorted[index];
-    while (upper.length >= 2 && hullCross(upper.at(-2), upper.at(-1), point) <= 1e-10) upper.pop();
-    upper.push(point);
-  }
-  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+  const nodes = points.map(xy => ({ xy }));
+  return convexHullIndices(nodes, points.map((_, index) => index), 1e-10)
+    .map(index => points[index].slice());
 }
 
 function directedEdgeKey(from, to) {
@@ -431,16 +383,7 @@ export function planarDualFromStructure(structure) {
 }
 
 export function distanceToSegment(point, start, end) {
-  const dx = end[0] - start[0];
-  const dy = end[1] - start[1];
-  const lengthSquared = dx * dx + dy * dy;
-  if (lengthSquared <= 1e-18) return Math.hypot(point[0] - start[0], point[1] - start[1]);
-  const t = Math.max(0, Math.min(
-    1,
-    ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / lengthSquared
-  ));
-  const nearest = [start[0] + dx * t, start[1] + dy * t];
-  return Math.hypot(point[0] - nearest[0], point[1] - nearest[1]);
+  return closestPointOnSegment(point, start, end).distance;
 }
 
 function pointInPolygon(point, polygon) {
@@ -469,7 +412,6 @@ function polygonBoundarySegments(polygon) {
     polygon[(index + 1) % polygon.length]
   ]);
 }
-
 
 function dualFacePoint(face) {
   return face.dualPoint ?? face.centroid;
@@ -501,9 +443,9 @@ function closestPointOnSegment(point, start, end) {
 
 function dualGraphComponents(dualGraph) {
   const adjacency = Array.from({ length: dualGraph.faces.length }, () => []);
-  dualGraph.edges.forEach((edge, edgeIndex) => {
-    adjacency[edge.from].push({ node: edge.to, edgeIndex });
-    if (edge.to !== edge.from) adjacency[edge.to].push({ node: edge.from, edgeIndex });
+  dualGraph.edges.forEach(edge => {
+    adjacency[edge.from].push(edge.to);
+    if (edge.to !== edge.from) adjacency[edge.to].push(edge.from);
   });
 
   const componentOf = Array(dualGraph.faces.length).fill(-1);
@@ -517,7 +459,7 @@ function dualGraphComponents(dualGraph) {
     while (stack.length) {
       const node = stack.pop();
       nodes.push(node);
-      adjacency[node].forEach(({ node: neighbor }) => {
+      adjacency[node].forEach(neighbor => {
         if (componentOf[neighbor] >= 0) return;
         componentOf[neighbor] = index;
         stack.push(neighbor);
@@ -549,7 +491,6 @@ function nearestDualSeeds(dualGraph, nodeIndices, edgeIndices, origin, tolerance
 
 export function dualPropagationSchedule(
   dualGraph,
-  arrangementNodes = [],
   origin = [0, 0],
   totalDurationMs = 1000
 ) {
@@ -653,7 +594,7 @@ export function dualPropagationSchedule(
   });
   for (let head = 0; head < queue.length; head += 1) {
     const node = queue[head];
-    adjacency[node].forEach(({ node: neighbor }) => {
+    adjacency[node].forEach(neighbor => {
       const nextLevel = levels[node] + 1;
       if (nextLevel >= levels[neighbor]) return;
       levels[neighbor] = nextLevel;
@@ -786,10 +727,10 @@ export function medialPropagationSchedule(
   }));
   const rootIndex = addMedialGraphPoint(points, root, tolerance);
   const adjacency = Array.from({ length: points.length }, () => []);
-  graphSegments.forEach((segment, index) => {
+  graphSegments.forEach(segment => {
     const length = pointDistance(segment.start, segment.end);
-    adjacency[segment.a].push({ node: segment.b, segmentIndex: index, length });
-    adjacency[segment.b].push({ node: segment.a, segmentIndex: index, length });
+    adjacency[segment.a].push({ node: segment.b, length });
+    adjacency[segment.b].push({ node: segment.a, length });
   });
 
   const distances = Array(points.length).fill(Infinity);
@@ -983,7 +924,6 @@ function renderHullGuide(overlay, guide, transform) {
 }
 
 
-
 function animatedDualPath(points, timing, extraClass = '') {
   const pointText = points.map(point => `${svgNumber(point[0])},${svgNumber(point[1])}`).join(' ');
   const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${Math.max(1, timing.durationMs).toFixed(2)}ms`;
@@ -997,7 +937,6 @@ function dualGraphMarkup(guide, transform, schedule = null) {
   ));
   const activeSchedule = schedule ?? dualPropagationSchedule(
     guide.dualGraph,
-    guide.arrangementNodes,
     [0, 0],
     1000
   );
@@ -1088,7 +1027,7 @@ function animatedMedialAxisMarkup(guide, transform, schedule) {
 }
 
 function renderDualGuide(overlay, guide, transform) {
-  const schedule = dualPropagationSchedule(guide.dualGraph, guide.arrangementNodes, [0, 0], 1000);
+  const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
   overlay.innerHTML = dualGraphMarkup(guide, transform, schedule)
     + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 동일 레벨 간선은 양쪽에서 중앙으로 · 1000ms</text>';
 }
@@ -1101,7 +1040,7 @@ function renderMedialAxisGuide(overlay, guide, transform) {
 }
 
 function renderDualMedialGuide(overlay, guide, transform) {
-  const schedule = dualPropagationSchedule(guide.dualGraph, guide.arrangementNodes, [0, 0], 1000);
+  const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
   const medialMarkup = animatedMedialAxisMarkup(guide, transform, schedule);
   overlay.innerHTML = `<g class="projection-guide-combined-medial">${medialMarkup}</g>`
     + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform, schedule)}</g>`
@@ -1122,7 +1061,8 @@ function showGuide(root, kind) {
     frame,
     structure
   );
-  const transform = stageTransform(guide.points, stage);
+  const rect = stage.getBoundingClientRect();
+  const transform = projectionScreenTransform(guide.points, Math.max(1, rect.width), Math.max(1, rect.height));
   overlay.setAttribute('viewBox', `0 0 ${transform.width} ${transform.height}`);
   overlay.dataset.guide = kind;
   if (kind === 'symmetry') renderSymmetryGuide(overlay, guide, transform);

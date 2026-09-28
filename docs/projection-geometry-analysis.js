@@ -1,4 +1,4 @@
-import { projectVertices, projectionEvents } from './projection-core.js';
+import { projectVertices, projectionEvents } from './projection-core.js?v=ponytail-20260928-1';
 
 const TAU = Math.PI * 2;
 const RADIAL_TOLERANCE_FACTOR = 0.002;
@@ -105,7 +105,7 @@ function eulerTrailAnalysis(nodes, segments) {
   };
 }
 
-function convexHullIndices(nodes, indices, areaTolerance) {
+export function convexHullIndices(nodes, indices, areaTolerance) {
   if (indices.length <= 2) return indices.slice();
   const sorted = indices.slice().sort((a, b) => (
     nodes[a].xy[0] - nodes[b].xy[0] || nodes[a].xy[1] - nodes[b].xy[1]
@@ -184,28 +184,24 @@ function convexHullLayers(nodes, areaTolerance) {
   return layers;
 }
 
-function concentricRadialLayers(nodes, scale) {
-  const tolerance = scale * RADIAL_TOLERANCE_FACTOR;
+export function groupedRadiusBands(nodes, tolerance) {
   const sorted = nodes
     .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
     .sort((a, b) => a.radius - b.radius);
   const bands = [];
-
   for (const item of sorted) {
     const current = bands.at(-1);
     if (!current || Math.abs(item.radius - current.radius) > tolerance) {
-      bands.push({ radius: item.radius, nodeIndices: [item.index], radii: [item.radius] });
+      bands.push({ radius: item.radius, nodeIndices: [item.index] });
       continue;
     }
     current.nodeIndices.push(item.index);
-    current.radii.push(item.radius);
-    current.radius = current.radii.reduce((sum, value) => sum + value, 0) / current.radii.length;
+    current.radius = current.nodeIndices.reduce((sum, nodeIndex) => {
+      const [x, y] = nodes[nodeIndex].xy;
+      return sum + Math.hypot(x, y);
+    }, 0) / current.nodeIndices.length;
   }
-
-  return {
-    layers: bands.map(band => band.nodeIndices),
-    radii: bands.map(band => band.radius)
-  };
+  return bands;
 }
 
 function reflectionTransform(axisAngle) {
@@ -322,7 +318,7 @@ function arrangementReflectionAxes(nodes, outerLayer, validationIndices, rotatio
 
 export function analyzeProjectionStructure(vertices, edges, frame) {
   const arrangement = projectedArrangement(vertices, edges, frame);
-  const radial = concentricRadialLayers(arrangement.nodes, arrangement.scale);
+  const bands = groupedRadiusBands(arrangement.nodes, arrangement.scale * RADIAL_TOLERANCE_FACTOR);
   const euler = eulerTrailAnalysis(arrangement.nodes, arrangement.segments);
   const allNodeIndices = arrangement.nodes.map((_, index) => index);
   const hullAreaTolerance = arrangement.scale * arrangement.scale * 1e-8;
@@ -349,12 +345,12 @@ export function analyzeProjectionStructure(vertices, edges, frame) {
     points: arrangement.points,
     nodes: arrangement.nodes,
     segments: arrangement.segments,
-    layers: radial.layers,
-    layerPointCounts: radial.layers.map(layer => layer.length),
+    layers: bands.map(band => band.nodeIndices),
+    layerPointCounts: bands.map(band => band.nodeIndices.length),
     convexHullLayers: hullLayers,
     convexHullLayerPointCounts: hullLayers.map(layer => layer.length),
     circleCenter: [0, 0],
-    circleRadii: radial.radii,
+    circleRadii: bands.map(band => band.radius),
     symmetryAxisAngles,
     rotationalOrder,
     eulerTrail: euler.eulerTrail,

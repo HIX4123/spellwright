@@ -81,7 +81,7 @@ test('dual propagation starts from a centered dual node when one exists', () => 
       { from: 0, to: 1, segment: [[1, -1], [1, 1]] }
     ]
   };
-  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
   assert.equal(schedule.seedMode, 'center-node');
   assert.equal(schedule.nodeTimes[0], 0);
   assert.ok(schedule.nodeTimes[1] > 0);
@@ -98,7 +98,7 @@ test('dual propagation creates a virtual edge-midpoint seed when an edge crosses
       { from: 0, to: 1, segment: [[0, -1], [0, 1]] }
     ]
   };
-  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
   assert.equal(schedule.seedMode, 'center-edge');
   assert.equal(schedule.edgeTimes[0].mode, 'split');
   assert.ok(schedule.nodeTimes[0] > 0 && schedule.nodeTimes[1] > 0);
@@ -118,7 +118,7 @@ test('dual propagation starts every node on the innermost radial tier and meets 
       { from: 1, to: 2, segment: [[1, 3], [2, 2]] }
     ]
   };
-  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
   const nodeSeeds = schedule.seeds.filter(seed => seed.type === 'node').map(seed => seed.node).sort();
   assert.deepEqual(nodeSeeds, [0, 1]);
   assert.deepEqual(schedule.levels, [0, 0, 1]);
@@ -139,7 +139,7 @@ test('edge midpoints participate only in initial seed selection', () => {
       { from: 1, to: 2, segment: [[1, 4], [2, 4]] }
     ]
   };
-  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
   assert.ok(schedule.seeds.some(seed => seed.type === 'edge' && seed.edgeIndex === 0));
   assert.equal(schedule.edgeTimes[0].mode, 'split');
   assert.ok(schedule.levels[2] > schedule.levels[1]);
@@ -225,11 +225,6 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         features.convexHullLayerPointCounts,
         `${solid.name} class ${item.id} convex hull layer signature`
       );
-      assert.equal(
-        guides.arrangementSegments.length,
-        structure.segments.size,
-        `${solid.name} class ${item.id} distance field segment source`
-      );
       assert.ok(
         guides.dualGraph.faces.every(face => !('isOuter' in face)),
         `${solid.name} class ${item.id} dual graph excludes exterior face`
@@ -261,7 +256,6 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
       );
       const propagation = dualPropagationSchedule(
         guides.dualGraph,
-        guides.arrangementNodes,
         [0, 0],
         1000
       );

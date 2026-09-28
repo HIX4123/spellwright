@@ -1,3 +1,4 @@
+import { escapeHtml, section } from './html.js';
 const STATS_URL = './data/stats.json';
 
 let statsData;
@@ -5,19 +6,6 @@ let statsViewActive = false;
 
 const view = document.querySelector('#view');
 const nav = document.querySelector('#nav');
-
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function section(title, subtitle = '') {
-  return `<div class="section-head"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(subtitle)}</p></div>`;
-}
 
 async function loadStats() {
   if (statsData) return statsData;
