@@ -153,9 +153,6 @@
   vector-effect: non-scaling-stroke;
 }
 
-.projection-guide-dual-node.is-outer {
-  stroke-dasharray: 3 2;
-}
 
 .projection-guide-dual-label {
   font-size: 9px;
