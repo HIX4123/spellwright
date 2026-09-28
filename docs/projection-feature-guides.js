@@ -72,8 +72,9 @@ function groupFeatureTags(featureLine) {
   guideGroup.className = 'projection-feature-group projection-guide-tool-group';
   guideGroup.dataset.featureGroup = 'guides';
   [
-    ['dual', '쌍대그래프', '호버하면 교차점을 포함해 평면 분할한 사영도의 쌍대그래프를 표시합니다.'],
-    ['medial', 'Medial Axis', '호버하면 각 내부 면의 경계 선분들로부터 얻은 medial axis를 표시합니다.']
+    ['dual', '쌍대그래프', '호버하면 각 내부 면의 최대 clearance 점에 노드를 둔 쌍대그래프를 표시합니다.'],
+    ['medial', 'Medial Axis', '호버하면 각 내부 면의 경계 선분들로부터 얻은 medial axis를 표시합니다.'],
+    ['dual-medial', 'Dual + Medial', '호버하면 쌍대그래프와 medial axis를 겹쳐서 표시합니다.']
   ].forEach(([kind, label, title]) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -218,6 +219,114 @@ function polygonCentroid(points) {
   return [xSum / (3 * crossSum), ySum / (3 * crossSum)];
 }
 
+function signedDistanceToPolygon(point, polygon) {
+  if (!polygon.length) return -Infinity;
+  const boundaryDistance = Math.min(...polygonBoundarySegments(polygon).map(([start, end]) => (
+    distanceToSegment(point, start, end)
+  )));
+  return pointInPolygon(point, polygon) ? boundaryDistance : -boundaryDistance;
+}
+
+function makeClearanceCell(x, y, halfSize, polygon) {
+  const distance = signedDistanceToPolygon([x, y], polygon);
+  return {
+    x,
+    y,
+    halfSize,
+    distance,
+    maxDistance: distance + halfSize * Math.SQRT2
+  };
+}
+
+function maxHeapPush(heap, cell) {
+  heap.push(cell);
+  let index = heap.length - 1;
+  while (index > 0) {
+    const parent = Math.floor((index - 1) / 2);
+    if (heap[parent].maxDistance >= heap[index].maxDistance) break;
+    [heap[parent], heap[index]] = [heap[index], heap[parent]];
+    index = parent;
+  }
+}
+
+function maxHeapPop(heap) {
+  if (!heap.length) return null;
+  const top = heap[0];
+  const tail = heap.pop();
+  if (heap.length && tail) {
+    heap[0] = tail;
+    let index = 0;
+    while (true) {
+      const left = index * 2 + 1;
+      const right = left + 1;
+      let largest = index;
+      if (left < heap.length && heap[left].maxDistance > heap[largest].maxDistance) largest = left;
+      if (right < heap.length && heap[right].maxDistance > heap[largest].maxDistance) largest = right;
+      if (largest === index) break;
+      [heap[index], heap[largest]] = [heap[largest], heap[index]];
+      index = largest;
+    }
+  }
+  return top;
+}
+
+export function maximumClearancePointForPolygon(polygon, requestedPrecision = null) {
+  if (!polygon.length) return { point: [0, 0], clearance: 0 };
+  if (polygon.length < 3) return { point: polygon[0].slice(), clearance: 0 };
+
+  const minX = Math.min(...polygon.map(point => point[0]));
+  const maxX = Math.max(...polygon.map(point => point[0]));
+  const minY = Math.min(...polygon.map(point => point[1]));
+  const maxY = Math.max(...polygon.map(point => point[1]));
+  const width = maxX - minX;
+  const height = maxY - minY;
+  const span = Math.max(width, height);
+  if (span <= 1e-12) return { point: polygon[0].slice(), clearance: 0 };
+
+  const cellSize = Math.min(width, height);
+  if (cellSize <= 1e-12) {
+    const centroid = polygonCentroid(polygon);
+    return { point: centroid, clearance: Math.max(0, signedDistanceToPolygon(centroid, polygon)) };
+  }
+
+  const precision = requestedPrecision ?? Math.max(span * 0.002, 1e-7);
+  const halfSize = cellSize / 2;
+  const heap = [];
+  for (let x = minX; x < maxX; x += cellSize) {
+    for (let y = minY; y < maxY; y += cellSize) {
+      maxHeapPush(heap, makeClearanceCell(
+        Math.min(x + halfSize, maxX),
+        Math.min(y + halfSize, maxY),
+        halfSize,
+        polygon
+      ));
+    }
+  }
+
+  const centroid = polygonCentroid(polygon);
+  let best = makeClearanceCell(centroid[0], centroid[1], 0, polygon);
+  const boxCenter = makeClearanceCell((minX + maxX) / 2, (minY + maxY) / 2, 0, polygon);
+  if (boxCenter.distance > best.distance) best = boxCenter;
+
+  while (heap.length) {
+    const cell = maxHeapPop(heap);
+    if (!cell) break;
+    if (cell.distance > best.distance) best = cell;
+    if (cell.maxDistance - best.distance <= precision) continue;
+
+    const nextHalf = cell.halfSize / 2;
+    maxHeapPush(heap, makeClearanceCell(cell.x - nextHalf, cell.y - nextHalf, nextHalf, polygon));
+    maxHeapPush(heap, makeClearanceCell(cell.x + nextHalf, cell.y - nextHalf, nextHalf, polygon));
+    maxHeapPush(heap, makeClearanceCell(cell.x - nextHalf, cell.y + nextHalf, nextHalf, polygon));
+    maxHeapPush(heap, makeClearanceCell(cell.x + nextHalf, cell.y + nextHalf, nextHalf, polygon));
+  }
+
+  return {
+    point: [best.x, best.y],
+    clearance: Math.max(0, best.distance)
+  };
+}
+
 export function planarDualFromStructure(structure) {
   const nodes = structure.nodes.map(node => node.xy.slice());
   const segments = [...structure.segments].map(key => key.split(':').map(Number));
@@ -294,9 +403,13 @@ export function planarDualFromStructure(structure) {
   const rawToFace = new Map();
   const faces = boundedRaw.map(({ face, index }, faceIndex) => {
     rawToFace.set(index, faceIndex);
+    const polygon = face.nodeIndices.map(nodeIndex => nodes[nodeIndex]);
+    const maximumClearance = maximumClearancePointForPolygon(polygon);
     return {
       nodeIndices: face.nodeIndices.slice(),
       centroid: face.centroid.slice(),
+      dualPoint: maximumClearance.point,
+      clearance: maximumClearance.clearance,
       area: face.area
     };
   });
@@ -367,8 +480,8 @@ function distanceToPolygon(point, polygon) {
 
 function dualEdgeVisualLength(edge, faces) {
   if (!faces[edge.from] || !faces[edge.to]) return 0;
-  const start = faces[edge.from].centroid;
-  const end = faces[edge.to].centroid;
+  const start = faces[edge.from].dualPoint ?? faces[edge.from].centroid;
+  const end = faces[edge.to].dualPoint ?? faces[edge.to].centroid;
   const midpoint = [
     (edge.segment[0][0] + edge.segment[1][0]) / 2,
     (edge.segment[0][1] + edge.segment[1][1]) / 2
@@ -648,8 +761,10 @@ function renderHullGuide(overlay, guide, transform) {
 }
 
 
-function renderDualGuide(overlay, guide, transform) {
-  const facePoints = guide.dualGraph.faces.map(face => transform.point(face.centroid));
+function dualGraphMarkup(guide, transform) {
+  const facePoints = guide.dualGraph.faces.map(face => (
+    transform.point(face.dualPoint ?? face.centroid)
+  ));
   const schedule = dualPropagationSchedule(
     guide.dualGraph,
     guide.arrangementNodes,
@@ -691,25 +806,40 @@ function renderDualGuide(overlay, guide, transform) {
     `;
   }).join('');
 
-  overlay.innerHTML = edgeMarkup + nodeMarkup
-    + '<text class="projection-guide-caption" x="12" y="18">내부 면 → 노드 · 내부 공유 선분 → 간선</text>';
+  return edgeMarkup + nodeMarkup;
 }
 
-function renderMedialAxisGuide(overlay, guide, transform) {
+function medialAxisMarkup(guide, transform) {
   const spacing = Math.max(3.5, Math.min(6, Math.min(transform.width, transform.height) / 72));
   const segments = guide.dualGraph.faces.flatMap(face => {
     const polygon = face.nodeIndices.map(index => transform.point(guide.arrangementNodes[index]));
     return medialAxisSegmentsForPolygon(polygon, spacing);
   });
+  if (!segments.length) return '';
 
   const path = segments.map(([start, end]) => (
     `M ${svgNumber(start[0])} ${svgNumber(start[1])} L ${svgNumber(end[0])} ${svgNumber(end[1])}`
-  )).join(' ');
+  )).join('');
+  return `<path class="projection-guide-medial-axis" d="${path}" />`;
+}
 
-  overlay.innerHTML = path
-    ? `<path class="projection-guide-medial-axis" d="${path}" />
-       <text class="projection-guide-caption" x="12" y="18">Medial Axis · 내부 면 경계의 등거리 중심축</text>`
+function renderDualGuide(overlay, guide, transform) {
+  overlay.innerHTML = dualGraphMarkup(guide, transform)
+    + '<text class="projection-guide-caption" x="12" y="18">최대 clearance 점 → 쌍대 노드 · 내부 공유 선분 → 간선</text>';
+}
+
+function renderMedialAxisGuide(overlay, guide, transform) {
+  const markup = medialAxisMarkup(guide, transform);
+  overlay.innerHTML = markup
+    ? markup + '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 내부 면 경계의 등거리 중심축</text>'
     : '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 추출 가능한 내부 면이 없음</text>';
+}
+
+function renderDualMedialGuide(overlay, guide, transform) {
+  const medialMarkup = medialAxisMarkup(guide, transform);
+  overlay.innerHTML = `<g class="projection-guide-combined-medial">${medialMarkup}</g>`
+    + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform)}</g>`
+    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 쌍대 노드와 중심축 비교</text>';
 }
 
 function showGuide(root, kind) {
@@ -733,6 +863,7 @@ function showGuide(root, kind) {
   else if (kind === 'hull') renderHullGuide(overlay, guide, transform);
   else if (kind === 'dual') renderDualGuide(overlay, guide, transform);
   else if (kind === 'medial') renderMedialAxisGuide(overlay, guide, transform);
+  else if (kind === 'dual-medial') renderDualMedialGuide(overlay, guide, transform);
   else renderLayerGuide(overlay, guide, transform);
   overlay.classList.add('is-visible');
 }
