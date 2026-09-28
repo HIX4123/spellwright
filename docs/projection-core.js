@@ -1,8 +1,6 @@
-const SELECTOR_ID = 'projectionSelectorPrototype';
 const SWIPE_THRESHOLD = 0.23;
 const VELOCITY_THRESHOLD = 0.55;
 const EVENT_DIGITS = 8;
-const TAU = Math.PI * 2;
 
 export function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -310,5 +308,30 @@ export function projectionMetrics(vertices, edges, frame) {
     crossings: events.filter(event => event.vertexIds.size === 0 && event.edgeIds.size >= 2).length,
     vertexClusters: vertexEvents.length,
     maxVertexOverlap: Math.max(1, ...vertexEvents.map(event => event.vertexIds.size))
+  };
+}
+
+export function projectionScreenTransform(points, width, height) {
+  const minX = Math.min(...points.map(point => point[0]));
+  const maxX = Math.max(...points.map(point => point[0]));
+  const minY = Math.min(...points.map(point => point[1]));
+  const maxY = Math.max(...points.map(point => point[1]));
+  const span = Math.max(maxX - minX, maxY - minY, 1e-9);
+  const padding = span * 0.15;
+  const scale = Math.min(
+    width / (maxX - minX + padding * 2),
+    height / (maxY - minY + padding * 2)
+  );
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  return {
+    width,
+    height,
+    span,
+    scale,
+    point: ([x, y]) => [
+      width / 2 + (x - centerX) * scale,
+      height / 2 - (y - centerY) * scale
+    ]
   };
 }

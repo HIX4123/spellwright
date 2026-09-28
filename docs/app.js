@@ -1,5 +1,6 @@
-import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=routing-20260823-1';
-import { mountProjectionSelector } from './projection-selector.js?v=category-readability-20260928-1';
+import { escapeHtml, section } from './html.js';
+import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
+import { mountProjectionSelector } from './projection-selector.js?v=ponytail-20260928-1';
 
 let data;
 let relationships;
@@ -136,19 +137,6 @@ function categoryLabel(id) {
     roguelite:'Roguelite',
     legacy:'Legacy'
   })[id] || id;
-}
-
-function section(title, subtitle='') {
-  return `<div class="section-head"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(subtitle)}</p></div>`;
-}
-
-function escapeHtml(value='') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
 }
 
 function render() {

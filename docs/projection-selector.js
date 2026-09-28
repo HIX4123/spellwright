@@ -1,17 +1,19 @@
+import { escapeHtml } from './html.js';
 import {
   clamp,
   dragProgress,
   geometryForSolid,
   interpolateFrames,
   projectVertices,
+  projectionScreenTransform,
   projectionEvents,
   swipeDirection,
   viewFrame,
   wrapIndex
-} from './projection-core.js?v=projection-core-20260903-1';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
-import { renderProjectionFeatureTags } from './projection-features.js?v=category-readability-20260928-1';
-import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=refactor-20260927-1';
+} from './projection-core.js?v=ponytail-20260928-1';
+import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
+import { renderProjectionFeatureTags } from './projection-features.js?v=ponytail-20260928-1';
+import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=ponytail-20260928-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -111,15 +113,6 @@ function optionMarkup(values, suffix, labels = {}, emptyLabel = '전체') {
   })].join('');
 }
 
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
 function resizeCanvas(canvas) {
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -140,24 +133,9 @@ function renderProjection(canvas, geometry, frame) {
   const vertexEvents = events.filter(event => event.vertexIds.size > 0);
   const crossingEvents = events.filter(event => event.vertexIds.size === 0 && event.edgeIds.size >= 2);
 
-  const minX = Math.min(...points.map(point => point[0]));
-  const maxX = Math.max(...points.map(point => point[0]));
-  const minY = Math.min(...points.map(point => point[1]));
-  const maxY = Math.max(...points.map(point => point[1]));
-  const span = Math.max(maxX - minX, maxY - minY, 1e-9);
-  const padding = span * 0.15;
   const cssWidth = width / dpr;
   const cssHeight = height / dpr;
-  const scale = Math.min(
-    cssWidth / (maxX - minX + padding * 2),
-    cssHeight / (maxY - minY + padding * 2)
-  );
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const screenPoint = point => [
-    cssWidth / 2 + (point[0] - centerX) * scale,
-    cssHeight / 2 - (point[1] - centerY) * scale
-  ];
+  const { point: screenPoint } = projectionScreenTransform(points, cssWidth, cssHeight);
 
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   const ink = dark ? '#e8edf2' : '#101820';
@@ -475,7 +453,6 @@ function createSelector(entries) {
     const order = preferredKey && keys.includes(preferredKey)
       ? [...keys.filter(key => key !== preferredKey), preferredKey]
       : keys;
-    let changed = false;
 
     for (let pass = 0; pass < 2; pass += 1) {
       for (const key of order) {
@@ -495,10 +472,8 @@ function createSelector(entries) {
           control.emptyLabel
         );
         if (previous && values.some(value => String(value) === previous)) control.element.value = previous;
-        else if (previous) changed = true;
       }
     }
-    return changed;
   }
   const targetAtDirection = direction => {
     const visible = visibleTargets();

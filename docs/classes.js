@@ -1,3 +1,4 @@
+import { escapeHtml, section } from './html.js';
 const CLASSES_URL = './data/classes.json';
 const CLASSES_HASH = '#classes';
 const CLASS_LINK_GAP = 16;
@@ -9,19 +10,6 @@ let classesViewActive = false;
 
 const view = document.querySelector('#view');
 const nav = document.querySelector('#nav');
-
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function section(title, subtitle = '') {
-  return `<div class="section-head"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(subtitle)}</p></div>`;
-}
 
 async function loadClasses() {
   if (classData) return classData;

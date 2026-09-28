@@ -1,8 +1,9 @@
+import { escapeHtml } from './html.js';
 import {
   projectVertices,
   projectionEvents
-} from './projection-core.js';
-import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=convex-hull-layers-20260927-1';
+} from './projection-core.js?v=ponytail-20260928-1';
+import { analyzeProjectionStructure, convexHullIndices, groupedRadiusBands } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 
 const TAU = Math.PI * 2;
 const ANGLE_TOLERANCE = 0.012;
@@ -10,10 +11,6 @@ const POSITION_TOLERANCE_FACTOR = 1e-5;
 
 function edgeKey(a, b) {
   return a <= b ? `${a}:${b}` : `${b}:${a}`;
-}
-
-function nearlyEqual(a, b, tolerance) {
-  return Math.abs(a - b) <= tolerance;
 }
 
 function projectedVertexGraph(vertices, edges, frame) {
@@ -39,26 +36,6 @@ function projectedVertexGraph(vertices, edges, frame) {
   return { nodes, edgeCounts };
 }
 
-function groupedRadiusBands(nodes, tolerance) {
-  const sorted = nodes
-    .map((node, index) => ({ index, radius: Math.hypot(node.xy[0], node.xy[1]) }))
-    .sort((a, b) => a.radius - b.radius);
-  const bands = [];
-  for (const item of sorted) {
-    const current = bands.at(-1);
-    if (!current || !nearlyEqual(item.radius, current.radius, tolerance)) {
-      bands.push({ radius: item.radius, nodeIndices: [item.index] });
-      continue;
-    }
-    current.nodeIndices.push(item.index);
-    current.radius = current.nodeIndices.reduce((sum, nodeIndex) => {
-      const [x, y] = nodes[nodeIndex].xy;
-      return sum + Math.hypot(x, y);
-    }, 0) / current.nodeIndices.length;
-  }
-  return bands;
-}
-
 function regularCycleSides(nodes, edgeCounts, band, tolerance) {
   if (!band || band.radius <= tolerance || band.nodeIndices.length < 3) return 0;
   const ordered = band.nodeIndices
@@ -74,28 +51,6 @@ function regularCycleSides(nodes, edgeCounts, band, tolerance) {
     if (!edgeCounts.has(edgeKey(current.index, next.index))) return 0;
   }
   return ordered.length;
-}
-
-function cross2d(origin, first, second) {
-  return (first[0] - origin[0]) * (second[1] - origin[1])
-    - (first[1] - origin[1]) * (second[0] - origin[0]);
-}
-
-function convexHullVertexCount(nodes, tolerance) {
-  if (nodes.length <= 2) return nodes.length;
-  const sorted = nodes.map(node => node.xy.slice()).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const lower = [];
-  for (const point of sorted) {
-    while (lower.length >= 2 && cross2d(lower.at(-2), lower.at(-1), point) <= tolerance) lower.pop();
-    lower.push(point);
-  }
-  const upper = [];
-  for (let index = sorted.length - 1; index >= 0; index -= 1) {
-    const point = sorted[index];
-    while (upper.length >= 2 && cross2d(upper.at(-2), upper.at(-1), point) <= tolerance) upper.pop();
-    upper.push(point);
-  }
-  return Math.max(1, lower.length + upper.length - 2);
 }
 
 export function analyzeProjectionFeatures(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
@@ -122,7 +77,7 @@ export function analyzeProjectionFeatures(vertices, edges, frame, structure = an
     layerPointCounts: structure.layerPointCounts,
     convexHullLayers: structure.convexHullLayers.length,
     convexHullLayerPointCounts: structure.convexHullLayerPointCounts,
-    hullVertices: convexHullVertexCount(nodes, tolerance * radiusScale * 4),
+    hullVertices: convexHullIndices(nodes, nodes.map((_, index) => index), tolerance * radiusScale * 4).length,
     eulerTrail: structure.eulerTrail,
     oddDegreeVertices: structure.oddDegreeVertices
   };
@@ -154,15 +109,6 @@ export function projectionHashtags(features) {
   if (features.radialLayers <= 3) tags.push('#동심차수3층이내');
   else if (features.radialLayers <= 5) tags.push('#동심차수5층이내');
   return tags;
-}
-
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
 }
 
 function ensureFeatureUi(root) {
