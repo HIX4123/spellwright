@@ -6,6 +6,7 @@ import { analyzeProjectionFeatures } from '../docs/projection-features.js';
 import {
   analyzeProjectionGuides,
   distanceToSegment,
+  medialAxisSegmentsForPolygon,
   orderedHullBoundary,
   planarDualFromStructure,
   screenLayerRadii
@@ -69,6 +70,19 @@ test('distance field uses Euclidean distance to the nearest point on a segment',
   assert.equal(distanceToSegment([0.5, 1], [0, 0], [1, 0]), 1);
   assert.equal(distanceToSegment([-1, 0], [0, 0], [1, 0]), 1);
   assert.equal(distanceToSegment([0.25, 0], [0, 0], [1, 0]), 0);
+});
+
+test('medial axis extraction follows equal-distance boundaries inside a polygon', () => {
+  const square = [[0, 0], [100, 0], [100, 100], [0, 100]];
+  const segments = medialAxisSegmentsForPolygon(square, 5);
+  assert.ok(segments.length > 0);
+  assert.ok(segments.flat().every(([x, y]) => x >= 0 && x <= 100 && y >= 0 && y <= 100));
+  assert.ok(segments.flat().some(([x, y]) => Math.hypot(x - 50, y - 50) < 8));
+
+  const rectangle = [[0, 0], [160, 0], [160, 80], [0, 80]];
+  const rectangleSegments = medialAxisSegmentsForPolygon(rectangle, 5);
+  assert.ok(rectangleSegments.length > 0);
+  assert.ok(rectangleSegments.flat().some(([, y]) => Math.abs(y - 40) < 6));
 });
 
 test('hover guide geometry stays aligned with all 43 feature classifications', () => {
