@@ -170,11 +170,13 @@
 @media (prefers-reduced-motion: reduce) {
   .projection-guide-dual-edge.is-animated,
   .projection-guide-dual-node.is-animated,
-  .projection-guide-dual-label.is-animated {
+  .projection-guide-dual-label.is-animated,
+  .projection-guide-medial-axis.is-animated {
     animation: none;
   }
 
-  .projection-guide-dual-edge.is-animated {
+  .projection-guide-dual-edge.is-animated,
+  .projection-guide-medial-axis.is-animated {
     stroke-dashoffset: 0;
   }
 
@@ -209,9 +211,19 @@
 
 .projection-guide-combined-medial .projection-guide-medial-axis {
   stroke: var(--secondary);
-  stroke-dasharray: 4 3;
   opacity: .82;
   filter: none;
+}
+
+.projection-guide-medial-axis.is-animated {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: projection-medial-axis-draw var(--medial-duration, 0ms) linear var(--medial-delay, 0ms) both;
+}
+
+@keyframes projection-medial-axis-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 
 .projection-guide-caption {

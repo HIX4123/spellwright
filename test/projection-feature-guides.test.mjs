@@ -8,6 +8,7 @@ import {
   distanceToSegment,
   dualPropagationSchedule,
   maximumClearancePointForPolygon,
+  medialPropagationSchedule,
   medialAxisSegmentsForPolygon,
   orderedHullBoundary,
   planarDualFromStructure,
@@ -69,53 +70,90 @@ test('planar dual omits the exterior face and every edge incident to it', () => 
 });
 
 
-test('dual propagation follows graph distance instead of radial node distance', () => {
-  const arrangementNodes = [
-    [-0.4, -0.4], [0.4, -0.4], [0.4, 0.4], [-0.4, 0.4],
-    [9.6, -0.4], [10.4, -0.4], [10.4, 0.4], [9.6, 0.4],
-    [0.8, -0.2], [1.2, -0.2], [1.2, 0.2], [0.8, 0.2]
-  ];
+
+test('dual propagation starts from a centered dual node when one exists', () => {
   const dualGraph = {
     faces: [
-      { nodeIndices: [0, 1, 2, 3], centroid: [0, 0] },
-      { nodeIndices: [4, 5, 6, 7], centroid: [10, 0] },
-      { nodeIndices: [8, 9, 10, 11], centroid: [1, 0] }
+      { dualPoint: [0, 0], centroid: [0, 0], nodeIndices: [] },
+      { dualPoint: [2, 0], centroid: [2, 0], nodeIndices: [] }
     ],
     edges: [
-      { from: 0, to: 1, segment: [[5, -0.2], [5, 0.2]] },
-      { from: 1, to: 2, segment: [[5.5, -0.2], [5.5, 0.2]] }
+      { from: 0, to: 1, segment: [[1, -1], [1, 1]] }
     ]
   };
-
-  const schedule = dualPropagationSchedule(dualGraph, arrangementNodes, [0, 0], 300);
+  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  assert.equal(schedule.seedMode, 'center-node');
   assert.equal(schedule.nodeTimes[0], 0);
   assert.ok(schedule.nodeTimes[1] > 0);
-  assert.ok(
-    schedule.nodeTimes[2] > schedule.nodeTimes[1],
-    'concave/near-center node should wait for its graph path to reach it'
-  );
-  assert.ok(Math.max(...schedule.nodeTimes) <= 300 + 1e-8);
-  assert.ok(schedule.edgeTimes.every(edge => edge.delayMs + edge.durationMs <= 300 + 1e-8));
+  assert.equal(schedule.edgeTimes[0].mode, 'forward');
 });
 
-test('dual propagation uses every face touching the projection center as a root', () => {
-  const arrangementNodes = [
-    [-1, -1], [0, -1], [0, 1], [-1, 1],
-    [1, -1], [1, 1]
-  ];
+test('dual propagation creates a virtual edge-midpoint seed when an edge crosses the center', () => {
   const dualGraph = {
     faces: [
-      { nodeIndices: [0, 1, 2, 3], centroid: [-0.5, 0] },
-      { nodeIndices: [1, 4, 5, 2], centroid: [0.5, 0] }
+      { dualPoint: [-2, 0], centroid: [-2, 0], nodeIndices: [] },
+      { dualPoint: [2, 0], centroid: [2, 0], nodeIndices: [] }
     ],
     edges: [
       { from: 0, to: 1, segment: [[0, -1], [0, 1]] }
     ]
   };
+  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  assert.equal(schedule.seedMode, 'center-edge');
+  assert.equal(schedule.edgeTimes[0].mode, 'split');
+  assert.ok(schedule.nodeTimes[0] > 0 && schedule.nodeTimes[1] > 0);
+  assert.equal(schedule.nodeTimes[0], schedule.nodeTimes[1]);
+});
 
-  const schedule = dualPropagationSchedule(dualGraph, arrangementNodes, [0, 0], 300);
-  assert.deepEqual(schedule.roots.sort((a, b) => a - b), [0, 1]);
-  assert.deepEqual(schedule.nodeTimes, [0, 0]);
+test('dual propagation starts every node on the innermost radial tier and meets on equal-level edges', () => {
+  const dualGraph = {
+    faces: [
+      { dualPoint: [-1, 0], centroid: [-1, 0], nodeIndices: [] },
+      { dualPoint: [1, 0], centroid: [1, 0], nodeIndices: [] },
+      { dualPoint: [0, 4], centroid: [0, 4], nodeIndices: [] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[0, 5], [0, 7]] },
+      { from: 0, to: 2, segment: [[-2, 2], [-1, 3]] },
+      { from: 1, to: 2, segment: [[1, 3], [2, 2]] }
+    ]
+  };
+  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  const nodeSeeds = schedule.seeds.filter(seed => seed.type === 'node').map(seed => seed.node).sort();
+  assert.deepEqual(nodeSeeds, [0, 1]);
+  assert.deepEqual(schedule.levels, [0, 0, 1]);
+  assert.equal(schedule.edgeTimes[0].mode, 'meet');
+  assert.equal(schedule.nodeTimes[0], 0);
+  assert.equal(schedule.nodeTimes[1], 0);
+});
+
+test('edge midpoints participate only in initial seed selection', () => {
+  const dualGraph = {
+    faces: [
+      { dualPoint: [-2, 2], centroid: [-2, 2], nodeIndices: [] },
+      { dualPoint: [2, 2], centroid: [2, 2], nodeIndices: [] },
+      { dualPoint: [0, 6], centroid: [0, 6], nodeIndices: [] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[0.5, 0.8], [0.5, 1.2]] },
+      { from: 1, to: 2, segment: [[1, 4], [2, 4]] }
+    ]
+  };
+  const schedule = dualPropagationSchedule(dualGraph, [], [0, 0], 1000);
+  assert.ok(schedule.seeds.some(seed => seed.type === 'edge' && seed.edgeIndex === 0));
+  assert.equal(schedule.edgeTimes[0].mode, 'split');
+  assert.ok(schedule.levels[2] > schedule.levels[1]);
+});
+
+test('combined medial propagation starts no earlier than its dual node activation', () => {
+  const segments = [
+    [[0, 0], [10, 0]],
+    [[10, 0], [20, 0]]
+  ];
+  const parts = medialPropagationSchedule(segments, [0, 0], 400, 1000);
+  assert.ok(parts.length > 0);
+  assert.ok(parts.every(part => part.delayMs >= 400 - 1e-8));
+  assert.ok(parts.every(part => part.delayMs + part.durationMs <= 1000 + 1e-8));
 });
 
 test('distance field uses Euclidean distance to the nearest point on a segment', () => {
@@ -225,7 +263,7 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         guides.dualGraph,
         guides.arrangementNodes,
         [0, 0],
-        300
+        1000
       );
       assert.equal(
         propagation.nodeTimes.length,
@@ -238,8 +276,8 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         `${solid.name} class ${item.id} dual propagation edge timing count`
       );
       assert.ok(
-        propagation.nodeTimes.every(time => Number.isFinite(time) && time >= 0 && time <= 300 + 1e-8),
-        `${solid.name} class ${item.id} dual propagation node timings stay within 300ms`
+        propagation.nodeTimes.every(time => Number.isFinite(time) && time >= 0 && time <= 1000 + 1e-8),
+        `${solid.name} class ${item.id} dual propagation node timings stay within 1000ms`
       );
       assert.ok(
         propagation.edgeTimes.every(({ delayMs, durationMs }) => (
@@ -247,9 +285,9 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
           && Number.isFinite(durationMs)
           && delayMs >= 0
           && durationMs >= 0
-          && delayMs + durationMs <= 300 + 1e-8
+          && delayMs + durationMs <= 1000 + 1e-8
         )),
-        `${solid.name} class ${item.id} dual propagation edge timings stay within 300ms`
+        `${solid.name} class ${item.id} dual propagation edge timings stay within 1000ms`
       );
       assert.ok(guides.layerRadii.every((radius, index, radii) => (
         radius >= 0 && (index === 0 || radius >= radii[index - 1] - 1e-8)
