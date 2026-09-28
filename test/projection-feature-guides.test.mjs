@@ -28,8 +28,8 @@ test('ordered hull boundary reduces collinear shell points to the visible hull o
   assert.deepEqual(orderedHullBoundary([[0, 0]]), [[0, 0]]);
 });
 
-test('planar dual turns one square face plus the exterior into two dual nodes', () => {
-  const structure = {
+test('planar dual omits the exterior face and every edge incident to it', () => {
+  const square = {
     nodes: [
       { xy: [0, 0] },
       { xy: [1, 0] },
@@ -39,12 +39,30 @@ test('planar dual turns one square face plus the exterior into two dual nodes', 
     segments: new Set(['0:1', '1:2', '2:3', '0:3']),
     scale: 1
   };
-  const dual = planarDualFromStructure(structure);
-  assert.equal(dual.faces.length, 2);
-  assert.equal(dual.faces.filter(face => face.isOuter).length, 1);
-  assert.equal(dual.faces.filter(face => !face.isOuter).length, 1);
-  assert.equal(dual.edges.length, 4);
-  assert.ok(dual.edges.every(edge => edge.from !== edge.to));
+  const squareDual = planarDualFromStructure(square);
+  assert.equal(squareDual.faces.length, 1);
+  assert.equal(squareDual.edges.length, 0);
+  assert.ok(squareDual.faces.every(face => !('isOuter' in face)));
+
+  const splitRectangle = {
+    nodes: [
+      { xy: [0, 0] },
+      { xy: [1, 0] },
+      { xy: [2, 0] },
+      { xy: [2, 1] },
+      { xy: [1, 1] },
+      { xy: [0, 1] }
+    ],
+    segments: new Set(['0:1', '1:2', '2:3', '3:4', '4:5', '0:5', '1:4']),
+    scale: 2
+  };
+  const splitDual = planarDualFromStructure(splitRectangle);
+  assert.equal(splitDual.faces.length, 2);
+  assert.equal(splitDual.edges.length, 1);
+  assert.deepEqual(
+    [splitDual.edges[0].from, splitDual.edges[0].to].sort((a, b) => a - b),
+    [0, 1]
+  );
 });
 
 test('distance field uses Euclidean distance to the nearest point on a segment', () => {
@@ -92,13 +110,23 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         `${solid.name} class ${item.id} distance field segment source`
       );
       assert.ok(
-        guides.dualGraph.faces.some(face => face.isOuter),
-        `${solid.name} class ${item.id} dual graph exterior face`
+        guides.dualGraph.faces.every(face => !('isOuter' in face)),
+        `${solid.name} class ${item.id} dual graph excludes exterior face`
       );
-      assert.equal(
-        guides.dualGraph.edges.length,
-        structure.segments.size,
-        `${solid.name} class ${item.id} dual edge per planar segment`
+      assert.ok(
+        guides.dualGraph.edges.length <= structure.segments.size,
+        `${solid.name} class ${item.id} dual graph only keeps internal shared segments`
+      );
+      assert.ok(
+        guides.dualGraph.edges.every(edge => (
+          Number.isInteger(edge.from)
+          && Number.isInteger(edge.to)
+          && edge.from >= 0
+          && edge.to >= 0
+          && edge.from < guides.dualGraph.faces.length
+          && edge.to < guides.dualGraph.faces.length
+        )),
+        `${solid.name} class ${item.id} dual edges reference only finite faces`
       );
       assert.ok(guides.layerRadii.every((radius, index, radii) => (
         radius >= 0 && (index === 0 || radius >= radii[index - 1] - 1e-8)
