@@ -291,39 +291,27 @@ export function planarDualFromStructure(structure) {
   const boundedRaw = rawFaces
     .map((face, index) => ({ face, index }))
     .filter(item => item.face.area > areaTolerance);
-  const outerRaw = rawFaces
-    .map((face, index) => ({ face, index }))
-    .filter(item => item.face.area < -areaTolerance);
   const rawToFace = new Map();
   const faces = boundedRaw.map(({ face, index }, faceIndex) => {
     rawToFace.set(index, faceIndex);
     return {
       nodeIndices: face.nodeIndices.slice(),
       centroid: face.centroid.slice(),
-      area: face.area,
-      isOuter: false
+      area: face.area
     };
   });
 
-  const outerIndex = faces.length;
-  faces.push({
-    nodeIndices: outerRaw.flatMap(item => item.face.nodeIndices),
-    centroid: [0, 0],
-    area: outerRaw.reduce((sum, item) => sum + item.face.area, 0),
-    isOuter: true
-  });
-  outerRaw.forEach(({ index }) => rawToFace.set(index, outerIndex));
-
-  const edges = segments.map(([a, b]) => {
+  const edges = segments.flatMap(([a, b]) => {
     const forwardRaw = halfEdgeRawFace.get(directedEdgeKey(a, b));
     const reverseRaw = halfEdgeRawFace.get(directedEdgeKey(b, a));
-    const from = rawToFace.get(forwardRaw) ?? outerIndex;
-    const to = rawToFace.get(reverseRaw) ?? outerIndex;
-    return {
+    const from = rawToFace.get(forwardRaw);
+    const to = rawToFace.get(reverseRaw);
+    if (!Number.isInteger(from) || !Number.isInteger(to)) return [];
+    return [{
       from,
       to,
       segment: [nodes[a].slice(), nodes[b].slice()]
-    };
+    }];
   });
 
   return { faces, edges };
@@ -367,16 +355,7 @@ function renderHullGuide(overlay, guide, transform) {
 
 
 function renderDualGuide(overlay, guide, transform) {
-  const arrangementScreen = guide.arrangementNodes.map(transform.point);
-  const maxX = arrangementScreen.length ? Math.max(...arrangementScreen.map(point => point[0])) : transform.width / 2;
-  const minY = arrangementScreen.length ? Math.min(...arrangementScreen.map(point => point[1])) : transform.height / 2;
-  const outerPoint = [
-    Math.min(transform.width - 18, maxX + 24),
-    Math.max(18, minY - 18)
-  ];
-  const facePoints = guide.dualGraph.faces.map(face => (
-    face.isOuter ? outerPoint : transform.point(face.centroid)
-  ));
+  const facePoints = guide.dualGraph.faces.map(face => transform.point(face.centroid));
 
   const edgeMarkup = guide.dualGraph.edges.map(edge => {
     const start = facePoints[edge.from];
@@ -396,17 +375,16 @@ function renderDualGuide(overlay, guide, transform) {
 
   const nodeMarkup = guide.dualGraph.faces.map((face, index) => {
     const point = facePoints[index];
-    const label = face.isOuter ? '∞' : `F${index + 1}`;
     return `
-      <circle class="projection-guide-dual-node${face.isOuter ? ' is-outer' : ''}"
+      <circle class="projection-guide-dual-node"
         cx="${svgNumber(point[0])}" cy="${svgNumber(point[1])}" r="4.5" />
       <text class="projection-guide-label projection-guide-dual-label"
-        x="${svgNumber(point[0] + 7)}" y="${svgNumber(point[1] - 7)}">${label}</text>
+        x="${svgNumber(point[0] + 7)}" y="${svgNumber(point[1] - 7)}">F${index + 1}</text>
     `;
   }).join('');
 
   overlay.innerHTML = edgeMarkup + nodeMarkup
-    + '<text class="projection-guide-caption" x="12" y="18">면 → 노드 · 공유 선분 → 간선</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">내부 면 → 노드 · 내부 공유 선분 → 간선</text>';
 }
 
 function renderDistanceGuide(overlay, guide, transform) {
