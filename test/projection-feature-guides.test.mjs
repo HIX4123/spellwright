@@ -7,6 +7,7 @@ import {
   analyzeProjectionGuides,
   distanceToSegment,
   dualPropagationSchedule,
+  maximumClearancePointForPolygon,
   medialAxisSegmentsForPolygon,
   orderedHullBoundary,
   planarDualFromStructure,
@@ -136,6 +137,23 @@ test('medial axis extraction follows equal-distance boundaries inside a polygon'
   assert.ok(rectangleSegments.flat().some(([, y]) => Math.abs(y - 40) < 6));
 });
 
+
+test('maximum-clearance dual point follows the medial center rather than area centroid', () => {
+  const square = [[0, 0], [100, 0], [100, 100], [0, 100]];
+  const squareCenter = maximumClearancePointForPolygon(square, 0.01);
+  assert.ok(Math.hypot(squareCenter.point[0] - 50, squareCenter.point[1] - 50) < 0.05);
+  assert.ok(Math.abs(squareCenter.clearance - 50) < 0.05);
+
+  const rightTriangle = [[0, 0], [4, 0], [0, 3]];
+  const triangleCenter = maximumClearancePointForPolygon(rightTriangle, 0.001);
+  assert.ok(Math.hypot(triangleCenter.point[0] - 1, triangleCenter.point[1] - 1) < 0.01);
+  assert.ok(Math.abs(triangleCenter.clearance - 1) < 0.01);
+  assert.ok(
+    Math.hypot(triangleCenter.point[0] - 4 / 3, triangleCenter.point[1] - 1) > 0.25,
+    'right-triangle dual point should not remain at the area centroid'
+  );
+});
+
 test('hover guide geometry stays aligned with all 43 feature classifications', () => {
   let count = 0;
   for (const solid of projections.solids) {
@@ -177,6 +195,16 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
       assert.ok(
         guides.dualGraph.faces.every(face => !('isOuter' in face)),
         `${solid.name} class ${item.id} dual graph excludes exterior face`
+      );
+      assert.ok(
+        guides.dualGraph.faces.every(face => (
+          Array.isArray(face.dualPoint)
+          && face.dualPoint.length === 2
+          && face.dualPoint.every(Number.isFinite)
+          && Number.isFinite(face.clearance)
+          && face.clearance >= 0
+        )),
+        `${solid.name} class ${item.id} dual nodes use finite maximum-clearance points`
       );
       assert.ok(
         guides.dualGraph.edges.length <= structure.segments.size,

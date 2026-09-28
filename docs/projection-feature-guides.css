@@ -207,6 +207,13 @@
   filter: drop-shadow(0 0 2px color-mix(in srgb, var(--primary) 38%, transparent));
 }
 
+.projection-guide-combined-medial .projection-guide-medial-axis {
+  stroke: var(--secondary);
+  stroke-dasharray: 4 3;
+  opacity: .82;
+  filter: none;
+}
+
 .projection-guide-caption {
   fill: var(--secondary);
   paint-order: stroke;
