@@ -21,18 +21,18 @@
 .projection-filter-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 7px;
   align-items: end;
 }
 .projection-filter-grid label {
   min-width: 0;
   display: grid;
-  grid-template-rows: 22px 38px;
-  gap: 4px;
+  grid-template-rows: auto 38px;
+  gap: 5px;
   align-items: end;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 10px;
 }
 .projection-filter-grid label > span {
   display: flex;
@@ -63,8 +63,8 @@
 .projection-solid-tabs {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 6px;
 }
 
 .projection-solid-tabs::-webkit-scrollbar,
@@ -73,8 +73,8 @@
 .projection-solid-tab {
   width: 100%;
   min-width: 0;
-  min-height: 40px;
-  padding: 7px 3px;
+  min-height: 42px;
+  padding: 8px 7px;
   display: grid;
   place-items: center;
   border-color: transparent;
@@ -83,8 +83,9 @@
 }
 
 .projection-solid-tab strong {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
+  line-height: 1.3;
 }
 
 .projection-solid-tab span {
@@ -342,7 +343,7 @@
 @media (max-width: 900px) {
   .projection-selector { grid-template-columns: 1fr; }
   .projection-selector-panel { padding: 14px 12px; }
-  .projection-solid-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .projection-solid-tabs { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
   .projection-class-rail { display: flex; overflow-x: auto; max-height: none; }
   .projection-class-chip { flex: 0 0 128px; }
   .projection-selector-instruction { padding: 10px 12px 0; }
