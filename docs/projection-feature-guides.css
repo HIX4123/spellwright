@@ -146,6 +146,44 @@
   opacity: .68;
 }
 
+.projection-guide-dual-edge.is-animated {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: projection-dual-edge-draw var(--dual-duration, 0ms) linear var(--dual-delay, 0ms) both;
+}
+
+.projection-guide-dual-node.is-animated,
+.projection-guide-dual-label.is-animated {
+  opacity: 0;
+  animation: projection-dual-node-arrive 1ms steps(1, end) var(--dual-node-delay, 0ms) forwards;
+}
+
+@keyframes projection-dual-edge-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes projection-dual-node-arrive {
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projection-guide-dual-edge.is-animated,
+  .projection-guide-dual-node.is-animated,
+  .projection-guide-dual-label.is-animated {
+    animation: none;
+  }
+
+  .projection-guide-dual-edge.is-animated {
+    stroke-dashoffset: 0;
+  }
+
+  .projection-guide-dual-node.is-animated,
+  .projection-guide-dual-label.is-animated {
+    opacity: 1;
+  }
+}
+
 .projection-guide-dual-node {
   fill: var(--projection-stage-bg);
   stroke: var(--primary);

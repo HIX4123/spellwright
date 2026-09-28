@@ -357,6 +357,159 @@ function polygonBoundarySegments(polygon) {
   ]);
 }
 
+function distanceToPolygon(point, polygon) {
+  if (!polygon.length) return Infinity;
+  if (pointInPolygon(point, polygon)) return 0;
+  return Math.min(...polygonBoundarySegments(polygon).map(([start, end]) => (
+    distanceToSegment(point, start, end)
+  )));
+}
+
+function dualEdgeVisualLength(edge, faces) {
+  if (!faces[edge.from] || !faces[edge.to]) return 0;
+  const start = faces[edge.from].centroid;
+  const end = faces[edge.to].centroid;
+  const midpoint = [
+    (edge.segment[0][0] + edge.segment[1][0]) / 2,
+    (edge.segment[0][1] + edge.segment[1][1]) / 2
+  ];
+  return Math.hypot(midpoint[0] - start[0], midpoint[1] - start[1])
+    + Math.hypot(end[0] - midpoint[0], end[1] - midpoint[1]);
+}
+
+export function dualPropagationSchedule(
+  dualGraph,
+  arrangementNodes,
+  origin = [0, 0],
+  totalDurationMs = 300
+) {
+  const faceCount = dualGraph.faces.length;
+  if (!faceCount) {
+    return { roots: [], nodeTimes: [], edgeTimes: [], durationMs: totalDurationMs };
+  }
+
+  const polygons = dualGraph.faces.map(face => (
+    face.nodeIndices.map(index => arrangementNodes[index])
+  ));
+  const originDistances = polygons.map(polygon => distanceToPolygon(origin, polygon));
+  const edgeWeights = dualGraph.edges.map(edge => Math.max(1e-9, dualEdgeVisualLength(edge, dualGraph.faces)));
+  const adjacency = Array.from({ length: faceCount }, () => []);
+
+  dualGraph.edges.forEach((edge, edgeIndex) => {
+    const weight = edgeWeights[edgeIndex];
+    adjacency[edge.from].push({ node: edge.to, edgeIndex, weight });
+    if (edge.to !== edge.from) {
+      adjacency[edge.to].push({ node: edge.from, edgeIndex, weight });
+    }
+  });
+
+  const componentOf = Array(faceCount).fill(-1);
+  const components = [];
+  for (let start = 0; start < faceCount; start += 1) {
+    if (componentOf[start] >= 0) continue;
+    const componentIndex = components.length;
+    const nodes = [];
+    const stack = [start];
+    componentOf[start] = componentIndex;
+    while (stack.length) {
+      const node = stack.pop();
+      nodes.push(node);
+      adjacency[node].forEach(({ node: neighbor }) => {
+        if (componentOf[neighbor] >= 0) return;
+        componentOf[neighbor] = componentIndex;
+        stack.push(neighbor);
+      });
+    }
+    components.push(nodes);
+  }
+
+  const distances = Array(faceCount).fill(Infinity);
+  const roots = [];
+  components.forEach(nodes => {
+    const minimum = Math.min(...nodes.map(node => originDistances[node]));
+    const tolerance = Math.max(1e-8, Math.abs(minimum) * 1e-6);
+    nodes.forEach(node => {
+      if (originDistances[node] <= minimum + tolerance) {
+        distances[node] = minimum;
+        roots.push(node);
+      }
+    });
+  });
+
+  const settled = Array(faceCount).fill(false);
+  for (let iteration = 0; iteration < faceCount; iteration += 1) {
+    let current = -1;
+    let currentDistance = Infinity;
+    for (let node = 0; node < faceCount; node += 1) {
+      if (!settled[node] && distances[node] < currentDistance) {
+        current = node;
+        currentDistance = distances[node];
+      }
+    }
+    if (current < 0) break;
+    settled[current] = true;
+
+    adjacency[current].forEach(({ node: neighbor, weight }) => {
+      const candidate = currentDistance + weight;
+      if (candidate + 1e-9 < distances[neighbor]) distances[neighbor] = candidate;
+    });
+  }
+
+  const baseline = Math.min(...distances.filter(Number.isFinite));
+  const shiftedDistances = distances.map(distance => (
+    Number.isFinite(distance) ? Math.max(0, distance - baseline) : 0
+  ));
+
+  const orientedEdges = dualGraph.edges.map((edge, edgeIndex) => {
+    const fromDistance = shiftedDistances[edge.from];
+    const toDistance = shiftedDistances[edge.to];
+    let source = edge.from;
+    let target = edge.to;
+    if (
+      toDistance < fromDistance - 1e-9
+      || (
+        Math.abs(toDistance - fromDistance) <= 1e-9
+        && originDistances[edge.to] < originDistances[edge.from] - 1e-9
+      )
+      || (
+        Math.abs(toDistance - fromDistance) <= 1e-9
+        && Math.abs(originDistances[edge.to] - originDistances[edge.from]) <= 1e-9
+        && edge.to < edge.from
+      )
+    ) {
+      source = edge.to;
+      target = edge.from;
+    }
+    const startDistance = Math.min(shiftedDistances[source], shiftedDistances[target]);
+    return {
+      source,
+      target,
+      startDistance,
+      durationDistance: edgeWeights[edgeIndex],
+      endDistance: startDistance + edgeWeights[edgeIndex]
+    };
+  });
+
+  const extent = Math.max(
+    0,
+    ...shiftedDistances,
+    ...orientedEdges.map(edge => edge.endDistance)
+  );
+  const scale = extent > 1e-9 ? totalDurationMs / extent : 0;
+
+  return {
+    roots,
+    nodeTimes: shiftedDistances.map(distance => distance * scale),
+    edgeTimes: orientedEdges.map(edge => ({
+      source: edge.source,
+      target: edge.target,
+      delayMs: edge.startDistance * scale,
+      durationMs: edge.durationDistance * scale
+    })),
+    durationMs: totalDurationMs
+  };
+}
+
 function nearestBoundaryFeature(point, boundarySegments) {
   let edgeIndex = -1;
   let distance = Infinity;
@@ -497,29 +650,43 @@ function renderHullGuide(overlay, guide, transform) {
 
 function renderDualGuide(overlay, guide, transform) {
   const facePoints = guide.dualGraph.faces.map(face => transform.point(face.centroid));
+  const schedule = dualPropagationSchedule(
+    guide.dualGraph,
+    guide.arrangementNodes,
+    [0, 0],
+    300
+  );
 
-  const edgeMarkup = guide.dualGraph.edges.map(edge => {
-    const start = facePoints[edge.from];
-    const end = facePoints[edge.to];
+  const edgeMarkup = guide.dualGraph.edges.map((edge, index) => {
+    const timing = schedule.edgeTimes[index];
     const midpoint = transform.point([
       (edge.segment[0][0] + edge.segment[1][0]) / 2,
       (edge.segment[0][1] + edge.segment[1][1]) / 2
     ]);
+    const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
+
     if (edge.from === edge.to) {
       const radius = 7;
-      return `<circle class="projection-guide-dual-edge projection-guide-dual-loop"
+      return `<circle class="projection-guide-dual-edge projection-guide-dual-loop is-animated"
+        pathLength="1" style="${style}"
         cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="${radius}" />`;
     }
-    return `<polyline class="projection-guide-dual-edge"
+
+    const sourceIsFrom = timing.source === edge.from;
+    const start = facePoints[sourceIsFrom ? edge.from : edge.to];
+    const end = facePoints[sourceIsFrom ? edge.to : edge.from];
+    return `<polyline class="projection-guide-dual-edge is-animated"
+      pathLength="1" style="${style}"
       points="${svgNumber(start[0])},${svgNumber(start[1])} ${svgNumber(midpoint[0])},${svgNumber(midpoint[1])} ${svgNumber(end[0])},${svgNumber(end[1])}" />`;
   }).join('');
 
   const nodeMarkup = guide.dualGraph.faces.map((face, index) => {
     const point = facePoints[index];
+    const style = `--dual-node-delay:${schedule.nodeTimes[index].toFixed(2)}ms`;
     return `
-      <circle class="projection-guide-dual-node"
+      <circle class="projection-guide-dual-node is-animated" style="${style}"
         cx="${svgNumber(point[0])}" cy="${svgNumber(point[1])}" r="4.5" />
-      <text class="projection-guide-label projection-guide-dual-label"
+      <text class="projection-guide-label projection-guide-dual-label is-animated" style="${style}"
         x="${svgNumber(point[0] + 7)}" y="${svgNumber(point[1] - 7)}">F${index + 1}</text>
     `;
   }).join('');
