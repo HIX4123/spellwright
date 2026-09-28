@@ -39,6 +39,15 @@
   color: var(--text);
 }
 
+.projection-canvas {
+  transition: opacity 120ms ease;
+}
+
+.projection-selector:has(.projection-feature-tag[data-guide]:hover) .projection-canvas,
+.projection-selector:has(.projection-feature-tag[data-guide]:focus-visible) .projection-canvas {
+  opacity: .38;
+}
+
 .projection-feature-overlay {
   position: absolute;
   inset: 0;
