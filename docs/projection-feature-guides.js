@@ -983,43 +983,62 @@ function renderHullGuide(overlay, guide, transform) {
 }
 
 
-function dualGraphMarkup(guide, transform) {
+
+function animatedDualPath(points, timing, extraClass = '') {
+  const pointText = points.map(point => `${svgNumber(point[0])},${svgNumber(point[1])}`).join(' ');
+  const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${Math.max(1, timing.durationMs).toFixed(2)}ms`;
+  return `<polyline class="projection-guide-dual-edge is-animated ${extraClass}" pathLength="1"
+    style="${style}" points="${pointText}" />`;
+}
+
+function dualGraphMarkup(guide, transform, schedule = null) {
   const facePoints = guide.dualGraph.faces.map(face => (
-    transform.point(face.dualPoint ?? face.centroid)
+    transform.point(dualFacePoint(face))
   ));
-  const schedule = dualPropagationSchedule(
+  const activeSchedule = schedule ?? dualPropagationSchedule(
     guide.dualGraph,
     guide.arrangementNodes,
     [0, 0],
-    300
+    1000
   );
 
   const edgeMarkup = guide.dualGraph.edges.map((edge, index) => {
-    const timing = schedule.edgeTimes[index];
-    const midpoint = transform.point([
-      (edge.segment[0][0] + edge.segment[1][0]) / 2,
-      (edge.segment[0][1] + edge.segment[1][1]) / 2
-    ]);
-    const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
+    const timing = activeSchedule.edgeTimes[index];
+    const midpoint = transform.point(dualEdgeMidpoint(edge));
 
     if (edge.from === edge.to) {
-      const radius = 7;
+      const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${Math.max(1, timing.durationMs).toFixed(2)}ms`;
       return `<circle class="projection-guide-dual-edge projection-guide-dual-loop is-animated"
         pathLength="1" style="${style}"
-        cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="${radius}" />`;
+        cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="7" />`;
+    }
+
+    if (timing.mode === 'meet') {
+      const partTiming = { delayMs: timing.delayMs, durationMs: timing.durationMs };
+      return animatedDualPath([facePoints[edge.from], midpoint], partTiming, 'is-half-edge')
+        + animatedDualPath([facePoints[edge.to], midpoint], partTiming, 'is-half-edge');
+    }
+
+    if (timing.mode === 'split') {
+      return timing.parts.map(part => {
+        const endpoint = part.side === 'from' ? facePoints[edge.from] : facePoints[edge.to];
+        return animatedDualPath(
+          [midpoint, endpoint],
+          { delayMs: part.delayMs, durationMs: part.durationMs },
+          'is-seed-half'
+        );
+      }).join('');
     }
 
     const sourceIsFrom = timing.source === edge.from;
     const start = facePoints[sourceIsFrom ? edge.from : edge.to];
     const end = facePoints[sourceIsFrom ? edge.to : edge.from];
-    return `<polyline class="projection-guide-dual-edge is-animated"
-      pathLength="1" style="${style}"
-      points="${svgNumber(start[0])},${svgNumber(start[1])} ${svgNumber(midpoint[0])},${svgNumber(midpoint[1])} ${svgNumber(end[0])},${svgNumber(end[1])}" />`;
+    return animatedDualPath([start, midpoint, end], timing);
   }).join('');
 
   const nodeMarkup = guide.dualGraph.faces.map((face, index) => {
     const point = facePoints[index];
-    const style = `--dual-node-delay:${schedule.nodeTimes[index].toFixed(2)}ms`;
+    const style = `--dual-node-delay:${activeSchedule.nodeTimes[index].toFixed(2)}ms`;
     return `
       <circle class="projection-guide-dual-node is-animated" style="${style}"
         cx="${svgNumber(point[0])}" cy="${svgNumber(point[1])}" r="4.5" />
@@ -1031,23 +1050,47 @@ function dualGraphMarkup(guide, transform) {
   return edgeMarkup + nodeMarkup;
 }
 
-function medialAxisMarkup(guide, transform) {
+function medialAxisSegmentsByFace(guide, transform) {
   const spacing = Math.max(3.5, Math.min(6, Math.min(transform.width, transform.height) / 72));
-  const segments = guide.dualGraph.faces.flatMap(face => {
+  return guide.dualGraph.faces.map(face => {
     const polygon = face.nodeIndices.map(index => transform.point(guide.arrangementNodes[index]));
     return medialAxisSegmentsForPolygon(polygon, spacing);
   });
-  if (!segments.length) return '';
+}
 
+function medialAxisMarkup(guide, transform) {
+  const segments = medialAxisSegmentsByFace(guide, transform).flat();
+  if (!segments.length) return '';
   const path = segments.map(([start, end]) => (
     `M ${svgNumber(start[0])} ${svgNumber(start[1])} L ${svgNumber(end[0])} ${svgNumber(end[1])}`
-  )).join('');
+  )).join(' ');
   return `<path class="projection-guide-medial-axis" d="${path}" />`;
 }
 
+function animatedMedialAxisMarkup(guide, transform, schedule) {
+  const byFace = medialAxisSegmentsByFace(guide, transform);
+  return byFace.map((segments, faceIndex) => {
+    if (!segments.length) return '';
+    const origin = transform.point(dualFacePoint(guide.dualGraph.faces[faceIndex]));
+    const parts = medialPropagationSchedule(
+      segments,
+      origin,
+      schedule.nodeTimes[faceIndex],
+      schedule.durationMs
+    );
+    return parts.map(part => {
+      const style = `--medial-delay:${part.delayMs.toFixed(2)}ms;--medial-duration:${Math.max(1, part.durationMs).toFixed(2)}ms`;
+      return `<line class="projection-guide-medial-axis is-animated" pathLength="1" style="${style}"
+        x1="${svgNumber(part.start[0])}" y1="${svgNumber(part.start[1])}"
+        x2="${svgNumber(part.end[0])}" y2="${svgNumber(part.end[1])}" />`;
+    }).join('');
+  }).join('');
+}
+
 function renderDualGuide(overlay, guide, transform) {
-  overlay.innerHTML = dualGraphMarkup(guide, transform)
-    + '<text class="projection-guide-caption" x="12" y="18">최대 clearance 점 → 쌍대 노드 · 내부 공유 선분 → 간선</text>';
+  const schedule = dualPropagationSchedule(guide.dualGraph, guide.arrangementNodes, [0, 0], 1000);
+  overlay.innerHTML = dualGraphMarkup(guide, transform, schedule)
+    + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 동일 레벨 간선은 양쪽에서 중앙으로 · 1000ms</text>';
 }
 
 function renderMedialAxisGuide(overlay, guide, transform) {
@@ -1058,10 +1101,11 @@ function renderMedialAxisGuide(overlay, guide, transform) {
 }
 
 function renderDualMedialGuide(overlay, guide, transform) {
-  const medialMarkup = medialAxisMarkup(guide, transform);
+  const schedule = dualPropagationSchedule(guide.dualGraph, guide.arrangementNodes, [0, 0], 1000);
+  const medialMarkup = animatedMedialAxisMarkup(guide, transform, schedule);
   overlay.innerHTML = `<g class="projection-guide-combined-medial">${medialMarkup}</g>`
-    + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform)}</g>`
-    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 쌍대 노드와 중심축 비교</text>';
+    + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform, schedule)}</g>`
+    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 노드 활성화 시 중심축 전파 시작 · 1000ms</text>';
 }
 
 function showGuide(root, kind) {
