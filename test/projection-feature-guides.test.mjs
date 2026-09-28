@@ -3,7 +3,13 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { geometryForSolid, viewFrame } from '../docs/projection-core.js';
 import { analyzeProjectionFeatures } from '../docs/projection-features.js';
-import { analyzeProjectionGuides, orderedHullBoundary, screenLayerRadii } from '../docs/projection-feature-guides.js';
+import {
+  analyzeProjectionGuides,
+  distanceToSegment,
+  orderedHullBoundary,
+  planarDualFromStructure,
+  screenLayerRadii
+} from '../docs/projection-feature-guides.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
 const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
@@ -20,6 +26,31 @@ test('ordered hull boundary reduces collinear shell points to the visible hull o
     [[0, 0], [2, 0], [2, 2], [0, 2]]
   );
   assert.deepEqual(orderedHullBoundary([[0, 0]]), [[0, 0]]);
+});
+
+test('planar dual turns one square face plus the exterior into two dual nodes', () => {
+  const structure = {
+    nodes: [
+      { xy: [0, 0] },
+      { xy: [1, 0] },
+      { xy: [1, 1] },
+      { xy: [0, 1] }
+    ],
+    segments: new Set(['0:1', '1:2', '2:3', '0:3']),
+    scale: 1
+  };
+  const dual = planarDualFromStructure(structure);
+  assert.equal(dual.faces.length, 2);
+  assert.equal(dual.faces.filter(face => face.isOuter).length, 1);
+  assert.equal(dual.faces.filter(face => !face.isOuter).length, 1);
+  assert.equal(dual.edges.length, 4);
+  assert.ok(dual.edges.every(edge => edge.from !== edge.to));
+});
+
+test('distance field uses Euclidean distance to the nearest point on a segment', () => {
+  assert.equal(distanceToSegment([0.5, 1], [0, 0], [1, 0]), 1);
+  assert.equal(distanceToSegment([-1, 0], [0, 0], [1, 0]), 1);
+  assert.equal(distanceToSegment([0.25, 0], [0, 0], [1, 0]), 0);
 });
 
 test('hover guide geometry stays aligned with all 43 feature classifications', () => {
@@ -54,6 +85,20 @@ test('hover guide geometry stays aligned with all 43 feature classifications', (
         guides.hullLayerPointCounts,
         features.convexHullLayerPointCounts,
         `${solid.name} class ${item.id} convex hull layer signature`
+      );
+      assert.equal(
+        guides.arrangementSegments.length,
+        structure.segments.size,
+        `${solid.name} class ${item.id} distance field segment source`
+      );
+      assert.ok(
+        guides.dualGraph.faces.some(face => face.isOuter),
+        `${solid.name} class ${item.id} dual graph exterior face`
+      );
+      assert.equal(
+        guides.dualGraph.edges.length,
+        structure.segments.size,
+        `${solid.name} class ${item.id} dual edge per planar segment`
       );
       assert.ok(guides.layerRadii.every((radius, index, radii) => (
         radius >= 0 && (index === 0 || radius >= radii[index - 1] - 1e-8)
