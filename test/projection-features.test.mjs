@@ -69,13 +69,10 @@ test('all 43 projections expose concentric and convex-hull layer descriptors fro
       assert.ok(tags.filter(tag => tag === '#중심점' || /^#정\d+각핵$/.test(tag)).length <= 1);
       assert.ok(tags.filter(tag => tag === '#짝수대칭' || tag === '#홀수대칭').length <= 1);
       assert.ok(tags.filter(tag => tag === '#동심차수3층이내' || tag === '#동심차수5층이내').length <= 1);
-      assert.ok(tags.filter(tag => tag === '#ConvexHull3층이내' || tag === '#ConvexHull5층이내').length <= 1);
       if (features.radialLayers <= 3) assert.ok(tags.includes('#동심차수3층이내'));
       else if (features.radialLayers <= 5) assert.ok(tags.includes('#동심차수5층이내'));
       else assert.ok(!tags.some(tag => tag.startsWith('#동심차수')));
-      if (features.convexHullLayers <= 3) assert.ok(tags.includes('#ConvexHull3층이내'));
-      else if (features.convexHullLayers <= 5) assert.ok(tags.includes('#ConvexHull5층이내'));
-      else assert.ok(!tags.some(tag => tag.startsWith('#ConvexHull')));
+      assert.ok(!tags.some(tag => tag.startsWith('#ConvexHull')));
       count += 1;
     }
   }

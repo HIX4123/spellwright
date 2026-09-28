@@ -153,8 +153,6 @@ export function projectionHashtags(features) {
   if (features.symmetryAxes > 0) tags.push(features.symmetryAxes % 2 === 0 ? '#짝수대칭' : '#홀수대칭');
   if (features.radialLayers <= 3) tags.push('#동심차수3층이내');
   else if (features.radialLayers <= 5) tags.push('#동심차수5층이내');
-  if (features.convexHullLayers <= 3) tags.push('#ConvexHull3층이내');
-  else if (features.convexHullLayers <= 5) tags.push('#ConvexHull5층이내');
   return tags;
 }
 
