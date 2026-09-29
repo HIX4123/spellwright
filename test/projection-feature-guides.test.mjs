@@ -160,7 +160,7 @@ test('dual propagation gives every rendered line segment the same growth speed',
   });
 });
 
-test('equal-level dual fronts keep one speed and meet at the shared midpoint together', () => {
+test('equal-level dual fronts keep one speed without synchronizing arrival times', () => {
   const dualGraph = {
     faces: [
       { dualPoint: [-1, 0], centroid: [-1, 0], nodeIndices: [] },
@@ -174,11 +174,13 @@ test('equal-level dual fronts keep one speed and meet at the shared midpoint tog
   const edge = schedule.edgeTimes[0];
   assert.equal(edge.mode, 'meet');
   assert.equal(edge.parts.length, 2);
-  const endTimes = edge.parts.map(part => part.delayMs + part.durationMs);
-  assert.ok(Math.abs(endTimes[0] - endTimes[1]) < 1e-8);
+  assert.equal(edge.parts[0].delayMs, schedule.nodeTimes[0]);
+  assert.equal(edge.parts[1].delayMs, schedule.nodeTimes[1]);
   edge.parts.forEach(part => {
     assert.ok(Math.abs(part.length / part.durationMs - schedule.speedUnitsPerMs) < 1e-9);
   });
+  const endTimes = edge.parts.map(part => part.delayMs + part.durationMs);
+  assert.ok(Math.abs(endTimes[0] - endTimes[1]) > 1e-6);
 });
 
 test('edge midpoints participate only in initial seed selection', () => {
