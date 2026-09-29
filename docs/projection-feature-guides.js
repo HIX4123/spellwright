@@ -774,13 +774,10 @@ function addMedialGraphPoint(points, point, tolerance) {
   return points.length - 1;
 }
 
-export function medialPropagationSchedule(
-  segments,
-  origin,
-  startTimeMs = 0,
-  totalDurationMs = 1000
-) {
-  if (!segments.length || startTimeMs >= totalDurationMs) return [];
+
+function medialPropagationGeometry(segments, origin) {
+  if (!segments.length) return { parts: [], extentDistance: 0 };
+
   const tolerance = 0.6;
   let rootSegment = 0;
   let rootProjection = null;
@@ -846,32 +843,87 @@ export function medialPropagationSchedule(
     if (Number.isFinite(distance)) return;
     distances[index] = finiteMax + pointDistance(root, points[index]);
   });
-  finiteMax = Math.max(1e-9, ...distances);
 
-  const available = totalDurationMs - startTimeMs;
-  const scale = available / finiteMax;
-  return graphSegments.flatMap(segment => {
+  const parts = graphSegments.flatMap(segment => {
     const firstDistance = distances[segment.a];
     const secondDistance = distances[segment.b];
-    if (Math.abs(firstDistance - secondDistance) <= 0.6) {
+
+    if (Math.abs(firstDistance - secondDistance) <= tolerance) {
       const midpoint = [
         (segment.start[0] + segment.end[0]) / 2,
         (segment.start[1] + segment.end[1]) / 2
       ];
-      const delayMs = startTimeMs + Math.min(firstDistance, secondDistance) * scale;
-      const durationMs = Math.max(1, pointDistance(segment.start, midpoint) * scale);
+      const halfLength = pointDistance(segment.start, midpoint);
+      const delayDistance = Math.min(firstDistance, secondDistance);
       return [
-        { start: segment.start, end: midpoint, delayMs, durationMs },
-        { start: segment.end, end: midpoint, delayMs, durationMs }
+        {
+          start: segment.start,
+          end: midpoint,
+          delayDistance,
+          durationDistance: halfLength,
+          length: halfLength
+        },
+        {
+          start: segment.end,
+          end: midpoint,
+          delayDistance,
+          durationDistance: halfLength,
+          length: halfLength
+        }
       ];
     }
+
     const forward = firstDistance < secondDistance;
     const start = forward ? segment.start : segment.end;
     const end = forward ? segment.end : segment.start;
-    const delayMs = startTimeMs + Math.min(firstDistance, secondDistance) * scale;
-    const durationMs = Math.max(1, pointDistance(start, end) * scale);
-    return [{ start, end, delayMs, durationMs }];
+    const length = pointDistance(start, end);
+    return [{
+      start,
+      end,
+      delayDistance: Math.min(firstDistance, secondDistance),
+      durationDistance: length,
+      length
+    }];
   });
+
+  return {
+    parts,
+    extentDistance: Math.max(
+      0,
+      ...parts.map(part => part.delayDistance + part.durationDistance)
+    )
+  };
+}
+
+export function medialPropagationSchedule(
+  segments,
+  origin,
+  startTimeMs = 0,
+  totalDurationMs = 1000,
+  speedUnitsPerMs = null
+) {
+  if (!segments.length || startTimeMs >= totalDurationMs) return [];
+
+  const geometry = medialPropagationGeometry(segments, origin);
+  if (!geometry.parts.length) return [];
+
+  const available = Math.max(0, totalDurationMs - startTimeMs);
+  const speed = Number.isFinite(speedUnitsPerMs) && speedUnitsPerMs > 0
+    ? speedUnitsPerMs
+    : geometry.extentDistance / Math.max(available, 1e-9);
+  const msPerUnit = speed > 0 ? 1 / speed : 0;
+
+  return geometry.parts.map(part => ({
+    start: part.start,
+    end: part.end,
+    length: part.length,
+    delayMs: startTimeMs + part.delayDistance * msPerUnit,
+    durationMs: part.durationDistance * msPerUnit
+  }));
+}
+
+export function medialPropagationExtent(segments, origin) {
+  return medialPropagationGeometry(segments, origin).extentDistance;
 }
 
 function nearestBoundaryFeature(point, boundarySegments) {
@@ -1014,7 +1066,7 @@ function renderHullGuide(overlay, guide, transform) {
 
 function animatedDualPath(points, timing, extraClass = '') {
   const pointText = points.map(point => `${svgNumber(point[0])},${svgNumber(point[1])}`).join(' ');
-  const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${Math.max(1, timing.durationMs).toFixed(2)}ms`;
+  const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
   return `<polyline class="projection-guide-dual-edge is-animated ${extraClass}" pathLength="1"
     style="${style}" points="${pointText}" />`;
 }
@@ -1034,7 +1086,7 @@ function dualGraphMarkup(guide, transform, schedule = null) {
     const midpoint = transform.point(dualEdgeMidpoint(edge));
 
     if (edge.from === edge.to) {
-      const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${Math.max(1, timing.durationMs).toFixed(2)}ms`;
+      const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
       return `<circle class="projection-guide-dual-edge projection-guide-dual-loop is-animated"
         pathLength="1" style="${style}"
         cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="7" />`;
@@ -1099,19 +1151,36 @@ function medialAxisMarkup(guide, transform) {
   return `<path class="projection-guide-medial-axis" d="${path}" />`;
 }
 
-function animatedMedialAxisMarkup(guide, transform, schedule) {
+
+function medialTimingData(guide, transform) {
   const byFace = medialAxisSegmentsByFace(guide, transform);
-  return byFace.map((segments, faceIndex) => {
+  const origins = guide.dualGraph.faces.map(face => transform.point(dualFacePoint(face)));
+  const extents = byFace.map((segments, index) => (
+    medialPropagationExtent(segments, origins[index])
+  ));
+  return { byFace, origins, extents };
+}
+
+function animatedMedialAxisMarkup(
+  guide,
+  transform,
+  startTimes,
+  speedPixelsPerMs,
+  totalDurationMs = 1000,
+  timingData = null
+) {
+  const data = timingData ?? medialTimingData(guide, transform);
+  return data.byFace.map((segments, faceIndex) => {
     if (!segments.length) return '';
-    const origin = transform.point(dualFacePoint(guide.dualGraph.faces[faceIndex]));
     const parts = medialPropagationSchedule(
       segments,
-      origin,
-      schedule.nodeTimes[faceIndex],
-      schedule.durationMs
+      data.origins[faceIndex],
+      startTimes[faceIndex] ?? 0,
+      totalDurationMs,
+      speedPixelsPerMs
     );
     return parts.map(part => {
-      const style = `--medial-delay:${part.delayMs.toFixed(2)}ms;--medial-duration:${Math.max(1, part.durationMs).toFixed(2)}ms`;
+      const style = `--medial-delay:${part.delayMs.toFixed(2)}ms;--medial-duration:${part.durationMs.toFixed(2)}ms`;
       return `<line class="projection-guide-medial-axis is-animated" pathLength="1" style="${style}"
         x1="${svgNumber(part.start[0])}" y1="${svgNumber(part.start[1])}"
         x2="${svgNumber(part.end[0])}" y2="${svgNumber(part.end[1])}" />`;
@@ -1126,18 +1195,61 @@ function renderDualGuide(overlay, guide, transform) {
 }
 
 function renderMedialAxisGuide(overlay, guide, transform) {
-  const markup = medialAxisMarkup(guide, transform);
+  const timing = medialTimingData(guide, transform);
+  const extent = Math.max(0, ...timing.extents);
+  if (extent <= 1e-9) {
+    overlay.innerHTML = '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 추출 가능한 내부 면이 없음</text>';
+    return;
+  }
+
+  const speedPixelsPerMs = extent / 1000;
+  const markup = animatedMedialAxisMarkup(
+    guide,
+    transform,
+    timing.extents.map(() => 0),
+    speedPixelsPerMs,
+    1000,
+    timing
+  );
   overlay.innerHTML = markup
-    ? markup + '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 내부 면 경계의 등거리 중심축</text>'
-    : '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 추출 가능한 내부 면이 없음</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 모든 가지 동일 속도 · 1000ms</text>';
 }
 
 function renderDualMedialGuide(overlay, guide, transform) {
-  const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
-  const medialMarkup = animatedMedialAxisMarkup(guide, transform, schedule);
+  const provisionalDual = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
+  const timing = medialTimingData(guide, transform);
+  const dualExtentModel = provisionalDual.speedUnitsPerMs * 1000;
+  const dualExtentPixels = dualExtentModel * transform.scale;
+  const nodeArrivalPixels = provisionalDual.nodeTimes.map(time => (
+    time * provisionalDual.speedUnitsPerMs * transform.scale
+  ));
+  const combinedExtentPixels = Math.max(
+    dualExtentPixels,
+    ...timing.extents.map((extent, index) => nodeArrivalPixels[index] + extent),
+    1e-9
+  );
+  const speedPixelsPerMs = combinedExtentPixels / 1000;
+  const dualSpeedModelPerMs = speedPixelsPerMs / Math.max(transform.scale, 1e-9);
+  const dualDurationMs = dualExtentModel > 1e-9
+    ? dualExtentModel / dualSpeedModelPerMs
+    : 0;
+  const schedule = dualPropagationSchedule(
+    guide.dualGraph,
+    [0, 0],
+    Math.max(dualDurationMs, 1e-6)
+  );
+  const medialMarkup = animatedMedialAxisMarkup(
+    guide,
+    transform,
+    schedule.nodeTimes,
+    speedPixelsPerMs,
+    1000,
+    timing
+  );
+
   overlay.innerHTML = `<g class="projection-guide-combined-medial">${medialMarkup}</g>`
     + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform, schedule)}</g>`
-    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 노드 활성화 시 중심축 전파 시작 · 1000ms</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 공통 속도 · 비동기 종료 · 1000ms</text>';
 }
 
 function showGuide(root, kind) {
