@@ -489,6 +489,21 @@ function nearestDualSeeds(dualGraph, nodeIndices, edgeIndices, origin, tolerance
     .map(({ distance, ...candidate }) => candidate);
 }
 
+
+function dualEdgeLengths(dualGraph, edgeIndex) {
+  const edge = dualGraph.edges[edgeIndex];
+  const midpoint = dualEdgeMidpoint(edge);
+  const fromPoint = dualFacePoint(dualGraph.faces[edge.from]);
+  const toPoint = dualFacePoint(dualGraph.faces[edge.to]);
+  const fromLength = pointDistance(fromPoint, midpoint);
+  const toLength = pointDistance(toPoint, midpoint);
+  return {
+    fromLength,
+    toLength,
+    totalLength: fromLength + toLength
+  };
+}
+
 export function dualPropagationSchedule(
   dualGraph,
   origin = [0, 0],
@@ -502,6 +517,7 @@ export function dualPropagationSchedule(
       levels: [],
       nodeTimes: [],
       edgeTimes: [],
+      speedUnitsPerMs: 0,
       durationMs: totalDurationMs
     };
   }
@@ -602,79 +618,144 @@ export function dualPropagationSchedule(
     });
   }
 
-  const edgePhases = dualGraph.edges.map((edge, edgeIndex) => {
+  const edgeLengths = dualGraph.edges.map((_, edgeIndex) => dualEdgeLengths(dualGraph, edgeIndex));
+  const arrivalDistance = Array(faceCount).fill(Infinity);
+
+  seeds.forEach(seed => {
+    if (seed.type === 'node') {
+      arrivalDistance[seed.node] = 0;
+      return;
+    }
+    const edge = dualGraph.edges[seed.edgeIndex];
+    const lengths = edgeLengths[seed.edgeIndex];
+    arrivalDistance[edge.from] = Math.min(arrivalDistance[edge.from], lengths.fromLength);
+    arrivalDistance[edge.to] = Math.min(arrivalDistance[edge.to], lengths.toLength);
+  });
+
+  const finiteLevels = levels.filter(Number.isFinite);
+  const maxLevel = finiteLevels.length ? Math.max(...finiteLevels) : 0;
+  for (let level = 0; level < maxLevel; level += 1) {
+    dualGraph.edges.forEach((edge, edgeIndex) => {
+      const fromLevel = levels[edge.from];
+      const toLevel = levels[edge.to];
+      if (Math.abs(fromLevel - toLevel) !== 1) return;
+
+      const source = fromLevel < toLevel ? edge.from : edge.to;
+      const target = source === edge.from ? edge.to : edge.from;
+      if (levels[source] !== level || !Number.isFinite(arrivalDistance[source])) return;
+
+      const candidate = arrivalDistance[source] + edgeLengths[edgeIndex].totalLength;
+      if (candidate < arrivalDistance[target]) arrivalDistance[target] = candidate;
+    });
+  }
+
+  // Fallback for any numerically isolated node in an otherwise seeded component.
+  arrivalDistance.forEach((distance, node) => {
+    if (Number.isFinite(distance)) return;
+    const sameLevel = levels[node];
+    let best = Infinity;
+    dualGraph.edges.forEach((edge, edgeIndex) => {
+      if (edge.from !== node && edge.to !== node) return;
+      const neighbor = edge.from === node ? edge.to : edge.from;
+      if (!Number.isFinite(arrivalDistance[neighbor])) return;
+      if (levels[neighbor] > sameLevel) return;
+      best = Math.min(best, arrivalDistance[neighbor] + edgeLengths[edgeIndex].totalLength);
+    });
+    arrivalDistance[node] = Number.isFinite(best) ? best : 0;
+  });
+
+  const rawEdgeTimes = dualGraph.edges.map((edge, edgeIndex) => {
     const fromLevel = levels[edge.from];
     const toLevel = levels[edge.to];
+    const lengths = edgeLengths[edgeIndex];
 
     if (seedEdgeIndices.has(edgeIndex)) {
-      const parts = [
-        {
-          side: 'from',
-          delayPhase: 0,
-          durationPhase: Math.max(1, fromLevel * 2),
-          direction: 'midpoint-to-node'
-        },
-        {
-          side: 'to',
-          delayPhase: 0,
-          durationPhase: Math.max(1, toLevel * 2),
-          direction: 'midpoint-to-node'
-        }
-      ];
       return {
         mode: 'split',
-        parts,
-        endPhase: Math.max(...parts.map(part => part.delayPhase + part.durationPhase))
+        parts: [
+          {
+            side: 'from',
+            delayDistance: 0,
+            durationDistance: lengths.fromLength,
+            length: lengths.fromLength,
+            direction: 'midpoint-to-node'
+          },
+          {
+            side: 'to',
+            delayDistance: 0,
+            durationDistance: lengths.toLength,
+            length: lengths.toLength,
+            direction: 'midpoint-to-node'
+          }
+        ],
+        endDistance: Math.max(lengths.fromLength, lengths.toLength)
       };
     }
 
     if (Math.abs(fromLevel - toLevel) <= 1e-9) {
-      const delayPhase = fromLevel * 2;
+      const meetDistance = Math.max(
+        arrivalDistance[edge.from] + lengths.fromLength,
+        arrivalDistance[edge.to] + lengths.toLength
+      );
+      const parts = [
+        {
+          side: 'from',
+          delayDistance: meetDistance - lengths.fromLength,
+          durationDistance: lengths.fromLength,
+          length: lengths.fromLength
+        },
+        {
+          side: 'to',
+          delayDistance: meetDistance - lengths.toLength,
+          durationDistance: lengths.toLength,
+          length: lengths.toLength
+        }
+      ];
       return {
         mode: 'meet',
-        delayPhase,
-        durationPhase: 1,
-        endPhase: delayPhase + 1
+        parts,
+        endDistance: meetDistance
       };
     }
 
     const source = fromLevel < toLevel ? edge.from : edge.to;
     const target = source === edge.from ? edge.to : edge.from;
-    const sourceLevel = Math.min(fromLevel, toLevel);
-    const targetLevel = Math.max(fromLevel, toLevel);
+    const delayDistance = arrivalDistance[source];
     return {
       mode: 'forward',
       source,
       target,
-      delayPhase: sourceLevel * 2,
-      durationPhase: Math.max(1, (targetLevel - sourceLevel) * 2),
-      endPhase: targetLevel * 2
+      delayDistance,
+      durationDistance: lengths.totalLength,
+      length: lengths.totalLength,
+      endDistance: delayDistance + lengths.totalLength
     };
   });
 
-  const nodePhases = levels.map(level => Number.isFinite(level) ? level * 2 : 0);
   const extent = Math.max(
-    1,
-    ...nodePhases,
-    ...edgePhases.map(edge => edge.endPhase)
+    1e-9,
+    ...arrivalDistance.filter(Number.isFinite),
+    ...rawEdgeTimes.map(edge => edge.endDistance)
   );
-  const scale = totalDurationMs / extent;
+  const msPerUnit = totalDurationMs / extent;
+  const speedUnitsPerMs = 1 / msPerUnit;
 
   return {
     seeds,
     seedMode,
     levels,
-    nodeTimes: nodePhases.map(phase => phase * scale),
-    edgeTimes: edgePhases.map(edge => ({
+    nodeTimes: arrivalDistance.map(distance => Math.max(0, distance) * msPerUnit),
+    edgeTimes: rawEdgeTimes.map(edge => ({
       ...edge,
-      delayMs: (edge.delayPhase ?? 0) * scale,
-      durationMs: (edge.durationPhase ?? 0) * scale,
+      delayMs: Math.max(0, edge.delayDistance ?? 0) * msPerUnit,
+      durationMs: Math.max(0, edge.durationDistance ?? 0) * msPerUnit,
       parts: edge.parts?.map(part => ({
         ...part,
-        delayMs: part.delayPhase * scale,
-        durationMs: part.durationPhase * scale
+        delayMs: Math.max(0, part.delayDistance) * msPerUnit,
+        durationMs: Math.max(0, part.durationDistance) * msPerUnit
       }))
     })),
+    speedUnitsPerMs,
     durationMs: totalDurationMs
   };
 }
