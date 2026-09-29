@@ -704,20 +704,16 @@ export function dualPropagationSchedule(
     }
 
     if (Math.abs(fromLevel - toLevel) <= 1e-9) {
-      const meetDistance = Math.max(
-        arrivalDistance[edge.from] + lengths.fromLength,
-        arrivalDistance[edge.to] + lengths.toLength
-      );
       const parts = [
         {
           side: 'from',
-          delayDistance: meetDistance - lengths.fromLength,
+          delayDistance: arrivalDistance[edge.from],
           durationDistance: lengths.fromLength,
           length: lengths.fromLength
         },
         {
           side: 'to',
-          delayDistance: meetDistance - lengths.toLength,
+          delayDistance: arrivalDistance[edge.to],
           durationDistance: lengths.toLength,
           length: lengths.toLength
         }
@@ -725,7 +721,7 @@ export function dualPropagationSchedule(
       return {
         mode: 'meet',
         parts,
-        endDistance: meetDistance
+        endDistance: Math.max(...parts.map(part => part.delayDistance + part.durationDistance))
       };
     }
 
