@@ -13,7 +13,7 @@ import {
 } from './projection-core.js?v=ponytail-20260928-1';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 import { renderProjectionFeatureTags } from './projection-features.js?v=ponytail-20260928-1';
-import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=dual-uniform-speed-20260929-1';
+import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=dual-async-uniform-20260929-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
