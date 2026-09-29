@@ -669,6 +669,17 @@ export function dualPropagationSchedule(
     const toLevel = levels[edge.to];
     const lengths = edgeLengths[edgeIndex];
 
+    if (edge.from === edge.to) {
+      const delayDistance = arrivalDistance[edge.from];
+      return {
+        mode: 'loop',
+        delayDistance,
+        durationDistance: lengths.totalLength,
+        length: lengths.totalLength,
+        endDistance: delayDistance + lengths.totalLength
+      };
+    }
+
     if (seedEdgeIndices.has(edgeIndex)) {
       return {
         mode: 'split',
