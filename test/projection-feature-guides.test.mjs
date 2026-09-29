@@ -9,6 +9,7 @@ import {
   dualPropagationSchedule,
   maximumClearancePointForPolygon,
   medialPropagationSchedule,
+  medialPropagationExtent,
   medialAxisSegmentsForPolygon,
   orderedHullBoundary,
   planarDualFromStructure,
@@ -210,6 +211,36 @@ test('combined medial propagation starts no earlier than its dual node activatio
   assert.ok(parts.length > 0);
   assert.ok(parts.every(part => part.delayMs >= 400 - 1e-8));
   assert.ok(parts.every(part => part.delayMs + part.durationMs <= 1000 + 1e-8));
+});
+
+
+test('medial propagation can share one explicit speed without synchronizing completion', () => {
+  const shortSegments = [
+    [[0, 0], [10, 0]]
+  ];
+  const longSegments = [
+    [[0, 0], [25, 0]]
+  ];
+  const speed = 0.05;
+  const shortParts = medialPropagationSchedule(shortSegments, [0, 0], 100, 1000, speed);
+  const longParts = medialPropagationSchedule(longSegments, [0, 0], 100, 1000, speed);
+  const allParts = [...shortParts, ...longParts];
+  allParts.forEach(part => {
+    assert.ok(Math.abs(part.length / part.durationMs - speed) < 1e-9);
+    assert.ok(part.delayMs >= 100 - 1e-8);
+  });
+  const shortEnd = Math.max(...shortParts.map(part => part.delayMs + part.durationMs));
+  const longEnd = Math.max(...longParts.map(part => part.delayMs + part.durationMs));
+  assert.ok(longEnd > shortEnd);
+});
+
+test('medial propagation extent reports raw travel distance for shared timing', () => {
+  const segments = [
+    [[0, 0], [10, 0]],
+    [[10, 0], [20, 0]]
+  ];
+  const extent = medialPropagationExtent(segments, [0, 0]);
+  assert.ok(extent >= 20 - 1e-8);
 });
 
 test('distance field uses Euclidean distance to the nearest point on a segment', () => {
