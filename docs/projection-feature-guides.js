@@ -1034,9 +1034,14 @@ function dualGraphMarkup(guide, transform, schedule = null) {
     }
 
     if (timing.mode === 'meet') {
-      const partTiming = { delayMs: timing.delayMs, durationMs: timing.durationMs };
-      return animatedDualPath([facePoints[edge.from], midpoint], partTiming, 'is-half-edge')
-        + animatedDualPath([facePoints[edge.to], midpoint], partTiming, 'is-half-edge');
+      return timing.parts.map(part => {
+        const start = part.side === 'from' ? facePoints[edge.from] : facePoints[edge.to];
+        return animatedDualPath(
+          [start, midpoint],
+          { delayMs: part.delayMs, durationMs: part.durationMs },
+          'is-half-edge'
+        );
+      }).join('');
     }
 
     if (timing.mode === 'split') {
@@ -1110,7 +1115,7 @@ function animatedMedialAxisMarkup(guide, transform, schedule) {
 function renderDualGuide(overlay, guide, transform) {
   const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
   overlay.innerHTML = dualGraphMarkup(guide, transform, schedule)
-    + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 동일 레벨 간선은 양쪽에서 중앙으로 · 1000ms</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 모든 간선 동일 속도 · 1000ms</text>';
 }
 
 function renderMedialAxisGuide(overlay, guide, transform) {
