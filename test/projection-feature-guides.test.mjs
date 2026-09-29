@@ -127,6 +127,60 @@ test('dual propagation starts every node on the innermost radial tier and meets 
   assert.equal(schedule.nodeTimes[1], 0);
 });
 
+
+test('dual propagation gives every rendered line segment the same growth speed', () => {
+  const dualGraph = {
+    faces: [
+      { dualPoint: [0, 0], centroid: [0, 0], nodeIndices: [] },
+      { dualPoint: [3, 0], centroid: [3, 0], nodeIndices: [] },
+      { dualPoint: [0, 4], centroid: [0, 4], nodeIndices: [] },
+      { dualPoint: [6, 4], centroid: [6, 4], nodeIndices: [] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[1, 0], [2, 0]] },
+      { from: 0, to: 2, segment: [[0, 1], [0, 3]] },
+      { from: 1, to: 3, segment: [[4, 1], [5, 3]] },
+      { from: 2, to: 3, segment: [[2, 4], [4, 4]] }
+    ]
+  };
+  const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
+  const speeds = [];
+  schedule.edgeTimes.forEach(edge => {
+    if (edge.parts?.length) {
+      edge.parts.forEach(part => {
+        if (part.length > 1e-9) speeds.push(part.length / part.durationMs);
+      });
+    } else if (edge.length > 1e-9) {
+      speeds.push(edge.length / edge.durationMs);
+    }
+  });
+  assert.ok(speeds.length > 0);
+  speeds.forEach(speed => {
+    assert.ok(Math.abs(speed - schedule.speedUnitsPerMs) < 1e-9);
+  });
+});
+
+test('equal-level dual fronts keep one speed and meet at the shared midpoint together', () => {
+  const dualGraph = {
+    faces: [
+      { dualPoint: [-1, 0], centroid: [-1, 0], nodeIndices: [] },
+      { dualPoint: [2, 0], centroid: [2, 0], nodeIndices: [] }
+    ],
+    edges: [
+      { from: 0, to: 1, segment: [[0.25, -1], [0.25, 1]] }
+    ]
+  };
+  const schedule = dualPropagationSchedule(dualGraph, [0, 3], 1000);
+  const edge = schedule.edgeTimes[0];
+  assert.equal(edge.mode, 'meet');
+  assert.equal(edge.parts.length, 2);
+  const endTimes = edge.parts.map(part => part.delayMs + part.durationMs);
+  assert.ok(Math.abs(endTimes[0] - endTimes[1]) < 1e-8);
+  edge.parts.forEach(part => {
+    assert.ok(Math.abs(part.length / part.durationMs - schedule.speedUnitsPerMs) < 1e-9);
+  });
+});
+
 test('edge midpoints participate only in initial seed selection', () => {
   const dualGraph = {
     faces: [
