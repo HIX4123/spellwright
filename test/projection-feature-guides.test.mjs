@@ -164,10 +164,10 @@ test('equal-level dual fronts keep one speed and meet at the shared midpoint tog
   const dualGraph = {
     faces: [
       { dualPoint: [-1, 0], centroid: [-1, 0], nodeIndices: [] },
-      { dualPoint: [2, 0], centroid: [2, 0], nodeIndices: [] }
+      { dualPoint: [0, 1], centroid: [0, 1], nodeIndices: [] }
     ],
     edges: [
-      { from: 0, to: 1, segment: [[0, 5], [0, 7]] }
+      { from: 0, to: 1, segment: [[2, 4], [4, 6]] }
     ]
   };
   const schedule = dualPropagationSchedule(dualGraph, [0, 0], 1000);
