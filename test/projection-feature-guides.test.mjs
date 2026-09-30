@@ -7,6 +7,7 @@ import {
   analyzeProjectionGuides,
   distanceToSegment,
   dualPropagationSchedule,
+  guideGlobalProgress,
   maximumClearancePointForPolygon,
   medialPropagationSchedule,
   medialPropagationExtent,
@@ -26,11 +27,23 @@ test('screen guide radii preserve computed concentric radii without visual displ
 });
 
 
-test('projection guide motion uses a two-second emphasized accelerate-decelerate curve', async () => {
+test('projection guide easing is applied once to the global two-second timeline', async () => {
+  const early = guideGlobalProgress(0.1);
+  const beforeBurst = guideGlobalProgress(0.3);
+  const burst = guideGlobalProgress(0.4);
+  const late = guideGlobalProgress(0.9);
+
+  assert.ok(early < 0.03, 'global motion should linger near the start');
+  assert.ok(beforeBurst < 0.3, 'global motion should still be behind linear progress before the burst');
+  assert.ok(burst > 0.55, 'global motion should accelerate sharply through the middle');
+  assert.ok(late > 0.99, 'global motion should ease out near completion');
+
   const css = await readFile(new URL('../docs/projection-feature-guides.css', import.meta.url), 'utf8');
-  assert.match(css, /--projection-guide-growth-easing:\s*cubic-bezier\(0\.55,\s*0,\s*0\.1,\s*1\)/);
-  assert.match(css, /projection-dual-edge-draw[\s\S]*var\(--projection-guide-growth-easing\)/);
-  assert.match(css, /projection-medial-axis-draw[\s\S]*var\(--projection-guide-growth-easing\)/);
+  const source = await readFile(new URL('../docs/projection-feature-guides.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(css, /animation:\s*projection-dual-edge-draw/);
+  assert.doesNotMatch(css, /animation:\s*projection-medial-axis-draw/);
+  assert.match(source, /data-global-start/);
+  assert.match(source, /requestAnimationFrame/);
 });
 
 test('ordered hull boundary reduces collinear shell points to the visible hull outline', () => {
