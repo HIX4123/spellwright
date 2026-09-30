@@ -1079,7 +1079,7 @@ function dualGraphMarkup(guide, transform, schedule = null) {
   const activeSchedule = schedule ?? dualPropagationSchedule(
     guide.dualGraph,
     [0, 0],
-    1000
+    GUIDE_ANIMATION_DURATION_MS
   );
 
   const edgeMarkup = guide.dualGraph.edges.map((edge, index) => {
@@ -1167,7 +1167,7 @@ function animatedMedialAxisMarkup(
   transform,
   startTimes,
   speedPixelsPerMs,
-  totalDurationMs = 1000,
+  totalDurationMs = GUIDE_ANIMATION_DURATION_MS,
   timingData = null
 ) {
   const data = timingData ?? medialTimingData(guide, transform);
