@@ -3,7 +3,44 @@ import { analyzeProjectionStructure, convexHullIndices } from './projection-geom
 
 const activeGuideByRoot = new WeakMap();
 const guideByRoot = new WeakMap();
+const activeTimelineByRoot = new WeakMap();
 const GUIDE_ANIMATION_DURATION_MS = 2000;
+const GUIDE_EASING = [0.55, 0, 0.1, 1];
+
+function cubicBezierCoordinate(parameter, firstControl, secondControl) {
+  const inverse = 1 - parameter;
+  return (
+    3 * inverse * inverse * parameter * firstControl
+    + 3 * inverse * parameter * parameter * secondControl
+    + parameter * parameter * parameter
+  );
+}
+
+export function guideGlobalProgress(progress) {
+  const normalized = Math.max(0, Math.min(1, progress));
+  const [x1, y1, x2, y2] = GUIDE_EASING;
+  let lower = 0;
+  let upper = 1;
+  for (let iteration = 0; iteration < 24; iteration += 1) {
+    const parameter = (lower + upper) / 2;
+    const x = cubicBezierCoordinate(parameter, x1, x2);
+    if (x < normalized) lower = parameter;
+    else upper = parameter;
+  }
+  return cubicBezierCoordinate((lower + upper) / 2, y1, y2);
+}
+
+function normalizedGuideTime(milliseconds) {
+  return Math.max(0, Math.min(1, milliseconds / GUIDE_ANIMATION_DURATION_MS));
+}
+
+function guideTimelineAttributes(startMs, endMs) {
+  return `data-global-start="${normalizedGuideTime(startMs).toFixed(8)}" data-global-end="${normalizedGuideTime(endMs).toFixed(8)}"`;
+}
+
+function guideTimelineThreshold(milliseconds) {
+  return `data-global-threshold="${normalizedGuideTime(milliseconds).toFixed(8)}"`;
+}
 
 export function analyzeProjectionGuides(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
   const arrangementNodes = structure.nodes.map(node => node.xy.slice());
@@ -1067,9 +1104,12 @@ function renderHullGuide(overlay, guide, transform) {
 
 function animatedDualPath(points, timing, extraClass = '') {
   const pointText = points.map(point => `${svgNumber(point[0])},${svgNumber(point[1])}`).join(' ');
-  const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
+  const timeline = guideTimelineAttributes(
+    timing.delayMs,
+    timing.delayMs + timing.durationMs
+  );
   return `<polyline class="projection-guide-dual-edge is-animated ${extraClass}" pathLength="1"
-    style="${style}" points="${pointText}" />`;
+    ${timeline} points="${pointText}" />`;
 }
 
 function dualGraphMarkup(guide, transform, schedule = null) {
@@ -1087,9 +1127,12 @@ function dualGraphMarkup(guide, transform, schedule = null) {
     const midpoint = transform.point(dualEdgeMidpoint(edge));
 
     if (edge.from === edge.to) {
-      const style = `--dual-delay:${timing.delayMs.toFixed(2)}ms;--dual-duration:${timing.durationMs.toFixed(2)}ms`;
+      const timeline = guideTimelineAttributes(
+        timing.delayMs,
+        timing.delayMs + timing.durationMs
+      );
       return `<circle class="projection-guide-dual-edge projection-guide-dual-loop is-animated"
-        pathLength="1" style="${style}"
+        pathLength="1" ${timeline}
         cx="${svgNumber(midpoint[0])}" cy="${svgNumber(midpoint[1])}" r="7" />`;
     }
 
@@ -1123,11 +1166,11 @@ function dualGraphMarkup(guide, transform, schedule = null) {
 
   const nodeMarkup = guide.dualGraph.faces.map((face, index) => {
     const point = facePoints[index];
-    const style = `--dual-node-delay:${activeSchedule.nodeTimes[index].toFixed(2)}ms`;
+    const threshold = guideTimelineThreshold(activeSchedule.nodeTimes[index]);
     return `
-      <circle class="projection-guide-dual-node is-animated" style="${style}"
+      <circle class="projection-guide-dual-node is-animated" ${threshold}
         cx="${svgNumber(point[0])}" cy="${svgNumber(point[1])}" r="4.5" />
-      <text class="projection-guide-label projection-guide-dual-label is-animated" style="${style}"
+      <text class="projection-guide-label projection-guide-dual-label is-animated" ${threshold}
         x="${svgNumber(point[0] + 7)}" y="${svgNumber(point[1] - 7)}">F${index + 1}</text>
     `;
   }).join('');
@@ -1181,8 +1224,11 @@ function animatedMedialAxisMarkup(
       speedPixelsPerMs
     );
     return parts.map(part => {
-      const style = `--medial-delay:${part.delayMs.toFixed(2)}ms;--medial-duration:${part.durationMs.toFixed(2)}ms`;
-      return `<line class="projection-guide-medial-axis is-animated" pathLength="1" style="${style}"
+      const timeline = guideTimelineAttributes(
+        part.delayMs,
+        part.delayMs + part.durationMs
+      );
+      return `<line class="projection-guide-medial-axis is-animated" pathLength="1" ${timeline}
         x1="${svgNumber(part.start[0])}" y1="${svgNumber(part.start[1])}"
         x2="${svgNumber(part.end[0])}" y2="${svgNumber(part.end[1])}" />`;
     }).join('');
@@ -1253,6 +1299,72 @@ function renderDualMedialGuide(overlay, guide, transform) {
     + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 공통 속도 · 비동기 종료 · 2000ms</text>';
 }
 
+
+function applyGuideTimelineProgress(overlay, easedProgress) {
+  overlay.querySelectorAll('[data-global-start][data-global-end]').forEach(element => {
+    const start = Number(element.dataset.globalStart);
+    const end = Number(element.dataset.globalEnd);
+    const span = Math.max(end - start, 1e-9);
+    const localProgress = Math.max(0, Math.min(1, (easedProgress - start) / span));
+    element.style.strokeDashoffset = String(1 - localProgress);
+  });
+
+  overlay.querySelectorAll('[data-global-threshold]').forEach(element => {
+    const threshold = Number(element.dataset.globalThreshold);
+    element.style.opacity = easedProgress + 1e-9 >= threshold ? '1' : '0';
+  });
+}
+
+function stopGuideTimeline(root) {
+  const state = activeTimelineByRoot.get(root);
+  if (!state) return;
+  if (state.frameId !== null && typeof cancelAnimationFrame === 'function') {
+    cancelAnimationFrame(state.frameId);
+  }
+  activeTimelineByRoot.delete(root);
+}
+
+function startGuideTimeline(root, overlay) {
+  stopGuideTimeline(root);
+
+  const hasAnimatedContent = overlay.querySelector(
+    '[data-global-start][data-global-end], [data-global-threshold]'
+  );
+  if (!hasAnimatedContent) return;
+
+  const reducedMotion = typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (
+    reducedMotion
+    || typeof requestAnimationFrame !== 'function'
+    || typeof performance === 'undefined'
+  ) {
+    applyGuideTimelineProgress(overlay, 1);
+    return;
+  }
+
+  const state = { frameId: null, startTime: performance.now() };
+  activeTimelineByRoot.set(root, state);
+  applyGuideTimelineProgress(overlay, guideGlobalProgress(0));
+
+  const tick = now => {
+    if (activeTimelineByRoot.get(root) !== state) return;
+    const elapsed = Math.max(0, now - state.startTime);
+    const progress = Math.min(1, elapsed / GUIDE_ANIMATION_DURATION_MS);
+    applyGuideTimelineProgress(overlay, guideGlobalProgress(progress));
+    if (progress >= 1) {
+      state.frameId = null;
+      activeTimelineByRoot.delete(root);
+      return;
+    }
+    state.frameId = requestAnimationFrame(tick);
+  };
+
+  state.frameId = requestAnimationFrame(tick);
+}
+
 function showGuide(root, kind) {
   const overlay = ensureOverlay(root);
   const stage = root.querySelector('.projection-stage');
@@ -1278,11 +1390,13 @@ function showGuide(root, kind) {
   else if (kind === 'dual-medial') renderDualMedialGuide(overlay, guide, transform);
   else renderLayerGuide(overlay, guide, transform);
   overlay.classList.add('is-visible');
+  startGuideTimeline(root, overlay);
 }
 
 function hideGuide(root, kind = null) {
   if (kind && activeGuideByRoot.get(root) !== kind) return;
   activeGuideByRoot.delete(root);
+  stopGuideTimeline(root);
   const overlay = root.querySelector('.projection-feature-overlay');
   if (!overlay) return;
   overlay.classList.remove('is-visible');
