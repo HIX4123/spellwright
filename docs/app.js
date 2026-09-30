@@ -1,6 +1,6 @@
 import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=emphasized-motion-20260930-1';
+import { mountProjectionSelector } from './projection-selector.js?v=global-easing-20260930-1';
 
 let data;
 let relationships;
