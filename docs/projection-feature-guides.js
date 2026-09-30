@@ -3,6 +3,7 @@ import { analyzeProjectionStructure, convexHullIndices } from './projection-geom
 
 const activeGuideByRoot = new WeakMap();
 const guideByRoot = new WeakMap();
+const GUIDE_ANIMATION_DURATION_MS = 2000;
 
 export function analyzeProjectionGuides(vertices, edges, frame, structure = analyzeProjectionStructure(vertices, edges, frame)) {
   const arrangementNodes = structure.nodes.map(node => node.xy.slice());
@@ -507,7 +508,7 @@ function dualEdgeLengths(dualGraph, edgeIndex) {
 export function dualPropagationSchedule(
   dualGraph,
   origin = [0, 0],
-  totalDurationMs = 1000
+  totalDurationMs = GUIDE_ANIMATION_DURATION_MS
 ) {
   const faceCount = dualGraph.faces.length;
   if (!faceCount) {
@@ -899,7 +900,7 @@ export function medialPropagationSchedule(
   segments,
   origin,
   startTimeMs = 0,
-  totalDurationMs = 1000,
+  totalDurationMs = GUIDE_ANIMATION_DURATION_MS,
   speedUnitsPerMs = null
 ) {
   if (!segments.length || startTimeMs >= totalDurationMs) return [];
@@ -1189,9 +1190,9 @@ function animatedMedialAxisMarkup(
 }
 
 function renderDualGuide(overlay, guide, transform) {
-  const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
+  const schedule = dualPropagationSchedule(guide.dualGraph, [0, 0], GUIDE_ANIMATION_DURATION_MS);
   overlay.innerHTML = dualGraphMarkup(guide, transform, schedule)
-    + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 모든 간선 동일 속도 · 1000ms</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">BFS 전파 · 모든 간선 동일 속도 · 2000ms</text>';
 }
 
 function renderMedialAxisGuide(overlay, guide, transform) {
@@ -1202,23 +1203,23 @@ function renderMedialAxisGuide(overlay, guide, transform) {
     return;
   }
 
-  const speedPixelsPerMs = extent / 1000;
+  const speedPixelsPerMs = extent / GUIDE_ANIMATION_DURATION_MS;
   const markup = animatedMedialAxisMarkup(
     guide,
     transform,
     timing.extents.map(() => 0),
     speedPixelsPerMs,
-    1000,
+    GUIDE_ANIMATION_DURATION_MS,
     timing
   );
   overlay.innerHTML = markup
-    + '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 모든 가지 동일 속도 · 1000ms</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">Medial Axis · 모든 가지 동일 속도 · 2000ms</text>';
 }
 
 function renderDualMedialGuide(overlay, guide, transform) {
-  const provisionalDual = dualPropagationSchedule(guide.dualGraph, [0, 0], 1000);
+  const provisionalDual = dualPropagationSchedule(guide.dualGraph, [0, 0], GUIDE_ANIMATION_DURATION_MS);
   const timing = medialTimingData(guide, transform);
-  const dualExtentModel = provisionalDual.speedUnitsPerMs * 1000;
+  const dualExtentModel = provisionalDual.speedUnitsPerMs * GUIDE_ANIMATION_DURATION_MS;
   const dualExtentPixels = dualExtentModel * transform.scale;
   const nodeArrivalPixels = provisionalDual.nodeTimes.map(time => (
     time * provisionalDual.speedUnitsPerMs * transform.scale
@@ -1228,7 +1229,7 @@ function renderDualMedialGuide(overlay, guide, transform) {
     ...timing.extents.map((extent, index) => nodeArrivalPixels[index] + extent),
     1e-9
   );
-  const speedPixelsPerMs = combinedExtentPixels / 1000;
+  const speedPixelsPerMs = combinedExtentPixels / GUIDE_ANIMATION_DURATION_MS;
   const dualSpeedModelPerMs = speedPixelsPerMs / Math.max(transform.scale, 1e-9);
   const dualDurationMs = dualExtentModel > 1e-9
     ? dualExtentModel / dualSpeedModelPerMs
@@ -1243,13 +1244,13 @@ function renderDualMedialGuide(overlay, guide, transform) {
     transform,
     schedule.nodeTimes,
     speedPixelsPerMs,
-    1000,
+    GUIDE_ANIMATION_DURATION_MS,
     timing
   );
 
   overlay.innerHTML = `<g class="projection-guide-combined-medial">${medialMarkup}</g>`
     + `<g class="projection-guide-combined-dual">${dualGraphMarkup(guide, transform, schedule)}</g>`
-    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 공통 속도 · 비동기 종료 · 1000ms</text>';
+    + '<text class="projection-guide-caption" x="12" y="18">Dual + Medial · 공통 속도 · 비동기 종료 · 2000ms</text>';
 }
 
 function showGuide(root, kind) {
