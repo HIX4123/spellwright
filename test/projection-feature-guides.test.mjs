@@ -25,6 +25,14 @@ test('screen guide radii preserve computed concentric radii without visual displ
   assert.deepEqual(screenLayerRadii([0.01, 0.02, 0.03], 100), [1, 2, 3]);
 });
 
+
+test('projection guide motion uses a two-second emphasized accelerate-decelerate curve', async () => {
+  const css = await readFile(new URL('../docs/projection-feature-guides.css', import.meta.url), 'utf8');
+  assert.match(css, /--projection-guide-growth-easing:\s*cubic-bezier\(0\.55,\s*0,\s*0\.1,\s*1\)/);
+  assert.match(css, /projection-dual-edge-draw[\s\S]*var\(--projection-guide-growth-easing\)/);
+  assert.match(css, /projection-medial-axis-draw[\s\S]*var\(--projection-guide-growth-easing\)/);
+});
+
 test('ordered hull boundary reduces collinear shell points to the visible hull outline', () => {
   assert.deepEqual(
     orderedHullBoundary([[0, 0], [1, 0], [2, 0], [2, 2], [0, 2]]),
