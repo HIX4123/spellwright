@@ -147,9 +147,9 @@
   min-width: 0;
   margin: 0;
   padding: 4px;
-  border: 1px solid color-mix(in srgb, var(--projection-attribute-tint) 20%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--projection-attribute-tint) 42%, var(--line));
   border-radius: 8px;
-  background: color-mix(in srgb, var(--projection-attribute-tint) 10%, var(--surface));
+  background: color-mix(in srgb, var(--projection-attribute-tint) 20%, var(--surface));
 }
 
 .projection-periodic-item[data-solid="tetrahedron"] { --projection-attribute-tint: #9b7bd7; }
@@ -170,7 +170,7 @@
   min-height: 58px;
   overflow: hidden;
   border-radius: 5px;
-  background: color-mix(in srgb, var(--projection-attribute-tint) 5%, var(--surface-2));
+  background: color-mix(in srgb, var(--projection-attribute-tint) 11%, var(--surface-2));
 }
 
 .projection-periodic-thumb img {
