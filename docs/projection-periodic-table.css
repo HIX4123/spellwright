@@ -142,25 +142,25 @@
 }
 
 .projection-periodic-item {
-  --projection-attribute-tint: var(--surface);
+  --projection-attribute-material: var(--surface-3);
   position: relative;
   min-width: 0;
   margin: 0;
   padding: 4px;
-  border: 1px solid color-mix(in srgb, var(--projection-attribute-tint) 42%, var(--line));
+  border: 0;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--projection-attribute-tint) 20%, var(--surface));
+  background: var(--projection-attribute-material);
+  box-shadow: none;
 }
 
-.projection-periodic-item[data-solid="tetrahedron"] { --projection-attribute-tint: #9b7bd7; }
-.projection-periodic-item[data-solid="cube"] { --projection-attribute-tint: #4a9bd8; }
-.projection-periodic-item[data-solid="octahedron"] { --projection-attribute-tint: #d58b45; }
-.projection-periodic-item[data-solid="dodecahedron"] { --projection-attribute-tint: #5ba77a; }
-.projection-periodic-item[data-solid="icosahedron"] { --projection-attribute-tint: #c96f86; }
+.projection-periodic-item[data-solid="tetrahedron"] { --projection-attribute-material: #8f72c7; }
+.projection-periodic-item[data-solid="cube"] { --projection-attribute-material: #4f8fd8; }
+.projection-periodic-item[data-solid="octahedron"] { --projection-attribute-material: #d89443; }
+.projection-periodic-item[data-solid="dodecahedron"] { --projection-attribute-material: #58a276; }
+.projection-periodic-item[data-solid="icosahedron"] { --projection-attribute-material: #c66d86; }
 
 .projection-periodic-item.is-euler {
-  border-color: color-mix(in srgb, #44c58a 72%, var(--line));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #44c58a 18%, transparent);
+  box-shadow: none;
 }
 
 .projection-periodic-thumb {
@@ -170,7 +170,7 @@
   min-height: 58px;
   overflow: hidden;
   border-radius: 5px;
-  background: color-mix(in srgb, var(--projection-attribute-tint) 11%, var(--surface-2));
+  background: transparent;
 }
 
 .projection-periodic-thumb img {
@@ -179,6 +179,7 @@
   height: 58px;
   object-fit: contain;
   pointer-events: none;
+  mix-blend-mode: multiply;
 }
 
 .projection-periodic-euler-badge {
