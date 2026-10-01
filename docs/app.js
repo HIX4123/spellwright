@@ -2,6 +2,7 @@ import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-easing-20260930-1';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-periodic-table-20261001-1';
+import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=linked-dashboard-tabs-20261001-1';
 
 let data;
 let relationships;
@@ -92,6 +93,7 @@ async function load() {
 
   $('#projectName').textContent = data.project.name;
   $('#version').textContent = `${data.project.version} · ${data.project.phase}`;
+  currentView = dashboardViewFromHash(location.hash);
   renderNav();
   render();
 
@@ -110,14 +112,8 @@ async function load() {
 
 function renderNav() {
   $('#nav').innerHTML = navItems
-    .map(([id,label]) => `<button class="nav-btn ${id===currentView?'active':''}" data-view="${id}">${label}</button>`)
+    .map(([id,label]) => `<a class="nav-btn ${id===currentView?'active':''}" href="${dashboardViewHref(id)}" data-view="${id}"${id===currentView?' aria-current="page"':''}>${label}</a>`)
     .join('');
-
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.onclick = () => {
-    currentView = btn.dataset.view;
-    renderNav();
-    render();
-  });
 }
 
 function statusMeta(id) {
@@ -551,6 +547,15 @@ $('#importInput').onchange = async e => {
     toast('Invalid JSON');
   }
 };
+
+window.addEventListener('hashchange', () => {
+  const nextView = dashboardViewFromHash(location.hash);
+  if (nextView === currentView) return;
+  currentView = nextView;
+  renderNav();
+  if (data) render();
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+});
 
 window.addEventListener('beforeunload',e=>{
   if (dirty) {
