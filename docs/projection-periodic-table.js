@@ -6,6 +6,12 @@ import {
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
+export const CORE_BLOCKS = Object.freeze([
+  { id: 'point', label: 'Point', description: 'core 1' },
+  { id: 'pair', label: 'Pair', description: 'core 2' },
+  { id: 'ring', label: 'Ring', description: 'core 3+' }
+]);
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, character => ({
     '&': '&amp;',
@@ -23,8 +29,13 @@ function vertexHullCount(structure) {
   return convexHullIndices(nodes, nodes.map((_, index) => index), tolerance).length;
 }
 
-export function buildProjectionPeriodicEntries(projectionData, viewData, elements = []) {
-  const attributeBySolid = new Map(elements.map(element => [element.solid, element.name]));
+export function projectionCoreBlock(coreSize) {
+  if (coreSize === 1) return 'point';
+  if (coreSize === 2) return 'pair';
+  return 'ring';
+}
+
+export function buildProjectionPeriodicEntries(projectionData, viewData) {
   const viewsBySolid = new Map(viewData.solids.map(solid => [solid.name, solid]));
 
   return projectionData.solids.flatMap((solid, solidOrder) => {
@@ -46,6 +57,7 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
       const rotationalOrder = Math.max(1, structure.rotationalOrder);
       const sectorSize = hullVertices / rotationalOrder;
       const roundedSectorSize = Math.round(sectorSize);
+      const coreSize = structure.convexHullLayerPointCounts.at(-1);
 
       if (Math.abs(sectorSize - roundedSectorSize) > 1e-6) {
         throw new Error('Non-integral fundamental sector for ' + solid.name + ' class ' + projection.id);
@@ -60,9 +72,10 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
         classId: projection.id,
         label: projection.role?.name || projection.label,
         image: projection.image,
-        attribute: attributeBySolid.get(solid.name) || solid.name,
         period: structure.convexHullLayers.length,
         group: Math.max(1, roundedSectorSize),
+        coreSize,
+        coreBlock: projectionCoreBlock(coreSize),
         hullVertices,
         rotationalOrder,
         eulerTrail: structure.eulerTrail,
@@ -84,24 +97,31 @@ function periodicCell(entries) {
       ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
       : '';
     const title = [
-      entry.attribute + ' · ' + entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
+      entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
       entry.label,
       'P' + entry.period + ' / G' + entry.group,
+      'Core ' + entry.coreSize,
       'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
     ].join(' · ');
 
     return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" title="' + escapeHtml(title) + '">' +
       '<div class="projection-periodic-thumb">' +
-        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
+        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.solidName + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
         eulerBadge +
       '</div>' +
-      '<figcaption><strong>' + escapeHtml(entry.attribute) + '</strong><span>#' + String(entry.classId).padStart(2, '0') + '</span></figcaption>' +
     '</figure>';
   }).join('');
 
   return '<div class="projection-periodic-cell">' +
     (entries.length > 1 ? '<span class="projection-periodic-count">' + entries.length + '</span>' : '') +
     '<div class="projection-periodic-items">' + items + '</div>' +
+  '</div>';
+}
+
+function periodBlockLabel(period, block) {
+  return '<div class="projection-periodic-axis projection-periodic-period-block is-' + block.id + '">' +
+    '<div class="projection-periodic-period-code"><span>PERIOD</span><strong>P' + period + '</strong></div>' +
+    '<div class="projection-periodic-block-code"><span>CORE BLOCK</span><strong>' + block.label + '</strong><small>' + block.description + '</small></div>' +
   '</div>';
 }
 
@@ -116,7 +136,7 @@ export function renderProjectionPeriodicTable(root, entries) {
   const cells = new Map();
 
   sorted.forEach(entry => {
-    const key = entry.period + ':' + entry.group;
+    const key = entry.period + ':' + entry.group + ':' + entry.coreBlock;
     if (!cells.has(key)) cells.set(key, []);
     cells.get(key).push(entry);
   });
@@ -128,14 +148,13 @@ export function renderProjectionPeriodicTable(root, entries) {
     '</div>'
   ).join('');
 
-  const rows = periods.map(period => {
-    const label =
-      '<div class="projection-periodic-axis projection-periodic-period">' +
-        '<span>PERIOD</span><strong>P' + period + '</strong>' +
-        '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
-      '</div>';
-    return label + groups.map(group => periodicCell(cells.get(period + ':' + group) || [])).join('');
-  }).join('');
+  const rows = periods.flatMap(period => CORE_BLOCKS.map(block => {
+    const label = periodBlockLabel(period, block);
+    const rowCells = groups.map(group =>
+      periodicCell(cells.get(period + ':' + group + ':' + block.id) || [])
+    ).join('');
+    return label + rowCells;
+  })).join('');
 
   const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
   root.innerHTML =
@@ -143,20 +162,21 @@ export function renderProjectionPeriodicTable(root, entries) {
       '<div class="projection-periodic-legend">' +
         '<span><strong>P</strong> Convex Hull depth</span>' +
         '<span><strong>G</strong> Hull vertices ÷ rotational order</span>' +
+        '<span><strong>Core</strong> Point 1 · Pair 2 · Ring 3+</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' + eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
-        '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (82 + groups.length * 150) + 'px">' +
-          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>GROUP</span></div>' +
+        '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (132 + groups.length * 138) + 'px">' +
+          '<div class="projection-periodic-corner"><span>PERIOD + CORE</span><b>×</b><span>GROUP</span></div>' +
           groupHeaders +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 Fundamental Sector Size를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">각 Period를 최내곽 Convex Hull의 크기에 따라 Point / Pair / Ring Core Block으로 펼쳤다. 같은 칸에는 동일한 P·G·Core 분류를 공유하는 사영도를 모두 표시한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 }
 
-export async function mountProjectionPeriodicTable(elements = []) {
+export async function mountProjectionPeriodicTable() {
   const root = document.querySelector('#projectionPeriodicTable');
   if (!root) return;
 
@@ -171,7 +191,7 @@ export async function mountProjectionPeriodicTable(elements = []) {
 
     const projectionData = await projectionResponse.json();
     const viewData = await viewResponse.json();
-    const entries = buildProjectionPeriodicEntries(projectionData, viewData, elements);
+    const entries = buildProjectionPeriodicEntries(projectionData, viewData);
     renderProjectionPeriodicTable(root, entries);
   } catch (error) {
     console.error(error);
