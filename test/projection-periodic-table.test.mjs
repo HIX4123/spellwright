@@ -44,17 +44,22 @@ test('projection periodic table keeps the B-axis classification and adds mutuall
   }
 });
 
-test('core blocks expand collisions while preserving every projection', () => {
+test('core blocks subdivide cells without adding another table axis', () => {
   const entries = buildProjectionPeriodicEntries(projections, views);
   const cells = new Map();
+  const nestedBlocks = new Map();
 
   entries.forEach(entry => {
-    const key = entry.period + ':' + entry.group + ':' + entry.coreBlock;
-    cells.set(key, (cells.get(key) || 0) + 1);
+    const cellKey = entry.period + ':' + entry.group;
+    const blockKey = cellKey + ':' + entry.coreBlock;
+    cells.set(cellKey, (cells.get(cellKey) || 0) + 1);
+    nestedBlocks.set(blockKey, (nestedBlocks.get(blockKey) || 0) + 1);
   });
 
-  assert.equal(cells.size, 22);
-  assert.equal(Math.max(...cells.values()), 6);
+  assert.equal(cells.size, 15, 'P×G remains the only table coordinate system');
+  assert.equal(Math.max(...cells.values()), 8);
+  assert.equal(nestedBlocks.size, 22, 'Core Block only subdivides occupied P×G cells');
+  assert.equal(Math.max(...nestedBlocks.values()), 6);
   assert.equal([...cells.values()].reduce((sum, count) => sum + count, 0), 43);
   assert.equal(entries.filter(entry => entry.eulerTrail).length, 8);
   assert.equal(entries.filter(entry => entry.eulerCircuit).length, 4);

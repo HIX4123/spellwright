@@ -85,43 +85,52 @@ export function buildProjectionPeriodicEntries(projectionData, viewData) {
   });
 }
 
+function projectionItem(entry) {
+  const eulerClass = entry.eulerTrail ? ' is-euler' : '';
+  const circuitClass = entry.eulerCircuit ? ' is-circuit' : '';
+  const eulerBadge = entry.eulerTrail
+    ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
+    : '';
+  const title = [
+    entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
+    entry.label,
+    'P' + entry.period + ' / G' + entry.group,
+    'Core ' + entry.coreSize,
+    'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
+  ].join(' · ');
+
+  return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" title="' + escapeHtml(title) + '">' +
+    '<div class="projection-periodic-thumb">' +
+      '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.solidName + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
+      eulerBadge +
+    '</div>' +
+  '</figure>';
+}
+
 function periodicCell(entries) {
   if (!entries.length) {
     return '<div class="projection-periodic-cell is-empty" aria-hidden="true"></div>';
   }
 
-  const items = entries.map(entry => {
-    const eulerClass = entry.eulerTrail ? ' is-euler' : '';
-    const circuitClass = entry.eulerCircuit ? ' is-circuit' : '';
-    const eulerBadge = entry.eulerTrail
-      ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
-      : '';
-    const title = [
-      entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
-      entry.label,
-      'P' + entry.period + ' / G' + entry.group,
-      'Core ' + entry.coreSize,
-      'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
-    ].join(' · ');
+  const byBlock = new Map(CORE_BLOCKS.map(block => [block.id, []]));
+  entries.forEach(entry => byBlock.get(entry.coreBlock)?.push(entry));
 
-    return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" title="' + escapeHtml(title) + '">' +
-      '<div class="projection-periodic-thumb">' +
-        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.solidName + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
-        eulerBadge +
-      '</div>' +
-    '</figure>';
-  }).join('');
+  const blockSections = CORE_BLOCKS
+    .filter(block => byBlock.get(block.id).length)
+    .map(block => {
+      const blockEntries = byBlock.get(block.id);
+      return '<section class="projection-periodic-core-block is-' + block.id + '">' +
+        '<div class="projection-periodic-core-label">' +
+          '<strong>' + block.label + '</strong>' +
+          '<span>' + block.description + '</span>' +
+        '</div>' +
+        '<div class="projection-periodic-items">' + blockEntries.map(projectionItem).join('') + '</div>' +
+      '</section>';
+    }).join('');
 
   return '<div class="projection-periodic-cell">' +
     (entries.length > 1 ? '<span class="projection-periodic-count">' + entries.length + '</span>' : '') +
-    '<div class="projection-periodic-items">' + items + '</div>' +
-  '</div>';
-}
-
-function periodBlockLabel(period, block) {
-  return '<div class="projection-periodic-axis projection-periodic-period-block is-' + block.id + '">' +
-    '<div class="projection-periodic-period-code"><span>PERIOD</span><strong>P' + period + '</strong></div>' +
-    '<div class="projection-periodic-block-code"><span>CORE BLOCK</span><strong>' + block.label + '</strong><small>' + block.description + '</small></div>' +
+    blockSections +
   '</div>';
 }
 
@@ -136,7 +145,7 @@ export function renderProjectionPeriodicTable(root, entries) {
   const cells = new Map();
 
   sorted.forEach(entry => {
-    const key = entry.period + ':' + entry.group + ':' + entry.coreBlock;
+    const key = entry.period + ':' + entry.group;
     if (!cells.has(key)) cells.set(key, []);
     cells.get(key).push(entry);
   });
@@ -148,13 +157,14 @@ export function renderProjectionPeriodicTable(root, entries) {
     '</div>'
   ).join('');
 
-  const rows = periods.flatMap(period => CORE_BLOCKS.map(block => {
-    const label = periodBlockLabel(period, block);
-    const rowCells = groups.map(group =>
-      periodicCell(cells.get(period + ':' + group + ':' + block.id) || [])
-    ).join('');
-    return label + rowCells;
-  })).join('');
+  const rows = periods.map(period => {
+    const label =
+      '<div class="projection-periodic-axis projection-periodic-period">' +
+        '<span>PERIOD</span><strong>P' + period + '</strong>' +
+        '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
+      '</div>';
+    return label + groups.map(group => periodicCell(cells.get(period + ':' + group) || [])).join('');
+  }).join('');
 
   const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
   root.innerHTML =
@@ -166,13 +176,13 @@ export function renderProjectionPeriodicTable(root, entries) {
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' + eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
-        '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (132 + groups.length * 138) + 'px">' +
-          '<div class="projection-periodic-corner"><span>PERIOD + CORE</span><b>×</b><span>GROUP</span></div>' +
+        '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (82 + groups.length * 150) + 'px">' +
+          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>GROUP</span></div>' +
           groupHeaders +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">각 Period를 최내곽 Convex Hull의 크기에 따라 Point / Pair / Ring Core Block으로 펼쳤다. 같은 칸에는 동일한 P·G·Core 분류를 공유하는 사영도를 모두 표시한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">Period와 Group 좌표는 그대로 유지하고, 각 셀 내부에서 최내곽 Convex Hull의 크기에 따라 Point / Pair / Ring Core Block으로 묶는다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 }
 

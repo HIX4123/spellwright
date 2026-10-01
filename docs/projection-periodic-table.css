@@ -41,8 +41,8 @@
 
 .projection-periodic-grid {
   display: grid;
-  grid-template-columns: 132px repeat(var(--projection-periodic-groups), minmax(132px, 1fr));
-  gap: 5px;
+  grid-template-columns: 82px repeat(var(--projection-periodic-groups), minmax(144px, 1fr));
+  gap: 6px;
   min-width: var(--projection-periodic-min-width);
   align-items: stretch;
 }
@@ -51,7 +51,7 @@
 .projection-periodic-axis,
 .projection-periodic-cell {
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 10px;
   background: var(--surface-2);
 }
 
@@ -62,9 +62,8 @@
   place-items: center;
   padding: 8px;
   color: var(--muted);
-  font-size: 7px;
+  font-size: 8px;
   letter-spacing: .08em;
-  text-align: center;
 }
 
 .projection-periodic-corner b {
@@ -74,7 +73,7 @@
 
 .projection-periodic-axis {
   min-width: 0;
-  padding: 8px;
+  padding: 9px 8px;
   display: grid;
   align-content: center;
   gap: 2px;
@@ -85,11 +84,11 @@
   color: var(--muted);
   font-size: 7px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .12em;
 }
 
 .projection-periodic-axis strong {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -98,69 +97,32 @@
   font-size: 8px;
 }
 
-.projection-periodic-period-block {
-  min-height: 86px;
-  grid-template-columns: 46px minmax(0, 1fr);
-  align-items: stretch;
-  gap: 8px;
-  padding: 6px 7px;
-  text-align: left;
-}
-
-.projection-periodic-period-code,
-.projection-periodic-block-code {
-  min-width: 0;
-  display: grid;
-  align-content: center;
-  gap: 1px;
-}
-
-.projection-periodic-period-code {
-  padding-right: 7px;
-  border-right: 1px solid var(--line);
-}
-
-.projection-periodic-period-code strong {
-  font-size: 16px;
-}
-
-.projection-periodic-block-code strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.projection-periodic-period-block.is-point {
-  border-left: 3px solid var(--primary);
-}
-
-.projection-periodic-period-block.is-pair {
-  border-left: 3px solid var(--secondary);
-}
-
-.projection-periodic-period-block.is-ring {
-  border-left: 3px solid var(--muted);
+.projection-periodic-period {
+  min-height: 126px;
 }
 
 .projection-periodic-cell {
   position: relative;
   min-width: 0;
-  min-height: 86px;
-  padding: 5px;
+  min-height: 126px;
+  padding: 6px;
+  display: grid;
+  gap: 5px;
+  align-content: start;
   background: color-mix(in srgb, var(--surface-2) 74%, var(--surface));
 }
 
 .projection-periodic-cell.is-empty {
   border-style: dashed;
   background: transparent;
-  opacity: .34;
+  opacity: .42;
 }
 
 .projection-periodic-count {
   position: absolute;
-  top: 4px;
-  right: 5px;
-  z-index: 2;
+  top: 5px;
+  right: 6px;
+  z-index: 3;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
@@ -174,10 +136,45 @@
   font-variant-numeric: tabular-nums;
 }
 
+.projection-periodic-core-block {
+  min-width: 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+
+.projection-periodic-core-block.is-point { border-left-color: var(--primary); }
+.projection-periodic-core-block.is-pair { border-left-color: var(--secondary); }
+.projection-periodic-core-block.is-ring { border-left-color: var(--muted); }
+
+.projection-periodic-core-label {
+  min-height: 14px;
+  padding: 0 2px 3px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 7px;
+  line-height: 1;
+}
+
+.projection-periodic-core-label strong {
+  color: var(--secondary);
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.projection-periodic-core-label span {
+  font-size: 6px;
+}
+
 .projection-periodic-items {
-  height: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
   gap: 4px;
   align-content: start;
 }
@@ -188,7 +185,7 @@
   margin: 0;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 6px;
   background: var(--surface);
 }
 
@@ -201,16 +198,16 @@
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 64px;
+  min-height: 52px;
   overflow: hidden;
-  border-radius: 5px;
+  border-radius: 4px;
   background: color-mix(in srgb, var(--surface-2) 72%, transparent);
 }
 
 .projection-periodic-thumb img {
   display: block;
   width: 100%;
-  height: 64px;
+  height: 52px;
   object-fit: contain;
   pointer-events: none;
 }
@@ -230,7 +227,6 @@
   color: color-mix(in srgb, #44c58a 72%, var(--text));
   font-size: 7px;
   font-weight: 750;
-  letter-spacing: .02em;
 }
 
 .projection-periodic-note {
@@ -250,9 +246,7 @@
 }
 
 @media (max-width: 900px) {
-  .projection-periodic-card {
-    padding: 10px;
-  }
+  .projection-periodic-card { padding: 10px; }
 
   .projection-periodic-legend {
     align-items: flex-start;
@@ -261,17 +255,11 @@
   }
 
   .projection-periodic-grid {
-    grid-template-columns: 118px repeat(var(--projection-periodic-groups), minmax(124px, 1fr));
+    grid-template-columns: 74px repeat(var(--projection-periodic-groups), minmax(132px, 1fr));
   }
 
-  .projection-periodic-period-block,
+  .projection-periodic-period,
   .projection-periodic-cell {
-    min-height: 82px;
-  }
-
-  .projection-periodic-thumb,
-  .projection-periodic-thumb img {
-    height: 58px;
-    min-height: 58px;
+    min-height: 116px;
   }
 }
