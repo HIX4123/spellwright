@@ -23,6 +23,41 @@ function vertexHullCount(structure) {
   return convexHullIndices(nodes, nodes.map((_, index) => index), tolerance).length;
 }
 
+function flattenProjectionImage(image) {
+  if (image.dataset.flatMaterialReady === 'true') return;
+  image.dataset.flatMaterialReady = 'true';
+
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  if (!width || !height) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) return;
+
+  context.drawImage(image, 0, 0);
+  const pixels = context.getImageData(0, 0, width, height);
+
+  for (let index = 0; index < pixels.data.length; index += 4) {
+    const red = pixels.data[index];
+    const green = pixels.data[index + 1];
+    const blue = pixels.data[index + 2];
+    const sourceAlpha = pixels.data[index + 3] / 255;
+    const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    const ink = Math.max(0, Math.min(1, (238 - luminance) / 190));
+
+    pixels.data[index] = 18;
+    pixels.data[index + 1] = 18;
+    pixels.data[index + 2] = 18;
+    pixels.data[index + 3] = Math.round(255 * sourceAlpha * Math.pow(ink, 0.82));
+  }
+
+  context.putImageData(pixels, 0, 0);
+  image.src = canvas.toDataURL('image/png');
+}
+
 export function buildProjectionPeriodicEntries(projectionData, viewData, elements = []) {
   const attributeBySolid = new Map(elements.map(element => [element.solid, element.name]));
   const viewsBySolid = new Map(viewData.solids.map(solid => [solid.name, solid]));
@@ -92,7 +127,7 @@ function periodicCell(entries) {
 
     return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" data-solid="' + escapeHtml(entry.solidId) + '" title="' + escapeHtml(title) + '">' +
       '<div class="projection-periodic-thumb">' +
-        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
+        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" data-projection-flat-material />' +
         eulerBadge +
       '</div>' +
     '</figure>';
@@ -153,6 +188,11 @@ export function renderProjectionPeriodicTable(root, entries) {
       '</div>' +
       '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 Fundamental Sector Size를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
+
+  root.querySelectorAll('img[data-projection-flat-material]').forEach(image => {
+    if (image.complete) flattenProjectionImage(image);
+    else image.addEventListener('load', () => flattenProjectionImage(image), { once: true });
+  });
 }
 
 export async function mountProjectionPeriodicTable(elements = []) {
