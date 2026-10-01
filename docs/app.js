@@ -1,6 +1,7 @@
 import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-easing-20260930-1';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-periodic-table-20261001-1';
 
 let data;
 let relationships;
@@ -379,13 +380,8 @@ function renderAttributes() {
       <p class="core-statement">삶이란 상실의 연속이다.</p>
       ${background}
     </div>
-    ${section('Attribute correspondence','자기 → 자리 → 안정 → 관계 → 가능성')}
-    <div class="card">
-      <table class="table">
-        <thead><tr><th>속성</th><th>정다면체</th><th>근본 모토</th><th>상실 대상</th><th>해석</th><th>사영 클래스</th></tr></thead>
-        <tbody>${data.elements.map(e=>`<tr><td><strong>${escapeHtml(e.name)}</strong></td><td>${escapeHtml(e.solid)}</td><td>${escapeHtml(e.motto)}</td><td>${escapeHtml(e.loss)}</td><td>${escapeHtml(e.meaning)}</td><td>${escapeHtml(e.projectionClasses)}</td></tr>`).join('')}</tbody>
-      </table>
-    </div>
+    ${section('Projection periodic table','Period = Convex Hull 층수 · Group = Fundamental Sector Size')}
+    <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · 클래스 번호로 사영 전환')}
     <div id="projectionSimulation"></div>
     ${section('Magic theory', '현재까지 정립된 마법 구현 원리와 전투 해석')}
@@ -396,6 +392,7 @@ function renderAttributes() {
     ${section('Related systems')}
     <div class="system-grid">${data.systems.filter(x=>x.category==='attribute').map(systemCard).join('')}</div>`;
 
+  mountProjectionPeriodicTable(data.elements);
   mountProjectionSelector();
   bindSystemCards();
 }
