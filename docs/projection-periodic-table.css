@@ -136,7 +136,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.projection-periodic-core-block {
+.projection-periodic-symmetry-block {
   min-width: 0;
   padding: 4px;
   border: 1px solid var(--line);
@@ -145,11 +145,15 @@
   background: color-mix(in srgb, var(--surface) 86%, transparent);
 }
 
-.projection-periodic-core-block.is-point { border-left-color: var(--primary); }
-.projection-periodic-core-block.is-pair { border-left-color: var(--secondary); }
-.projection-periodic-core-block.is-ring { border-left-color: var(--muted); }
+.projection-periodic-symmetry-block.is-c {
+  border-left-color: var(--primary);
+}
 
-.projection-periodic-core-label {
+.projection-periodic-symmetry-block.is-d {
+  border-left-color: var(--secondary);
+}
+
+.projection-periodic-symmetry-label {
   min-height: 14px;
   padding: 0 2px 3px;
   display: flex;
@@ -160,15 +164,14 @@
   line-height: 1;
 }
 
-.projection-periodic-core-label strong {
+.projection-periodic-symmetry-label strong {
   color: var(--secondary);
-  font-size: 7px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .06em;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .08em;
 }
 
-.projection-periodic-core-label span {
+.projection-periodic-symmetry-label span {
   font-size: 6px;
 }
 

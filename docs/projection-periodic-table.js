@@ -6,10 +6,9 @@ import {
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
-export const CORE_BLOCKS = Object.freeze([
-  { id: 'point', label: 'Point', description: 'core 1' },
-  { id: 'pair', label: 'Pair', description: 'core 2' },
-  { id: 'ring', label: 'Ring', description: 'core 3+' }
+export const SYMMETRY_BLOCKS = Object.freeze([
+  { id: 'C', label: 'C', description: 'rotation only' },
+  { id: 'D', label: 'D', description: 'mirror + rotation' }
 ]);
 
 function escapeHtml(value) {
@@ -29,10 +28,8 @@ function vertexHullCount(structure) {
   return convexHullIndices(nodes, nodes.map((_, index) => index), tolerance).length;
 }
 
-export function projectionCoreBlock(coreSize) {
-  if (coreSize === 1) return 'point';
-  if (coreSize === 2) return 'pair';
-  return 'ring';
+export function projectionSymmetryBlock(symmetryAxes) {
+  return symmetryAxes > 0 ? 'D' : 'C';
 }
 
 export function buildProjectionPeriodicEntries(projectionData, viewData) {
@@ -57,7 +54,7 @@ export function buildProjectionPeriodicEntries(projectionData, viewData) {
       const rotationalOrder = Math.max(1, structure.rotationalOrder);
       const sectorSize = hullVertices / rotationalOrder;
       const roundedSectorSize = Math.round(sectorSize);
-      const coreSize = structure.convexHullLayerPointCounts.at(-1);
+      const symmetryAxes = structure.symmetryAxisAngles.length;
 
       if (Math.abs(sectorSize - roundedSectorSize) > 1e-6) {
         throw new Error('Non-integral fundamental sector for ' + solid.name + ' class ' + projection.id);
@@ -74,8 +71,8 @@ export function buildProjectionPeriodicEntries(projectionData, viewData) {
         image: projection.image,
         period: structure.convexHullLayers.length,
         group: Math.max(1, roundedSectorSize),
-        coreSize,
-        coreBlock: projectionCoreBlock(coreSize),
+        symmetryAxes,
+        symmetryBlock: projectionSymmetryBlock(symmetryAxes),
         hullVertices,
         rotationalOrder,
         eulerTrail: structure.eulerTrail,
@@ -91,11 +88,13 @@ function projectionItem(entry) {
   const eulerBadge = entry.eulerTrail
     ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
     : '';
+  const symmetryName = entry.symmetryBlock + entry.rotationalOrder;
   const title = [
     entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
     entry.label,
     'P' + entry.period + ' / G' + entry.group,
-    'Core ' + entry.coreSize,
+    'Symmetry ' + symmetryName,
+    entry.symmetryAxes + ' reflection axis' + (entry.symmetryAxes === 1 ? '' : 'es'),
     'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
   ].join(' · ');
 
@@ -112,15 +111,15 @@ function periodicCell(entries) {
     return '<div class="projection-periodic-cell is-empty" aria-hidden="true"></div>';
   }
 
-  const byBlock = new Map(CORE_BLOCKS.map(block => [block.id, []]));
-  entries.forEach(entry => byBlock.get(entry.coreBlock)?.push(entry));
+  const byBlock = new Map(SYMMETRY_BLOCKS.map(block => [block.id, []]));
+  entries.forEach(entry => byBlock.get(entry.symmetryBlock)?.push(entry));
 
-  const blockSections = CORE_BLOCKS
+  const blockSections = SYMMETRY_BLOCKS
     .filter(block => byBlock.get(block.id).length)
     .map(block => {
       const blockEntries = byBlock.get(block.id);
-      return '<section class="projection-periodic-core-block is-' + block.id + '">' +
-        '<div class="projection-periodic-core-label">' +
+      return '<section class="projection-periodic-symmetry-block is-' + block.id.toLowerCase() + '">' +
+        '<div class="projection-periodic-symmetry-label">' +
           '<strong>' + block.label + '</strong>' +
           '<span>' + block.description + '</span>' +
         '</div>' +
@@ -172,7 +171,7 @@ export function renderProjectionPeriodicTable(root, entries) {
       '<div class="projection-periodic-legend">' +
         '<span><strong>P</strong> Convex Hull depth</span>' +
         '<span><strong>G</strong> Hull vertices ÷ rotational order</span>' +
-        '<span><strong>Core</strong> Point 1 · Pair 2 · Ring 3+</span>' +
+        '<span><strong>C/D</strong> C = rotation only · D = reflection symmetry</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' + eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
@@ -182,7 +181,7 @@ export function renderProjectionPeriodicTable(root, entries) {
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">Period와 Group 좌표는 그대로 유지하고, 각 셀 내부에서 최내곽 Convex Hull의 크기에 따라 Point / Pair / Ring Core Block으로 묶는다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">Period와 Group 좌표는 그대로 유지하고, 각 셀 내부에서 반사대칭 유무에 따라 C / D Symmetry Block으로 묶는다. Cₙ은 회전대칭만, Dₙ은 같은 회전대칭에 반사대칭이 더해진 계열을 뜻한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 }
 
