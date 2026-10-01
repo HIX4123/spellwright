@@ -90,12 +90,11 @@ function periodicCell(entries) {
       'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
     ].join(' · ');
 
-    return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" title="' + escapeHtml(title) + '">' +
+    return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" data-solid="' + escapeHtml(entry.solidId) + '" title="' + escapeHtml(title) + '">' +
       '<div class="projection-periodic-thumb">' +
         '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" />' +
         eulerBadge +
       '</div>' +
-      '<figcaption><strong>' + escapeHtml(entry.attribute) + '</strong><span>#' + String(entry.classId).padStart(2, '0') + '</span></figcaption>' +
     '</figure>';
   }).join('');
 

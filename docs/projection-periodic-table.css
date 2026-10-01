@@ -142,63 +142,43 @@
 }
 
 .projection-periodic-item {
+  --projection-attribute-tint: var(--surface);
   position: relative;
   min-width: 0;
   margin: 0;
   padding: 4px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--projection-attribute-tint) 20%, var(--line));
   border-radius: 8px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--projection-attribute-tint) 10%, var(--surface));
 }
+
+.projection-periodic-item[data-solid="tetrahedron"] { --projection-attribute-tint: #9b7bd7; }
+.projection-periodic-item[data-solid="cube"] { --projection-attribute-tint: #4a9bd8; }
+.projection-periodic-item[data-solid="octahedron"] { --projection-attribute-tint: #d58b45; }
+.projection-periodic-item[data-solid="dodecahedron"] { --projection-attribute-tint: #5ba77a; }
+.projection-periodic-item[data-solid="icosahedron"] { --projection-attribute-tint: #c96f86; }
 
 .projection-periodic-item.is-euler {
   border-color: color-mix(in srgb, #44c58a 72%, var(--line));
-  background: color-mix(in srgb, #44c58a 7%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #44c58a 18%, transparent);
 }
 
 .projection-periodic-thumb {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 54px;
+  min-height: 58px;
   overflow: hidden;
   border-radius: 5px;
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  background: color-mix(in srgb, var(--projection-attribute-tint) 5%, var(--surface-2));
 }
 
 .projection-periodic-thumb img {
   display: block;
   width: 100%;
-  height: 54px;
+  height: 58px;
   object-fit: contain;
   pointer-events: none;
-}
-
-.projection-periodic-item figcaption {
-  min-width: 0;
-  margin-top: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  color: var(--muted);
-  font-size: 7px;
-  line-height: 1.2;
-}
-
-.projection-periodic-item figcaption strong {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--secondary);
-  font-size: 8px;
-  font-weight: 650;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.projection-periodic-item figcaption span {
-  flex: 0 0 auto;
-  font-variant-numeric: tabular-nums;
 }
 
 .projection-periodic-euler-badge {
