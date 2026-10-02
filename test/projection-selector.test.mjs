@@ -19,8 +19,9 @@ import {
   availableClassificationValuesAcrossEntries,
   filteredProjectionIndices,
   filteredProjectionTargets,
-  formatProjectionViewAngle,
-  minimalRotationClassOrder
+  formatProjectionSerial,
+  minimalRotationClassOrder,
+  projectionSerialLayout
 } from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
@@ -335,23 +336,27 @@ test('default class order minimizes the symmetry-aware cyclic rotation path', ()
 });
 
 
-test('symmetry-reduced view-angle identifiers are unique within each solid', () => {
+
+
+
+test('projection serials map optimized cyclic rotation distance into unique #000-#999 identifiers', () => {
   for (const solid of projections.solids) {
     const geometry = geometryForSolid(solid.name);
     const rotations = platonicRotationSymmetries(geometry.vertices);
     const viewSolid = views.solids.find(item => item.name === solid.name);
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
-    const referenceView = viewsByClass.get(solid.classes[0].id);
-    const referenceFrame = viewFrame(referenceView.viewDirection, referenceView.rollDegrees);
+    const { orderedClasses, serialsByClass } = projectionSerialLayout(
+      solid.classes,
+      viewsByClass,
+      geometry,
+      rotations
+    );
+    const serials = orderedClasses.map(item => serialsByClass.get(item.id));
 
-    const identifiers = solid.classes.map(item => {
-      const view = viewsByClass.get(item.id);
-      const frame = viewFrame(view.viewDirection, view.rollDegrees);
-      const angle = nearestSymmetryEquivalentFrame(referenceFrame, frame, rotations).angle * 180 / Math.PI;
-      return formatProjectionViewAngle(angle);
-    });
-
-    assert.equal(identifiers[0], '0.00°', solid.name + ' reference view');
-    assert.equal(new Set(identifiers).size, identifiers.length, solid.name + ' unique view angles');
+    assert.equal(serials[0], 0, solid.name + ' begins at #000');
+    assert.equal(new Set(serials).size, serials.length, solid.name + ' serials stay unique');
+    assert.ok(serials.every(value => Number.isInteger(value) && value >= 0 && value <= 999));
+    assert.ok(serials.every((value, index) => index === 0 || value > serials[index - 1]));
+    assert.equal(formatProjectionSerial(serials[0]), '#000');
   }
 });
