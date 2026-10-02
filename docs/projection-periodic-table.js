@@ -3,6 +3,7 @@ import {
   analyzeProjectionStructure,
   convexHullIndices
 } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
+import { selectProjectionTarget } from './projection-selector.js?v=periodic-navigation-20261002-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
@@ -119,12 +120,12 @@ function periodicCell(entries) {
       'Outer hull vertices ' + entry.hullVertices + ' · C' + entry.rotationalOrder
     ].join(' · ');
 
-    return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" data-solid="' + escapeHtml(entry.solidId) + '" title="' + escapeHtml(title) + '">' +
+    return '<button class="projection-periodic-item' + eulerClass + circuitClass + '" type="button" data-solid="' + escapeHtml(entry.solidId) + '" data-class-id="' + entry.classId + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(entry.attribute + ' ' + entry.solidName + ' Class ' + entry.classId + ' 사영도 열기') + '">' +
       '<div class="projection-periodic-thumb">' +
         '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" data-projection-flat-material />' +
         eulerBadge +
       '</div>' +
-    '</figure>';
+    '</button>';
   }).join('');
 
   return '<div class="projection-periodic-cell">' +
@@ -185,6 +186,17 @@ export function renderProjectionPeriodicTable(root, entries) {
   root.querySelectorAll('img[data-projection-flat-material]').forEach(image => {
     if (image.complete) flattenProjectionImage(image);
     else image.addEventListener('load', () => flattenProjectionImage(image), { once: true });
+  });
+
+  root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
+    item.addEventListener('click', async () => {
+      const selected = await selectProjectionTarget(item.dataset.solid, Number(item.dataset.classId));
+      if (!selected) return;
+      document.getElementById('projectionSimulation')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    });
   });
 }
 

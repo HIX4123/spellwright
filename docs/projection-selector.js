@@ -759,6 +759,32 @@ function createSelector(entries) {
     commitTarget({ entryIndex, classIndex });
   });
 
+  root.addEventListener('projection-target-request', event => {
+    const solidId = String(event.detail?.solidId || '');
+    const classId = Number(event.detail?.classId);
+    const entryIndex = entries.findIndex(entry => entry.solid.id === solidId);
+    if (entryIndex < 0 || !Number.isInteger(classId)) return;
+
+    const classIndex = entries[entryIndex].solid.classes.findIndex(item => item.id === classId);
+    if (classIndex < 0) return;
+
+    cancelAnimationFrame(state.animationFrame);
+    state.animationFrame = 0;
+    state.locked = false;
+    state.pointerId = null;
+    state.selectedSolidIndices.clear();
+    stage.classList.remove('is-dragging', 'is-grabbing');
+    Object.values(filterControls).forEach(control => {
+      control.element.value = '';
+    });
+    search.value = '';
+    syncFilterOptions();
+
+    const target = { entryIndex, classIndex };
+    if (targetEquals(target, currentTarget())) renderStatic({ announce: true });
+    else commitTarget(target);
+  });
+
   if (typeof ResizeObserver !== 'undefined') {
     const resizeObserver = new ResizeObserver(draw);
     resizeObserver.observe(stage);
@@ -787,4 +813,17 @@ export async function mountProjectionSelector() {
     if (container.isConnected) container.textContent = '사영도와 역할 설명을 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.';
     return false;
   }
+}
+
+export async function selectProjectionTarget(solidId, classId) {
+  const mounted = await mountProjectionSelector();
+  if (!mounted) return false;
+
+  const root = document.getElementById(SELECTOR_ID);
+  if (!root) return false;
+
+  root.dispatchEvent(new CustomEvent('projection-target-request', {
+    detail: { solidId, classId }
+  }));
+  return true;
 }

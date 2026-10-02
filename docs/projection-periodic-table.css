@@ -144,6 +144,7 @@
 .projection-periodic-item {
   --projection-attribute-material: var(--surface-3);
   position: relative;
+  width: 100%;
   min-width: 0;
   margin: 0;
   padding: 4px;
@@ -151,6 +152,20 @@
   border-radius: 8px;
   background: var(--projection-attribute-material);
   box-shadow: none;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+}
+
+.projection-periodic-item:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.projection-periodic-item:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }
 
 .projection-periodic-item[data-solid="tetrahedron"] { --projection-attribute-material: #8f72c7; }
