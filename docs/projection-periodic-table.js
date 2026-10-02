@@ -115,7 +115,7 @@ function periodicCell(entries) {
     const title = [
       entry.attribute + ' · ' + entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
       entry.label,
-      'P' + entry.period + ' / G' + entry.group,
+      'P' + entry.period + ' / H' + entry.group,
       'Outer hull vertices ' + entry.hullVertices + ' · C' + entry.rotationalOrder
     ].join(' · ');
 
