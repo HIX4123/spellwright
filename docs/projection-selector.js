@@ -19,7 +19,7 @@ import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './p
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
-export const DEFAULT_TRANSITION_DURATION_MS = 1000;
+export const DEFAULT_TRANSITION_DURATION_MS = 500;
 
 export function filteredProjectionIndices(classes, classifications = new Map(), filters = {}, query = '') {
   const term = query.trim().toLocaleLowerCase();
