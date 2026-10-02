@@ -235,8 +235,8 @@ async function loadSelectorData() {
   return selectorDataPromise;
 }
 
-export function formatProjectionViewAngle(angleDegrees) {
-  return Number(angleDegrees).toFixed(2) + '°';
+export function formatProjectionSerial(serial) {
+  return '#' + String(Math.max(0, Math.min(999, Math.round(Number(serial) || 0)))).padStart(3, '0');
 }
 
 export function minimalRotationClassOrder(classes, viewsByClass, geometry, symmetryRotations) {
@@ -312,6 +312,43 @@ export function minimalRotationClassOrder(classes, viewsByClass, geometry, symme
   return order.map(index => classes[index]);
 }
 
+export function projectionSerialLayout(classes, viewsByClass, geometry, symmetryRotations) {
+  const orderedClasses = minimalRotationClassOrder(
+    classes,
+    viewsByClass,
+    geometry,
+    symmetryRotations
+  );
+  if (!orderedClasses.length) {
+    return { orderedClasses, serialsByClass: new Map(), totalRotationRadians: 0 };
+  }
+
+  const frames = orderedClasses.map(item => {
+    const view = viewsByClass.get(item.id);
+    return viewFrame(view.viewDirection, view.rollDegrees);
+  });
+  const edgeAngles = frames.map((frame, index) =>
+    nearestSymmetryEquivalentFrame(
+      frame,
+      frames[(index + 1) % frames.length],
+      symmetryRotations
+    ).angle
+  );
+  const totalRotationRadians = edgeAngles.reduce((sum, angle) => sum + angle, 0);
+  const serialsByClass = new Map();
+  let cumulative = 0;
+
+  orderedClasses.forEach((item, index) => {
+    const serial = totalRotationRadians > 1e-12
+      ? Math.min(999, Math.round(cumulative / totalRotationRadians * 1000))
+      : 0;
+    serialsByClass.set(item.id, serial);
+    cumulative += edgeAngles[index];
+  });
+
+  return { orderedClasses, serialsByClass, totalRotationRadians };
+}
+
 function selectorEntries(elements, solids, viewSolids) {
   return elements.map(element => {
     const solid = solids.find(item => item.name === element.solid);
@@ -321,23 +358,12 @@ function selectorEntries(elements, solids, viewSolids) {
     if (solid.classes.some(item => !viewsByClass.has(item.id))) return null;
     const geometry = geometryForSolid(solid.name);
     const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
-    const orderedClasses = minimalRotationClassOrder(
+    const { orderedClasses, serialsByClass } = projectionSerialLayout(
       solid.classes,
       viewsByClass,
       geometry,
       symmetryRotations
     );
-    const referenceItem = solid.classes[0];
-    const referenceView = viewsByClass.get(referenceItem.id);
-    const referenceFrame = viewFrame(referenceView.viewDirection, referenceView.rollDegrees);
-    const viewAnglesByClass = new Map(solid.classes.map(item => {
-      const view = viewsByClass.get(item.id);
-      const frame = viewFrame(view.viewDirection, view.rollDegrees);
-      return [
-        item.id,
-        nearestSymmetryEquivalentFrame(referenceFrame, frame, symmetryRotations).angle * 180 / Math.PI
-      ];
-    }));
     const orderedSolid = { ...solid, classes: orderedClasses };
     const classificationsByClass = new Map(orderedClasses.map(item => {
       const view = viewsByClass.get(item.id);
@@ -359,7 +385,7 @@ function selectorEntries(elements, solids, viewSolids) {
       element,
       solid: orderedSolid,
       viewsByClass,
-      viewAnglesByClass,
+      serialsByClass,
       geometry,
       symmetryRotations,
       classificationsByClass
@@ -435,9 +461,9 @@ function createSelector(entries) {
         </label>
       </div>
       <label class="projection-filter-label" for="projectionSearch">이름·역할 검색</label>
-      <input id="projectionSearch" class="projection-filter-search" type="search" placeholder="클래스 또는 역할 검색" />
+      <input id="projectionSearch" class="projection-filter-search" type="search" placeholder="역할 검색" />
       <div class="projection-filter-count" aria-live="polite"></div>
-      <div class="projection-class-rail" role="group" aria-label="사영 클래스 바로 선택"></div>
+      <div class="projection-class-rail" role="group" aria-label="사영도 바로 선택"></div>
     </aside>
     <div class="card projection-selector-content">
     <div class="projection-selector-instruction">ORTHOGRAPHIC · HORIZONTAL DRAG · ← →</div>
@@ -481,7 +507,7 @@ function createSelector(entries) {
       </dl>
       <p class="muted">사영도의 구조적 차이를 마법 연산으로 번역한 1차 가설이며, 최종 능력은 전투 프로토타입 검증 후 확정한다.</p>
     </section>
-    <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그·버튼·키보드는 인접 사영으로 이동하고, 클래스 번호를 직접 선택하면 중간 클래스를 거치지 않고 목표 사영으로 바로 회전한다.</p>
+    <p class="projection-selector-note">원근법 없는 정투영. 좌우 드래그·버튼·키보드는 인접 사영으로 이동하고, 사영 번호를 직접 선택하면 중간 사영을 거치지 않고 목표 사영으로 바로 회전한다.</p>
     <span class="projection-selector-live" aria-live="polite"></span>
     </div>
   `;
@@ -520,8 +546,8 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
-  const currentViewAngle = index => currentEntry().viewAnglesByClass.get(currentClasses()[index].id);
-  const targetViewAngle = target => targetEntry(target).viewAnglesByClass.get(targetItem(target).id);
+  const currentSerial = index => currentEntry().serialsByClass.get(currentClasses()[index].id);
+  const targetSerial = target => targetEntry(target).serialsByClass.get(targetItem(target).id);
   const activeEntryIndices = () => activeProjectionEntryIndices(
     entries.length,
     [...state.selectedSolidIndices]
@@ -624,7 +650,7 @@ function createSelector(entries) {
       <button type="button" class="projection-class-chip${active ? ' active' : ''}"
         data-solid-index="${target.entryIndex}" data-class-index="${target.classIndex}"
         data-class-id="${item.id}" aria-pressed="${active}">
-        <span>${escapeHtml(entry.element.name)} · ${formatProjectionViewAngle(targetViewAngle(target))} · ${escapeHtml(item.role.name)}</span>
+        <span>${escapeHtml(entry.element.name)} · ${formatProjectionSerial(targetSerial(target))} · ${escapeHtml(item.role.name)}</span>
         <small>동심차수 ${classification.radialLayers}층 · Convex Hull ${classification.convexHullLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차 · Euler Trail ${classification.eulerTrail ? '가능' : '불가'}</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
@@ -645,7 +671,7 @@ function createSelector(entries) {
       || search.value.trim();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
-    title.textContent = `${formatProjectionViewAngle(currentViewAngle(currentIndex()))} · ${item.role.name}`;
+    title.textContent = `${formatProjectionSerial(currentSerial(currentIndex()))} · ${item.role.name}`;
     position.textContent = currentPosition >= 0
       ? hasFilters
         ? `${currentPosition + 1} / ${visible.length} · 전체 ${totalActiveClasses()}`
@@ -665,7 +691,7 @@ function createSelector(entries) {
     const classification = currentClassification(currentIndex());
     stage.setAttribute(
       'aria-valuetext',
-      `${entry.element.name}, 시야각 ${formatProjectionViewAngle(currentViewAngle(currentIndex()))}, ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
+      `${entry.element.name}, 사영 번호 ${formatProjectionSerial(currentSerial(currentIndex()))}, ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
     );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
@@ -685,7 +711,7 @@ function createSelector(entries) {
     renderProjectionFeatureTags(root, entry.geometry, frame, classification.structure);
     updateProjectionFeatureGuides(root, entry.geometry, frame, classification.structure);
     if (announce) {
-      live.textContent = `${entry.element.name} ${entry.solid.name}, 시야각 ${formatProjectionViewAngle(currentViewAngle(currentIndex()))} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
+      live.textContent = `${entry.element.name} ${entry.solid.name}, 사영 번호 ${formatProjectionSerial(currentSerial(currentIndex()))} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
     }
   }
 
