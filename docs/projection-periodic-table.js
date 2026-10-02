@@ -9,7 +9,7 @@ import {
   analyzeProjectionStructure,
   convexHullIndices
 } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
-import { selectProjectionTarget } from './projection-selector.js?v=periodic-navigation-20261002-1';
+import { selectProjectionTarget } from './projection-selector.js?v=minimal-symmetry-rotation-20261002-2';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 

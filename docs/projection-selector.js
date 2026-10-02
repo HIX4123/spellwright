@@ -12,7 +12,7 @@ import {
   swipeDirection,
   viewFrame,
   wrapIndex
-} from './projection-core.js?v=ponytail-20260928-1';
+} from './projection-core.js?v=minimal-symmetry-rotation-20261002-2';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 import { renderProjectionFeatureTags } from './projection-features.js?v=ponytail-20260928-1';
 import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=global-easing-20260930-1';
