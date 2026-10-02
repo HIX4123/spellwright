@@ -53,6 +53,182 @@ function normalize3(v) {
   return [v[0] / length, v[1] / length, v[2] / length];
 }
 
+
+const PLATONIC_SYMMETRY_CACHE = new Map();
+
+function matrix3FromColumns(first, second, third) {
+  return [
+    [first[0], second[0], third[0]],
+    [first[1], second[1], third[1]],
+    [first[2], second[2], third[2]]
+  ];
+}
+
+function determinant3(matrix) {
+  return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1])
+    - matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0])
+    + matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+}
+
+function inverse3(matrix) {
+  const determinant = determinant3(matrix);
+  if (Math.abs(determinant) < 1e-12) return null;
+  const scale = 1 / determinant;
+  return [
+    [
+      (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) * scale,
+      (matrix[0][2] * matrix[2][1] - matrix[0][1] * matrix[2][2]) * scale,
+      (matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1]) * scale
+    ],
+    [
+      (matrix[1][2] * matrix[2][0] - matrix[1][0] * matrix[2][2]) * scale,
+      (matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0]) * scale,
+      (matrix[0][2] * matrix[1][0] - matrix[0][0] * matrix[1][2]) * scale
+    ],
+    [
+      (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]) * scale,
+      (matrix[0][1] * matrix[2][0] - matrix[0][0] * matrix[2][1]) * scale,
+      (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]) * scale
+    ]
+  ];
+}
+
+function multiplyMatrix3(first, second) {
+  return first.map((row, rowIndex) => second[0].map((_, columnIndex) =>
+    row.reduce((sum, value, innerIndex) =>
+      sum + value * second[innerIndex][columnIndex], 0)));
+}
+
+function rotateVector3(matrix, vector) {
+  return matrix.map(row => dot3(row, vector));
+}
+
+function matrixMaximumDifference(first, second) {
+  let maximum = 0;
+  for (let row = 0; row < 3; row += 1) {
+    for (let column = 0; column < 3; column += 1) {
+      maximum = Math.max(maximum, Math.abs(first[row][column] - second[row][column]));
+    }
+  }
+  return maximum;
+}
+
+function symmetryCacheKey(vertices) {
+  return vertices.map(vertex =>
+    vertex.map(value => Number(value).toPrecision(12)).join(',')
+  ).join(';');
+}
+
+export function platonicRotationSymmetries(vertices) {
+  const key = symmetryCacheKey(vertices);
+  const cached = PLATONIC_SYMMETRY_CACHE.get(key);
+  if (cached) return cached;
+
+  let sourceMatrix = null;
+  let largestDeterminant = 0;
+  for (let first = 0; first < vertices.length - 2; first += 1) {
+    for (let second = first + 1; second < vertices.length - 1; second += 1) {
+      for (let third = second + 1; third < vertices.length; third += 1) {
+        const candidate = matrix3FromColumns(vertices[first], vertices[second], vertices[third]);
+        const determinant = Math.abs(determinant3(candidate));
+        if (determinant > largestDeterminant) {
+          largestDeterminant = determinant;
+          sourceMatrix = candidate;
+        }
+      }
+    }
+  }
+  if (!sourceMatrix) return [];
+
+  const sourceInverse = inverse3(sourceMatrix);
+  if (!sourceInverse) return [];
+  const sourceColumns = [
+    [sourceMatrix[0][0], sourceMatrix[1][0], sourceMatrix[2][0]],
+    [sourceMatrix[0][1], sourceMatrix[1][1], sourceMatrix[2][1]],
+    [sourceMatrix[0][2], sourceMatrix[1][2], sourceMatrix[2][2]]
+  ];
+  const sourceGram = sourceColumns.map(first =>
+    sourceColumns.map(second => dot3(first, second)));
+  const radius = Math.max(1, ...vertices.map(vertex => length3(vertex)));
+  const gramTolerance = radius * radius * 1e-8;
+  const vertexTolerance = radius * 1e-7;
+  const rotations = [];
+
+  for (let first = 0; first < vertices.length; first += 1) {
+    for (let second = 0; second < vertices.length; second += 1) {
+      if (second === first) continue;
+      for (let third = 0; third < vertices.length; third += 1) {
+        if (third === first || third === second) continue;
+        const targetColumns = [vertices[first], vertices[second], vertices[third]];
+        let gramMatches = true;
+        for (let row = 0; row < 3 && gramMatches; row += 1) {
+          for (let column = 0; column < 3; column += 1) {
+            if (Math.abs(dot3(targetColumns[row], targetColumns[column]) - sourceGram[row][column])
+              > gramTolerance) {
+              gramMatches = false;
+              break;
+            }
+          }
+        }
+        if (!gramMatches) continue;
+
+        const targetMatrix = matrix3FromColumns(...targetColumns);
+        const rotation = multiplyMatrix3(targetMatrix, sourceInverse);
+        if (determinant3(rotation) < 1 - 1e-7) continue;
+
+        const mapsVertices = vertices.every(vertex => {
+          const rotated = rotateVector3(rotation, vertex);
+          return vertices.some(candidate =>
+            Math.hypot(
+              rotated[0] - candidate[0],
+              rotated[1] - candidate[1],
+              rotated[2] - candidate[2]
+            ) <= vertexTolerance
+          );
+        });
+        if (!mapsVertices) continue;
+        if (rotations.some(existing => matrixMaximumDifference(existing, rotation) < 1e-8)) continue;
+        rotations.push(rotation);
+      }
+    }
+  }
+
+  PLATONIC_SYMMETRY_CACHE.set(key, rotations);
+  return rotations;
+}
+
+export function rotateFrame(frame, rotation) {
+  return {
+    u: rotateVector3(rotation, frame.u),
+    v: rotateVector3(rotation, frame.v),
+    d: rotateVector3(rotation, frame.d)
+  };
+}
+
+export function frameRotationAngle(first, second) {
+  const trace = dot3(first.u, second.u) + dot3(first.v, second.v) + dot3(first.d, second.d);
+  return Math.acos(clamp((trace - 1) / 2, -1, 1));
+}
+
+export function nearestSymmetryEquivalentFrame(sourceFrame, targetFrame, rotations) {
+  if (!sourceFrame || !rotations?.length) return {
+    frame: targetFrame,
+    angle: sourceFrame ? frameRotationAngle(sourceFrame, targetFrame) : 0
+  };
+
+  let bestFrame = targetFrame;
+  let bestAngle = frameRotationAngle(sourceFrame, targetFrame);
+  for (const rotation of rotations) {
+    const candidate = rotateFrame(targetFrame, rotation);
+    const angle = frameRotationAngle(sourceFrame, candidate);
+    if (angle + 1e-10 < bestAngle) {
+      bestAngle = angle;
+      bestFrame = candidate;
+    }
+  }
+  return { frame: bestFrame, angle: bestAngle };
+}
+
 export function projectionBasis(direction) {
   const d = normalize3(direction);
   const a = Math.abs(d[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0];

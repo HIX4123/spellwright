@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import {
   dragProgress,
+  frameRotationAngle,
   geometryForSolid,
+  nearestSymmetryEquivalentFrame,
+  platonicRotationSymmetries,
   projectionBasis,
   projectionMetrics,
   swipeDirection,
@@ -242,4 +245,49 @@ test('all 43 endpoint views reproduce stored projection topology metrics', () =>
     }
   }
   assert.equal(count, 43);
+});
+
+
+test('Platonic rotational symmetry groups have the expected orders', () => {
+  const expected = new Map([
+    ['정사면체', 12],
+    ['정육면체', 24],
+    ['정팔면체', 24],
+    ['정십이면체', 60],
+    ['정이십면체', 60]
+  ]);
+  for (const [name, order] of expected) {
+    const geometry = geometryForSolid(name);
+    assert.equal(platonicRotationSymmetries(geometry.vertices).length, order, name);
+  }
+});
+
+test('symmetry-equivalent targets never require more rotation than the canonical target', () => {
+  for (const solid of projections.solids) {
+    const geometry = geometryForSolid(solid.name);
+    const rotations = platonicRotationSymmetries(geometry.vertices);
+    const viewSolid = views.solids.find(item => item.name === solid.name);
+    const frames = viewSolid.views.map(view => viewFrame(view.viewDirection, view.rollDegrees));
+
+    for (let index = 0; index < frames.length; index += 1) {
+      const source = frames[index];
+      const target = frames[(index + 1) % frames.length];
+      const canonicalAngle = frameRotationAngle(source, target);
+      const optimized = nearestSymmetryEquivalentFrame(source, target, rotations);
+      assert.ok(optimized.angle <= canonicalAngle + 1e-10, `${solid.name} ${index}`);
+    }
+  }
+});
+
+test('symmetry optimization finds a zero-turn equivalent for a symmetry-rotated frame', () => {
+  const geometry = geometryForSolid('정육면체');
+  const rotations = platonicRotationSymmetries(geometry.vertices);
+  const source = viewFrame([1, 1, 1], 17);
+  const rotatedTarget = {
+    u: rotations[1].map(row => row.reduce((sum, value, index) => sum + value * source.u[index], 0)),
+    v: rotations[1].map(row => row.reduce((sum, value, index) => sum + value * source.v[index], 0)),
+    d: rotations[1].map(row => row.reduce((sum, value, index) => sum + value * source.d[index], 0))
+  };
+  const optimized = nearestSymmetryEquivalentFrame(source, rotatedTarget, rotations);
+  assert.ok(optimized.angle < 1e-7);
 });

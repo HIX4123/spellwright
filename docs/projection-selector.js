@@ -4,6 +4,8 @@ import {
   dragProgress,
   geometryForSolid,
   interpolateFrames,
+  nearestSymmetryEquivalentFrame,
+  platonicRotationSymmetries,
   projectVertices,
   projectionScreenTransform,
   projectionEvents,
@@ -241,6 +243,7 @@ function selectorEntries(elements, solids, viewSolids) {
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
     if (solid.classes.some(item => !viewsByClass.has(item.id))) return null;
     const geometry = geometryForSolid(solid.name);
+    const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
     const classificationsByClass = new Map(solid.classes.map(item => {
       const view = viewsByClass.get(item.id);
       const structure = analyzeProjectionStructure(
@@ -257,7 +260,7 @@ function selectorEntries(elements, solids, viewSolids) {
         eulerTrail: structure.eulerTrail
       }];
     }));
-    return { element, solid, viewsByClass, geometry, classificationsByClass };
+    return { element, solid, viewsByClass, geometry, symmetryRotations, classificationsByClass };
   }).filter(Boolean);
 }
 
@@ -390,6 +393,7 @@ function createSelector(entries) {
     pointerId: null,
     startX: 0,
     startTime: 0,
+    dragSourceFrame: null,
     animationFrame: 0,
     locked: false
   };
@@ -489,6 +493,15 @@ function createSelector(entries) {
     return viewFrame(view.viewDirection, view.rollDegrees);
   };
   const frameFor = index => frameForTarget({ entryIndex: state.solidIndex, classIndex: index });
+  const nearestFrameForTarget = (target, sourceFrame = state.frame) => {
+    const entry = targetEntry(target);
+    const canonicalFrame = frameForTarget(target);
+    return nearestSymmetryEquivalentFrame(
+      sourceFrame,
+      canonicalFrame,
+      entry.symmetryRotations
+    ).frame;
+  };
 
   function draw() {
     renderProjection(canvas, currentEntry().geometry, state.frame);
@@ -573,7 +586,10 @@ function createSelector(entries) {
 
   function renderStatic({ announce = false } = {}) {
     state.progress = 0;
-    state.frame = frameFor(currentIndex());
+    const target = currentTarget();
+    state.frame = state.frame
+      ? nearestFrameForTarget(target, state.frame)
+      : frameFor(currentIndex());
     updateMetadata({ announce });
     draw();
   }
@@ -604,6 +620,7 @@ function createSelector(entries) {
     state.progress = 0;
     state.frame = targetFrame;
     state.locked = false;
+    state.dragSourceFrame = null;
     stage.classList.remove('is-dragging', 'is-grabbing');
     updateMetadata({ announce: true });
     draw();
@@ -628,7 +645,7 @@ function createSelector(entries) {
     }
 
     state.locked = true;
-    const targetFrame = frameForTarget(target);
+    const targetFrame = nearestFrameForTarget(target, state.frame);
     stage.classList.add('is-dragging');
     animateToFrame(targetFrame, duration, () => finishTransition(target, targetFrame));
   }
@@ -640,7 +657,7 @@ function createSelector(entries) {
   function cancelDrag() {
     if (state.locked) return;
     stage.classList.remove('is-grabbing');
-    const targetFrame = frameFor(currentIndex());
+    const targetFrame = nearestFrameForTarget(currentTarget(), state.frame);
     animateToFrame(targetFrame, 165, () => {
       state.progress = 0;
       state.frame = targetFrame;
@@ -656,6 +673,7 @@ function createSelector(entries) {
     state.pointerId = event.pointerId;
     state.startX = event.clientX;
     state.startTime = performance.now();
+    state.dragSourceFrame = state.frame;
     state.progress = 0;
     stage.setPointerCapture(event.pointerId);
     stage.classList.add('is-dragging', 'is-grabbing');
@@ -668,11 +686,16 @@ function createSelector(entries) {
     const progress = dragProgress(dx, stage.clientWidth);
     const direction = progress === 0 ? state.previewDirection : Math.sign(progress);
     const target = targetAtDirection(direction);
+    const sourceFrame = state.dragSourceFrame || state.frame;
     state.previewDirection = direction;
     state.progress = progress;
     state.frame = target.entryIndex === state.solidIndex
-      ? interpolateFrames(frameFor(currentIndex()), frameForTarget(target), Math.abs(progress))
-      : frameFor(currentIndex());
+      ? interpolateFrames(
+          sourceFrame,
+          nearestFrameForTarget(target, sourceFrame),
+          Math.abs(progress)
+        )
+      : sourceFrame;
     draw();
   });
 
@@ -736,6 +759,7 @@ function createSelector(entries) {
     state.animationFrame = 0;
     state.locked = false;
     state.pointerId = null;
+    state.dragSourceFrame = null;
     stage.classList.remove('is-dragging', 'is-grabbing');
     syncFilterOptions(preferredKey);
     const visible = visibleTargets();
