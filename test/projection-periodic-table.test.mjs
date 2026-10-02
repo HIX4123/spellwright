@@ -13,24 +13,22 @@ function distribution(entries, key) {
   }, {});
 }
 
-test('projection periodic table classifies all 43 projections with the B-axis proposal', () => {
+test('projection periodic table uses convex-hull depth and outer hull vertex count', () => {
   const entries = buildProjectionPeriodicEntries(projections, views);
 
   assert.equal(entries.length, 43);
   assert.deepEqual(distribution(entries, 'period'), { 1: 6, 2: 12, 3: 15, 4: 10 });
-  assert.deepEqual(distribution(entries, 'group'), { 1: 9, 2: 7, 3: 10, 4: 5, 5: 10, 6: 2 });
+  assert.deepEqual(distribution(entries, 'group'), { 3: 3, 4: 9, 6: 11, 8: 5, 10: 12, 12: 3 });
 
   for (const entry of entries) {
     assert.ok(Number.isInteger(entry.period));
     assert.ok(entry.period >= 1 && entry.period <= 4);
-    assert.ok(Number.isInteger(entry.group));
-    assert.ok(entry.group >= 1 && entry.group <= 6);
-    assert.equal(entry.hullVertices % entry.rotationalOrder, 0);
-    assert.equal(entry.group, entry.hullVertices / entry.rotationalOrder);
+    assert.ok([3, 4, 6, 8, 10, 12].includes(entry.group));
+    assert.equal(entry.group, entry.hullVertices);
   }
 });
 
-test('periodic-table cell collisions remain explicit instead of dropping projections', () => {
+test('outer-hull grouping preserves all projections and expected cell collisions', () => {
   const entries = buildProjectionPeriodicEntries(projections, views);
   const cells = new Map();
 
@@ -39,8 +37,9 @@ test('periodic-table cell collisions remain explicit instead of dropping project
     cells.set(key, (cells.get(key) || 0) + 1);
   });
 
-  assert.equal(cells.size, 15);
-  assert.equal(Math.max(...cells.values()), 8);
+  assert.equal(cells.size, 12);
+  assert.equal(Math.max(...cells.values()), 10);
+  assert.equal([...cells.values()].filter(count => count === 1).length, 1);
   assert.equal([...cells.values()].reduce((sum, count) => sum + count, 0), 43);
   assert.equal(entries.filter(entry => entry.eulerTrail).length, 8);
   assert.equal(entries.filter(entry => entry.eulerCircuit).length, 4);

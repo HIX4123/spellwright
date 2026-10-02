@@ -79,12 +79,6 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
       );
       const hullVertices = vertexHullCount(structure);
       const rotationalOrder = Math.max(1, structure.rotationalOrder);
-      const sectorSize = hullVertices / rotationalOrder;
-      const roundedSectorSize = Math.round(sectorSize);
-
-      if (Math.abs(sectorSize - roundedSectorSize) > 1e-6) {
-        throw new Error('Non-integral fundamental sector for ' + solid.name + ' class ' + projection.id);
-      }
 
       return {
         key: solid.id + '-' + String(projection.id).padStart(2, '0'),
@@ -97,7 +91,7 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
         image: projection.image,
         attribute: attributeBySolid.get(solid.name) || solid.name,
         period: structure.convexHullLayers.length,
-        group: Math.max(1, roundedSectorSize),
+        group: hullVertices,
         hullVertices,
         rotationalOrder,
         eulerTrail: structure.eulerTrail,
@@ -122,7 +116,7 @@ function periodicCell(entries) {
       entry.attribute + ' · ' + entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
       entry.label,
       'P' + entry.period + ' / G' + entry.group,
-      'Hull ' + entry.hullVertices + ' ÷ C' + entry.rotationalOrder
+      'Outer hull vertices ' + entry.hullVertices + ' · C' + entry.rotationalOrder
     ].join(' · ');
 
     return '<figure class="projection-periodic-item' + eulerClass + circuitClass + '" data-solid="' + escapeHtml(entry.solidId) + '" title="' + escapeHtml(title) + '">' +
@@ -144,9 +138,8 @@ export function renderProjectionPeriodicTable(root, entries) {
     first.solidOrder - second.solidOrder || first.classOrder - second.classOrder
   );
   const maxPeriod = Math.max(...sorted.map(entry => entry.period));
-  const maxGroup = Math.max(...sorted.map(entry => entry.group));
   const periods = Array.from({ length: maxPeriod }, (_, index) => index + 1);
-  const groups = Array.from({ length: maxGroup }, (_, index) => index + 1);
+  const groups = [...new Set(sorted.map(entry => entry.group))].sort((first, second) => first - second);
   const cells = new Map();
 
   sorted.forEach(entry => {
@@ -157,8 +150,8 @@ export function renderProjectionPeriodicTable(root, entries) {
 
   const groupHeaders = groups.map(group =>
     '<div class="projection-periodic-axis projection-periodic-group">' +
-      '<span>GROUP</span><strong>G' + group + '</strong>' +
-      '<small>sector ' + group + '</small>' +
+      '<span>GROUP</span><strong>H' + group + '</strong>' +
+      '<small>' + group + ' outer vertices</small>' +
     '</div>'
   ).join('');
 
@@ -176,17 +169,17 @@ export function renderProjectionPeriodicTable(root, entries) {
     '<div class="card projection-periodic-card">' +
       '<div class="projection-periodic-legend">' +
         '<span><strong>P</strong> Convex Hull depth</span>' +
-        '<span><strong>G</strong> Hull vertices ÷ rotational order</span>' +
+        '<span><strong>H</strong> Outer Convex Hull vertex count</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' + eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
         '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (82 + groups.length * 150) + 'px">' +
-          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>GROUP</span></div>' +
+          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>HULL</span></div>' +
           groupHeaders +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 Fundamental Sector Size를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 최외곽 Convex Hull 정점 수를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('img[data-projection-flat-material]').forEach(image => {
