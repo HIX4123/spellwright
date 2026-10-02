@@ -235,6 +235,79 @@ async function loadSelectorData() {
   return selectorDataPromise;
 }
 
+export function minimalRotationClassOrder(classes, viewsByClass, geometry, symmetryRotations) {
+  if (classes.length <= 2) return classes.slice();
+
+  const frames = classes.map(item => {
+    const view = viewsByClass.get(item.id);
+    return viewFrame(view.viewDirection, view.rollDegrees);
+  });
+  const count = frames.length;
+  const distances = Array.from({ length: count }, () => Array(count).fill(0));
+
+  for (let first = 0; first < count; first += 1) {
+    for (let second = first + 1; second < count; second += 1) {
+      const angle = nearestSymmetryEquivalentFrame(
+        frames[first],
+        frames[second],
+        symmetryRotations
+      ).angle;
+      distances[first][second] = angle;
+      distances[second][first] = angle;
+    }
+  }
+
+  const subsetCount = 1 << (count - 1);
+  const costs = Array.from({ length: subsetCount }, () => Array(count).fill(Infinity));
+  const previous = Array.from({ length: subsetCount }, () => Array(count).fill(-1));
+
+  for (let node = 1; node < count; node += 1) {
+    costs[1 << (node - 1)][node] = distances[0][node];
+  }
+
+  for (let mask = 1; mask < subsetCount; mask += 1) {
+    for (let node = 1; node < count; node += 1) {
+      const bit = 1 << (node - 1);
+      if (!(mask & bit)) continue;
+      const priorMask = mask ^ bit;
+      if (!priorMask) continue;
+
+      for (let prior = 1; prior < count; prior += 1) {
+        if (!(priorMask & (1 << (prior - 1)))) continue;
+        const candidate = costs[priorMask][prior] + distances[prior][node];
+        if (candidate + 1e-12 < costs[mask][node]) {
+          costs[mask][node] = candidate;
+          previous[mask][node] = prior;
+        }
+      }
+    }
+  }
+
+  const fullMask = subsetCount - 1;
+  let endNode = 1;
+  let bestCost = Infinity;
+  for (let node = 1; node < count; node += 1) {
+    const candidate = costs[fullMask][node] + distances[node][0];
+    if (candidate + 1e-12 < bestCost) {
+      bestCost = candidate;
+      endNode = node;
+    }
+  }
+
+  const reversed = [];
+  let mask = fullMask;
+  let node = endNode;
+  while (node > 0) {
+    reversed.push(node);
+    const prior = previous[mask][node];
+    mask ^= 1 << (node - 1);
+    node = prior;
+  }
+
+  const order = [0, ...reversed.reverse()];
+  return order.map(index => classes[index]);
+}
+
 function selectorEntries(elements, solids, viewSolids) {
   return elements.map(element => {
     const solid = solids.find(item => item.name === element.solid);
@@ -244,7 +317,14 @@ function selectorEntries(elements, solids, viewSolids) {
     if (solid.classes.some(item => !viewsByClass.has(item.id))) return null;
     const geometry = geometryForSolid(solid.name);
     const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
-    const classificationsByClass = new Map(solid.classes.map(item => {
+    const orderedClasses = minimalRotationClassOrder(
+      solid.classes,
+      viewsByClass,
+      geometry,
+      symmetryRotations
+    );
+    const orderedSolid = { ...solid, classes: orderedClasses };
+    const classificationsByClass = new Map(orderedClasses.map(item => {
       const view = viewsByClass.get(item.id);
       const structure = analyzeProjectionStructure(
         geometry.vertices,
@@ -260,7 +340,7 @@ function selectorEntries(elements, solids, viewSolids) {
         eulerTrail: structure.eulerTrail
       }];
     }));
-    return { element, solid, viewsByClass, geometry, symmetryRotations, classificationsByClass };
+    return { element, solid: orderedSolid, viewsByClass, geometry, symmetryRotations, classificationsByClass };
   }).filter(Boolean);
 }
 

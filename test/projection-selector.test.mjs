@@ -18,7 +18,8 @@ import {
   availableClassificationValues,
   availableClassificationValuesAcrossEntries,
   filteredProjectionIndices,
-  filteredProjectionTargets
+  filteredProjectionTargets,
+  minimalRotationClassOrder
 } from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 
@@ -290,4 +291,44 @@ test('symmetry optimization finds a zero-turn equivalent for a symmetry-rotated 
   };
   const optimized = nearestSymmetryEquivalentFrame(source, rotatedTarget, rotations);
   assert.ok(optimized.angle < 1e-7);
+});
+
+test('default class order minimizes the symmetry-aware cyclic rotation path', () => {
+  for (const solid of projections.solids) {
+    const geometry = geometryForSolid(solid.name);
+    const rotations = platonicRotationSymmetries(geometry.vertices);
+    const viewSolid = views.solids.find(item => item.name === solid.name);
+    const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
+    const ordered = minimalRotationClassOrder(
+      solid.classes,
+      viewsByClass,
+      geometry,
+      rotations
+    );
+
+    assert.equal(ordered[0].id, solid.classes[0].id, solid.name + ' keeps its default entry class');
+    assert.deepEqual(
+      [...ordered.map(item => item.id)].sort((a, b) => a - b),
+      [...solid.classes.map(item => item.id)].sort((a, b) => a - b),
+      solid.name + ' preserves every class exactly once'
+    );
+
+    const frameForItem = item => {
+      const view = viewsByClass.get(item.id);
+      return viewFrame(view.viewDirection, view.rollDegrees);
+    };
+    const cycleCost = items => items.reduce((sum, item, itemIndex) => {
+      const next = items[(itemIndex + 1) % items.length];
+      return sum + nearestSymmetryEquivalentFrame(
+        frameForItem(item),
+        frameForItem(next),
+        rotations
+      ).angle;
+    }, 0);
+
+    assert.ok(
+      cycleCost(ordered) <= cycleCost(solid.classes) + 1e-10,
+      solid.name + ' optimized order should never rotate more than the stored order'
+    );
+  }
 });
