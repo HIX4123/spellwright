@@ -1,5 +1,7 @@
 import {
   geometryForSolid,
+  nearestSymmetryEquivalentFrame,
+  platonicRotationSymmetries,
   projectVertices,
   projectionEvents,
   projectionScreenTransform,
@@ -9,7 +11,10 @@ import {
   analyzeProjectionStructure,
   convexHullIndices
 } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
-import { selectProjectionTarget } from './projection-selector.js?v=minimal-symmetry-rotation-20261002-2';
+import {
+  formatProjectionViewAngle,
+  selectProjectionTarget
+} from './projection-selector.js?v=view-angle-identifiers-20261002-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
@@ -79,6 +84,10 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
     if (!viewSolid) return [];
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
     const geometry = geometryForSolid(solid.name);
+    const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
+    const referenceProjection = solid.classes[0];
+    const referenceView = viewsByClass.get(referenceProjection.id);
+    const referenceFrame = viewFrame(referenceView.viewDirection, referenceView.rollDegrees);
 
     return solid.classes.map((projection, classOrder) => {
       const view = viewsByClass.get(projection.id);
@@ -108,6 +117,11 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
         group: hullVertices,
         hullVertices,
         rotationalOrder,
+        viewAngleDegrees: nearestSymmetryEquivalentFrame(
+          referenceFrame,
+          frame,
+          symmetryRotations
+        ).angle * 180 / Math.PI,
         eulerTrail: structure.eulerTrail,
         eulerCircuit: structure.eulerCircuit
       };
@@ -127,13 +141,13 @@ function periodicCell(entries) {
       ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
       : '';
     const title = [
-      entry.attribute + ' · ' + entry.solidName + ' #' + String(entry.classId).padStart(2, '0'),
+      entry.attribute + ' · ' + entry.solidName + ' · ' + formatProjectionViewAngle(entry.viewAngleDegrees),
       entry.label,
       'P' + entry.period + ' / H' + entry.group,
       'Outer hull vertices ' + entry.hullVertices + ' · C' + entry.rotationalOrder
     ].join(' · ');
 
-    return '<button class="projection-periodic-item' + eulerClass + circuitClass + '" type="button" data-solid="' + escapeHtml(entry.solidId) + '" data-class-id="' + entry.classId + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(entry.attribute + ' ' + entry.solidName + ' Class ' + entry.classId + ' 사영도 열기') + '">' +
+    return '<button class="projection-periodic-item' + eulerClass + circuitClass + '" type="button" data-solid="' + escapeHtml(entry.solidId) + '" data-class-id="' + entry.classId + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(entry.attribute + ' ' + entry.solidName + ' 시야각 ' + formatProjectionViewAngle(entry.viewAngleDegrees) + ' 사영도 열기') + '">' +
       '<div class="projection-periodic-thumb">' +
         entry.thumbnailSvg +
         eulerBadge +

@@ -235,6 +235,10 @@ async function loadSelectorData() {
   return selectorDataPromise;
 }
 
+export function formatProjectionViewAngle(angleDegrees) {
+  return Number(angleDegrees).toFixed(2) + '°';
+}
+
 export function minimalRotationClassOrder(classes, viewsByClass, geometry, symmetryRotations) {
   if (classes.length <= 2) return classes.slice();
 
@@ -323,6 +327,17 @@ function selectorEntries(elements, solids, viewSolids) {
       geometry,
       symmetryRotations
     );
+    const referenceItem = solid.classes[0];
+    const referenceView = viewsByClass.get(referenceItem.id);
+    const referenceFrame = viewFrame(referenceView.viewDirection, referenceView.rollDegrees);
+    const viewAnglesByClass = new Map(solid.classes.map(item => {
+      const view = viewsByClass.get(item.id);
+      const frame = viewFrame(view.viewDirection, view.rollDegrees);
+      return [
+        item.id,
+        nearestSymmetryEquivalentFrame(referenceFrame, frame, symmetryRotations).angle * 180 / Math.PI
+      ];
+    }));
     const orderedSolid = { ...solid, classes: orderedClasses };
     const classificationsByClass = new Map(orderedClasses.map(item => {
       const view = viewsByClass.get(item.id);
@@ -340,7 +355,15 @@ function selectorEntries(elements, solids, viewSolids) {
         eulerTrail: structure.eulerTrail
       }];
     }));
-    return { element, solid: orderedSolid, viewsByClass, geometry, symmetryRotations, classificationsByClass };
+    return {
+      element,
+      solid: orderedSolid,
+      viewsByClass,
+      viewAnglesByClass,
+      geometry,
+      symmetryRotations,
+      classificationsByClass
+    };
   }).filter(Boolean);
 }
 
@@ -497,6 +520,8 @@ function createSelector(entries) {
   const currentClasses = () => currentEntry().solid.classes;
   const currentIndex = () => state.selectedBySolid.get(state.solidIndex) || 0;
   const currentClassification = index => currentEntry().classificationsByClass.get(currentClasses()[index].id);
+  const currentViewAngle = index => currentEntry().viewAnglesByClass.get(currentClasses()[index].id);
+  const targetViewAngle = target => targetEntry(target).viewAnglesByClass.get(targetItem(target).id);
   const activeEntryIndices = () => activeProjectionEntryIndices(
     entries.length,
     [...state.selectedSolidIndices]
@@ -599,7 +624,7 @@ function createSelector(entries) {
       <button type="button" class="projection-class-chip${active ? ' active' : ''}"
         data-solid-index="${target.entryIndex}" data-class-index="${target.classIndex}"
         data-class-id="${item.id}" aria-pressed="${active}">
-        <span>${escapeHtml(entry.element.name)} · #${String(item.id).padStart(2, '0')} · ${escapeHtml(item.role.name)}</span>
+        <span>${escapeHtml(entry.element.name)} · ${formatProjectionViewAngle(targetViewAngle(target))} · ${escapeHtml(item.role.name)}</span>
         <small>동심차수 ${classification.radialLayers}층 · Convex Hull ${classification.convexHullLayers}층 · 대칭축 ${classification.symmetryAxes}개 · ${classification.rotationalOrder}차 · Euler Trail ${classification.eulerTrail ? '가능' : '불가'}</small>
       </button>`;
     }).join('') || '<p class="projection-filter-empty">검색 결과가 없습니다.</p>';
@@ -620,7 +645,7 @@ function createSelector(entries) {
       || search.value.trim();
 
     kicker.textContent = `${entry.element.name} · ${entry.solid.name}`;
-    title.textContent = `Class #${String(item.id).padStart(2, '0')} · ${item.role.name}`;
+    title.textContent = `${formatProjectionViewAngle(currentViewAngle(currentIndex()))} · ${item.role.name}`;
     position.textContent = currentPosition >= 0
       ? hasFilters
         ? `${currentPosition + 1} / ${visible.length} · 전체 ${totalActiveClasses()}`
@@ -640,7 +665,7 @@ function createSelector(entries) {
     const classification = currentClassification(currentIndex());
     stage.setAttribute(
       'aria-valuetext',
-      `${entry.element.name}, Class ${item.id}, ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
+      `${entry.element.name}, 시야각 ${formatProjectionViewAngle(currentViewAngle(currentIndex()))}, ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`
     );
     stage.setAttribute('aria-disabled', String(visible.length < 2));
     root.querySelector('.projection-step-prev').disabled = visible.length < 2;
@@ -660,7 +685,7 @@ function createSelector(entries) {
     renderProjectionFeatureTags(root, entry.geometry, frame, classification.structure);
     updateProjectionFeatureGuides(root, entry.geometry, frame, classification.structure);
     if (announce) {
-      live.textContent = `${entry.element.name} ${entry.solid.name}, Class ${item.id} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
+      live.textContent = `${entry.element.name} ${entry.solid.name}, 시야각 ${formatProjectionViewAngle(currentViewAngle(currentIndex()))} ${item.role.name}, 동심차수 ${classification.radialLayers}층, Convex Hull ${classification.convexHullLayers}층, 대칭축 ${classification.symmetryAxes}개, ${classification.rotationalOrder}차 대칭, Euler Trail ${classification.eulerTrail ? '가능' : '불가'}`;
     }
   }
 

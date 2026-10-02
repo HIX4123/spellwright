@@ -19,6 +19,7 @@ import {
   availableClassificationValuesAcrossEntries,
   filteredProjectionIndices,
   filteredProjectionTargets,
+  formatProjectionViewAngle,
   minimalRotationClassOrder
 } from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
@@ -330,5 +331,27 @@ test('default class order minimizes the symmetry-aware cyclic rotation path', ()
       cycleCost(ordered) <= cycleCost(solid.classes) + 1e-10,
       solid.name + ' optimized order should never rotate more than the stored order'
     );
+  }
+});
+
+
+test('symmetry-reduced view-angle identifiers are unique within each solid', () => {
+  for (const solid of projections.solids) {
+    const geometry = geometryForSolid(solid.name);
+    const rotations = platonicRotationSymmetries(geometry.vertices);
+    const viewSolid = views.solids.find(item => item.name === solid.name);
+    const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
+    const referenceView = viewsByClass.get(solid.classes[0].id);
+    const referenceFrame = viewFrame(referenceView.viewDirection, referenceView.rollDegrees);
+
+    const identifiers = solid.classes.map(item => {
+      const view = viewsByClass.get(item.id);
+      const frame = viewFrame(view.viewDirection, view.rollDegrees);
+      const angle = nearestSymmetryEquivalentFrame(referenceFrame, frame, rotations).angle * 180 / Math.PI;
+      return formatProjectionViewAngle(angle);
+    });
+
+    assert.equal(identifiers[0], '0.00°', solid.name + ' reference view');
+    assert.equal(new Set(identifiers).size, identifiers.length, solid.name + ' unique view angles');
   }
 });
