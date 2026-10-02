@@ -1,4 +1,10 @@
-import { geometryForSolid, viewFrame } from './projection-core.js?v=ponytail-20260928-1';
+import {
+  geometryForSolid,
+  projectVertices,
+  projectionEvents,
+  projectionScreenTransform,
+  viewFrame
+} from './projection-core.js?v=ponytail-20260928-1';
 import {
   analyzeProjectionStructure,
   convexHullIndices
@@ -24,39 +30,44 @@ function vertexHullCount(structure) {
   return convexHullIndices(nodes, nodes.map((_, index) => index), tolerance).length;
 }
 
-function flattenProjectionImage(image) {
-  if (image.dataset.flatMaterialReady === 'true') return;
-  image.dataset.flatMaterialReady = 'true';
+export function projectionThumbnailSvg(geometry, frame) {
+  const width = 96;
+  const height = 72;
+  const points = projectVertices(geometry.vertices, frame);
+  const events = projectionEvents(points, geometry.edges);
+  const vertexEvents = events.filter(event => event.vertexIds.size > 0);
+  const crossingEvents = events.filter(event => event.vertexIds.size === 0 && event.edgeIds.size >= 2);
+  const { point: screenPoint } = projectionScreenTransform(points, width, height);
 
-  const width = image.naturalWidth;
-  const height = image.naturalHeight;
-  if (!width || !height) return;
+  const edges = geometry.edges.map(([a, b]) => {
+    const start = screenPoint(points[a]);
+    const end = screenPoint(points[b]);
+    return '<line x1="' + start[0].toFixed(3) + '" y1="' + start[1].toFixed(3) +
+      '" x2="' + end[0].toFixed(3) + '" y2="' + end[1].toFixed(3) + '" />';
+  }).join('');
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  if (!context) return;
+  const crossings = crossingEvents.map(event => {
+    const point = screenPoint(event.xy);
+    return '<circle class="projection-periodic-crossing" cx="' + point[0].toFixed(3) +
+      '" cy="' + point[1].toFixed(3) + '" r="2.3" />';
+  }).join('');
 
-  context.drawImage(image, 0, 0);
-  const pixels = context.getImageData(0, 0, width, height);
+  const vertices = vertexEvents.map(event => {
+    const point = screenPoint(event.xy);
+    const overlap = event.vertexIds.size > 1
+      ? '<text x="' + (point[0] + 3.8).toFixed(3) + '" y="' + (point[1] - 3.2).toFixed(3) +
+        '">×' + event.vertexIds.size + '</text>'
+      : '';
+    return '<circle class="projection-periodic-vertex" cx="' + point[0].toFixed(3) +
+      '" cy="' + point[1].toFixed(3) + '" r="2.5" />' + overlap;
+  }).join('');
 
-  for (let index = 0; index < pixels.data.length; index += 4) {
-    const red = pixels.data[index];
-    const green = pixels.data[index + 1];
-    const blue = pixels.data[index + 2];
-    const sourceAlpha = pixels.data[index + 3] / 255;
-    const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-    const ink = Math.max(0, Math.min(1, (238 - luminance) / 190));
-
-    pixels.data[index] = 18;
-    pixels.data[index + 1] = 18;
-    pixels.data[index + 2] = 18;
-    pixels.data[index + 3] = Math.round(255 * sourceAlpha * Math.pow(ink, 0.82));
-  }
-
-  context.putImageData(pixels, 0, 0);
-  image.src = canvas.toDataURL('image/png');
+  return '<svg class="projection-periodic-live-svg" viewBox="0 0 ' + width + ' ' + height +
+    '" role="img" aria-hidden="true">' +
+    '<g class="projection-periodic-edges">' + edges + '</g>' +
+    '<g class="projection-periodic-crossings">' + crossings + '</g>' +
+    '<g class="projection-periodic-vertices">' + vertices + '</g>' +
+    '</svg>';
 }
 
 export function buildProjectionPeriodicEntries(projectionData, viewData, elements = []) {
@@ -73,10 +84,11 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
       const view = viewsByClass.get(projection.id);
       if (!view) throw new Error('Missing representative view for ' + solid.name + ' class ' + projection.id);
 
+      const frame = viewFrame(view.viewDirection, view.rollDegrees);
       const structure = analyzeProjectionStructure(
         geometry.vertices,
         geometry.edges,
-        viewFrame(view.viewDirection, view.rollDegrees)
+        frame
       );
       const hullVertices = vertexHullCount(structure);
       const rotationalOrder = Math.max(1, structure.rotationalOrder);
@@ -90,6 +102,7 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
         classId: projection.id,
         label: projection.role?.name || projection.label,
         image: projection.image,
+        thumbnailSvg: projectionThumbnailSvg(geometry, frame),
         attribute: attributeBySolid.get(solid.name) || solid.name,
         period: structure.convexHullLayers.length,
         group: hullVertices,
@@ -122,7 +135,7 @@ function periodicCell(entries) {
 
     return '<button class="projection-periodic-item' + eulerClass + circuitClass + '" type="button" data-solid="' + escapeHtml(entry.solidId) + '" data-class-id="' + entry.classId + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(entry.attribute + ' ' + entry.solidName + ' Class ' + entry.classId + ' 사영도 열기') + '">' +
       '<div class="projection-periodic-thumb">' +
-        '<img src="' + escapeHtml(entry.image) + '" alt="' + escapeHtml(entry.attribute + ' ' + entry.classId + ' 사영도') + '" loading="lazy" data-projection-flat-material />' +
+        entry.thumbnailSvg +
         eulerBadge +
       '</div>' +
     '</button>';
@@ -182,11 +195,6 @@ export function renderProjectionPeriodicTable(root, entries) {
       '</div>' +
       '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 최외곽 Convex Hull 정점 수를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
-
-  root.querySelectorAll('img[data-projection-flat-material]').forEach(image => {
-    if (image.complete) flattenProjectionImage(image);
-    else image.addEventListener('load', () => flattenProjectionImage(image), { once: true });
-  });
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
     item.addEventListener('click', async () => {

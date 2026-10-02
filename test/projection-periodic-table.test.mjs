@@ -25,6 +25,9 @@ test('projection periodic table uses convex-hull depth and outer hull vertex cou
     assert.ok(entry.period >= 1 && entry.period <= 4);
     assert.ok([3, 4, 6, 8, 10, 12].includes(entry.group));
     assert.equal(entry.group, entry.hullVertices);
+    assert.match(entry.thumbnailSvg, /^<svg class="projection-periodic-live-svg"/);
+    assert.ok(entry.thumbnailSvg.includes('<line '));
+    assert.ok(!entry.thumbnailSvg.includes('<img'));
   }
 });
 
@@ -43,4 +46,26 @@ test('outer-hull grouping preserves all projections and expected cell collisions
   assert.equal([...cells.values()].reduce((sum, count) => sum + count, 0), 43);
   assert.equal(entries.filter(entry => entry.eulerTrail).length, 8);
   assert.equal(entries.filter(entry => entry.eulerCircuit).length, 4);
+});
+
+
+test('projection thumbnails are derived from the current representative view', () => {
+  const baseline = buildProjectionPeriodicEntries(projections, views);
+  const shiftedViews = structuredClone(views);
+  const firstView = shiftedViews.solids[0].views[0];
+  firstView.rollDegrees += 17;
+  const shifted = buildProjectionPeriodicEntries(projections, shiftedViews);
+
+  const baselineEntry = baseline.find(entry =>
+    entry.solidId === shiftedViews.solids[0].id && entry.classId === firstView.classId);
+  const shiftedEntry = shifted.find(entry =>
+    entry.solidId === shiftedViews.solids[0].id && entry.classId === firstView.classId);
+
+  assert.ok(baselineEntry);
+  assert.ok(shiftedEntry);
+  assert.notEqual(
+    shiftedEntry.thumbnailSvg,
+    baselineEntry.thumbnailSvg,
+    'changing the current representative view must immediately change the table thumbnail'
+  );
 });
