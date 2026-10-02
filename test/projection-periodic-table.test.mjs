@@ -25,7 +25,8 @@ test('projection periodic table uses convex-hull depth and outer hull vertex cou
     assert.ok(entry.period >= 1 && entry.period <= 4);
     assert.ok([3, 4, 6, 8, 10, 12].includes(entry.group));
     assert.equal(entry.group, entry.hullVertices);
-    assert.ok(Number.isFinite(entry.viewAngleDegrees));
+    assert.ok(Number.isInteger(entry.serialNumber));
+    assert.ok(entry.serialNumber >= 0 && entry.serialNumber <= 999);
     assert.match(entry.thumbnailSvg, /^<svg class="projection-periodic-live-svg"/);
     assert.ok(entry.thumbnailSvg.includes('<line '));
     assert.ok(!entry.thumbnailSvg.includes('<img'));
@@ -72,11 +73,15 @@ test('projection thumbnails are derived from the current representative view', (
 });
 
 
-test('periodic entries expose unique symmetry-reduced view angles within each solid', () => {
+
+
+
+test('periodic entries expose unique #000-#999 projection serials within each solid', () => {
   const entries = buildProjectionPeriodicEntries(projections, views);
   for (const solid of projections.solids) {
     const solidEntries = entries.filter(entry => entry.solidId === solid.id);
-    const identifiers = solidEntries.map(entry => entry.viewAngleDegrees.toFixed(2));
-    assert.equal(new Set(identifiers).size, identifiers.length, solid.name);
+    const serials = solidEntries.map(entry => entry.serialNumber);
+    assert.equal(new Set(serials).size, serials.length, solid.name);
+    assert.ok(serials.every(value => Number.isInteger(value) && value >= 0 && value <= 999));
   }
 });
