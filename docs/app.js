@@ -1,7 +1,7 @@
 import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=view-angle-identifiers-20261002-1';
-import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=view-angle-identifiers-20261002-1';
+import { mountProjectionSelector } from './projection-selector.js?v=projection-serials-20261002-1';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-serials-20261002-1';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=linked-dashboard-tabs-20261001-1';
 
 let data;
@@ -378,7 +378,7 @@ function renderAttributes() {
     </div>
     ${section('Projection periodic table','Period = Convex Hull 층수 · Group = 최외곽 Convex Hull 정점 수')}
     <div id="projectionPeriodicTable"></div>
-    ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · 클래스 번호로 사영 전환')}
+    ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
     <div id="projectionSimulation"></div>
     ${section('Magic theory', '현재까지 정립된 마법 구현 원리와 전투 해석')}
     <div class="theory-grid">${THEORY_CARDS.map(([title, body, note]) => `
