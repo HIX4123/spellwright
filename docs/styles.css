@@ -207,20 +207,7 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
 .section-head p { margin: 0; font-size: 11px; color: var(--muted); }
 .core-statement { margin: 0; font-size: 16px; line-height: 1.65; }
 .muted { color: var(--muted); }
-.narrative-editor label { display: block; margin-bottom: 12px; font-weight: 650; }
-.narrative-editor textarea {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface-2);
-  color: var(--text);
-  line-height: 1.8;
-  resize: vertical;
-}
-.narrative-editor textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.narrative-text { margin: 0; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .attribute-background { display: grid; gap: 12px; }
 .attribute-background p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.7; }
 .attribute-background .core-statement { color: var(--text); font-size: 16px; }
