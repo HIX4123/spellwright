@@ -152,9 +152,9 @@
 }
 
 .projection-periodic-track {
-  --projection-periodic-lanes: 1;
+  --projection-track-height: 84px;
   position: relative;
-  min-height: calc(14px + var(--projection-periodic-lanes) * 70px);
+  min-height: var(--projection-track-height);
   overflow: hidden;
   background: color-mix(in srgb, var(--surface-2) 74%, var(--surface));
 }
@@ -178,7 +178,7 @@
   --projection-attribute-material: var(--surface-3);
   position: absolute;
   left: var(--projection-position);
-  top: calc(7px + var(--projection-lane) * 70px);
+  top: var(--projection-top);
   width: 74px;
   height: 62px;
   margin: 0;
