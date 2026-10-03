@@ -179,23 +179,11 @@ function renderOverview() {
 
 function renderStory() {
   view.innerHTML = `${section('Story & World', '게임의 스토리와 전반적인 세계관')}
-    <p class="muted">작성 후 상단의 Save local draft로 이 브라우저에 저장할 수 있어요. Export JSON으로 작성한 내용을 내보낼 수 있어요.</p>
-    <div class="grid">
-      ${[['story', '스토리', '줄거리와 사건의 흐름을 작성하세요.'],
-        ['worldbuilding', '세계관', '세계의 배경과 설정을 작성하세요.']].map(([key, title, placeholder]) => `
-        <div class="card narrative-editor">
-          <label for="narrative-${key}">${title}</label>
-          <textarea id="narrative-${key}" data-narrative="${key}" rows="14" placeholder="${placeholder}">${escapeHtml(data.narrative?.[key] || '')}</textarea>
-        </div>`).join('')}
-    </div>`;
-
-  view.querySelectorAll('[data-narrative]').forEach(input => {
-    input.oninput = () => {
-      data.narrative ??= { story: '', worldbuilding: '' };
-      data.narrative[input.dataset.narrative] = input.value;
-      markDirty();
-    };
-  });
+    ${[['story', '스토리'], ['worldbuilding', '세계관']].map(([key, title]) => `
+      ${section(title)}
+      <article class="card">
+        <p class="narrative-text${data.narrative?.[key] ? '' : ' muted'}">${escapeHtml(data.narrative?.[key] || `아직 정리된 ${title} 내용이 없어요.`)}</p>
+      </article>`).join('')}`;
 }
 
 function priorityCard(p) {
