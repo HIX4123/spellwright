@@ -1,7 +1,5 @@
 import {
   geometryForSolid,
-  nearestSymmetryEquivalentFrame,
-  platonicRotationSymmetries,
   projectVertices,
   projectionEvents,
   projectionScreenTransform,
@@ -13,9 +11,9 @@ import {
 } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 import {
   formatProjectionSerial,
-  projectionSerialLayout,
+  globalProjectionSerialLayout,
   selectProjectionTarget
-} from './projection-selector.js?v=projection-serials-20261002-1';
+} from './projection-selector.js?v=global-projection-axis-20261003-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
@@ -79,19 +77,16 @@ export function projectionThumbnailSvg(geometry, frame) {
 export function buildProjectionPeriodicEntries(projectionData, viewData, elements = []) {
   const attributeBySolid = new Map(elements.map(element => [element.solid, element.name]));
   const viewsBySolid = new Map(viewData.solids.map(solid => [solid.name, solid]));
+  const globalSerials = globalProjectionSerialLayout(
+    projectionData.solids,
+    viewData.solids
+  ).serialsByKey;
 
   return projectionData.solids.flatMap((solid, solidOrder) => {
     const viewSolid = viewsBySolid.get(solid.name);
     if (!viewSolid) return [];
     const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
     const geometry = geometryForSolid(solid.name);
-    const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
-    const { serialsByClass } = projectionSerialLayout(
-      solid.classes,
-      viewsByClass,
-      geometry,
-      symmetryRotations
-    );
 
     return solid.classes.map((projection, classOrder) => {
       const view = viewsByClass.get(projection.id);
@@ -105,6 +100,10 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
       );
       const hullVertices = vertexHullCount(structure);
       const rotationalOrder = Math.max(1, structure.rotationalOrder);
+      const serialNumber = globalSerials.get(solid.id + ':' + projection.id);
+      if (!Number.isInteger(serialNumber)) {
+        throw new Error('Missing global projection serial for ' + solid.name + ' class ' + projection.id);
+      }
 
       return {
         key: solid.id + '-' + String(projection.id).padStart(2, '0'),
@@ -118,10 +117,9 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
         thumbnailSvg: projectionThumbnailSvg(geometry, frame),
         attribute: attributeBySolid.get(solid.name) || solid.name,
         period: structure.convexHullLayers.length,
-        group: hullVertices,
         hullVertices,
         rotationalOrder,
-        serialNumber: serialsByClass.get(projection.id),
+        serialNumber,
         eulerTrail: structure.eulerTrail,
         eulerCircuit: structure.eulerCircuit
       };
@@ -129,67 +127,105 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
   });
 }
 
-function periodicCell(entries) {
-  if (!entries.length) {
-    return '<div class="projection-periodic-cell is-empty" aria-hidden="true"></div>';
-  }
+const PERIODIC_MIN_SERIAL_GAP = 54;
 
-  const items = entries.map(entry => {
-    const eulerClass = entry.eulerTrail ? ' is-euler' : '';
-    const circuitClass = entry.eulerCircuit ? ' is-circuit' : '';
-    const eulerBadge = entry.eulerTrail
-      ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
-      : '';
-    const title = [
-      entry.attribute + ' · ' + entry.solidName + ' · ' + formatProjectionSerial(entry.serialNumber),
-      entry.label,
-      'P' + entry.period + ' / H' + entry.group,
-      'Outer hull vertices ' + entry.hullVertices + ' · C' + entry.rotationalOrder
-    ].join(' · ');
+export function layoutProjectionPeriod(entries, minimumGap = PERIODIC_MIN_SERIAL_GAP) {
+  const laneEnds = [];
+  const laidOut = entries.slice()
+    .sort((first, second) =>
+      first.serialNumber - second.serialNumber
+      || first.solidOrder - second.solidOrder
+      || first.classOrder - second.classOrder)
+    .map(entry => {
+      let lane = laneEnds.findIndex(lastSerial =>
+        entry.serialNumber - lastSerial >= minimumGap);
+      if (lane < 0) lane = laneEnds.length;
+      laneEnds[lane] = entry.serialNumber;
+      return { ...entry, lane };
+    });
 
-    return '<button class="projection-periodic-item' + eulerClass + circuitClass + '" type="button" data-solid="' + escapeHtml(entry.solidId) + '" data-class-id="' + entry.classId + '" title="' + escapeHtml(title) + '" aria-label="' + escapeHtml(entry.attribute + ' ' + entry.solidName + ' 사영 번호 ' + formatProjectionSerial(entry.serialNumber) + ' 사영도 열기') + '">' +
+  return {
+    entries: laidOut,
+    laneCount: Math.max(1, laneEnds.length)
+  };
+}
+
+function periodicItem(entry) {
+  const eulerClass = entry.eulerTrail ? ' is-euler' : '';
+  const circuitClass = entry.eulerCircuit ? ' is-circuit' : '';
+  const eulerBadge = entry.eulerTrail
+    ? '<span class="projection-periodic-euler-badge">' + (entry.eulerCircuit ? 'EC' : 'ET') + '</span>'
+    : '';
+  const title = [
+    entry.attribute + ' · ' + entry.solidName + ' · ' + formatProjectionSerial(entry.serialNumber),
+    entry.label,
+    'P' + entry.period,
+    'Outer hull ' + entry.hullVertices + ' · C' + entry.rotationalOrder
+  ].join(' · ');
+  const position = (entry.serialNumber / 999 * 100).toFixed(4) + '%';
+
+  return '<button class="projection-periodic-item' + eulerClass + circuitClass +
+    '" type="button" data-solid="' + escapeHtml(entry.solidId) +
+    '" data-class-id="' + entry.classId +
+    '" data-serial="' + entry.serialNumber +
+    '" style="--projection-position:' + position + ';--projection-lane:' + entry.lane +
+    '" title="' + escapeHtml(title) +
+    '" aria-label="' + escapeHtml(
+      entry.attribute + ' ' + entry.solidName + ' 사영 번호 ' +
+      formatProjectionSerial(entry.serialNumber) + ' 사영도 열기'
+    ) + '">' +
       '<div class="projection-periodic-thumb">' +
         entry.thumbnailSvg +
         eulerBadge +
       '</div>' +
     '</button>';
-  }).join('');
+}
 
-  return '<div class="projection-periodic-cell">' +
-    (entries.length > 1 ? '<span class="projection-periodic-count">' + entries.length + '</span>' : '') +
-    '<div class="projection-periodic-items">' + items + '</div>' +
+function phaseAxisMarkup() {
+  const ticks = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999];
+  return '<div class="projection-periodic-phase-axis">' +
+    '<div class="projection-periodic-phase-field">' +
+      ticks.map((serial, index) => {
+        const position = (serial / 999 * 100).toFixed(4) + '%';
+        const edgeClass = index === 0
+          ? ' is-start'
+          : index === ticks.length - 1
+            ? ' is-end'
+            : '';
+        return '<span class="projection-periodic-tick' + edgeClass +
+          '" style="--projection-position:' + position + '">' +
+          '<i></i><b>' + formatProjectionSerial(serial) + '</b></span>';
+      }).join('') +
+    '</div>' +
   '</div>';
 }
 
 export function renderProjectionPeriodicTable(root, entries) {
   const sorted = entries.slice().sort((first, second) =>
-    first.solidOrder - second.solidOrder || first.classOrder - second.classOrder
+    first.period - second.period
+    || first.serialNumber - second.serialNumber
+    || first.solidOrder - second.solidOrder
+    || first.classOrder - second.classOrder
   );
   const maxPeriod = Math.max(...sorted.map(entry => entry.period));
   const periods = Array.from({ length: maxPeriod }, (_, index) => index + 1);
-  const groups = [...new Set(sorted.map(entry => entry.group))].sort((first, second) => first - second);
-  const cells = new Map();
-
-  sorted.forEach(entry => {
-    const key = entry.period + ':' + entry.group;
-    if (!cells.has(key)) cells.set(key, []);
-    cells.get(key).push(entry);
-  });
-
-  const groupHeaders = groups.map(group =>
-    '<div class="projection-periodic-axis projection-periodic-group">' +
-      '<span>GROUP</span><strong>H' + group + '</strong>' +
-      '<small>' + group + ' outer vertices</small>' +
-    '</div>'
-  ).join('');
 
   const rows = periods.map(period => {
+    const periodEntries = sorted.filter(entry => entry.period === period);
+    const layout = layoutProjectionPeriod(periodEntries);
     const label =
       '<div class="projection-periodic-axis projection-periodic-period">' +
         '<span>PERIOD</span><strong>P' + period + '</strong>' +
         '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
       '</div>';
-    return label + groups.map(group => periodicCell(cells.get(period + ':' + group) || [])).join('');
+    const track =
+      '<div class="projection-periodic-track" style="--projection-periodic-lanes:' +
+        layout.laneCount + '">' +
+        '<div class="projection-periodic-phase-field">' +
+          layout.entries.map(periodicItem).join('') +
+        '</div>' +
+      '</div>';
+    return label + track;
   }).join('');
 
   const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
@@ -197,17 +233,18 @@ export function renderProjectionPeriodicTable(root, entries) {
     '<div class="card projection-periodic-card">' +
       '<div class="projection-periodic-legend">' +
         '<span><strong>P</strong> Convex Hull depth</span>' +
-        '<span><strong>H</strong> Outer Convex Hull vertex count</span>' +
-        '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' + eulerCount + '</span>' +
+        '<span><strong>#</strong> Global projection coordinate · 1D MDS</span>' +
+        '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' +
+          eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
-        '<div class="projection-periodic-grid" style="--projection-periodic-groups:' + groups.length + ';--projection-periodic-min-width:' + (82 + groups.length * 150) + 'px">' +
-          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>HULL</span></div>' +
-          groupHeaders +
+        '<div class="projection-periodic-grid">' +
+          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>#ID</span></div>' +
+          phaseAxisMarkup() +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">같은 칸의 사영도는 동일한 Convex Hull 층수와 최외곽 Convex Hull 정점 수를 공유한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">#000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 번호 차이가 작을수록 대체로 가까운 사영이지만, 정확한 회전각 자체를 뜻하지는 않는다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
