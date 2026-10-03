@@ -129,7 +129,7 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
 
 const PERIODIC_MIN_SERIAL_GAP = 54;
 
-export function layoutProjectionPeriod(entries, minimumGap = PERIODIC_MIN_SERIAL_GAP) {
+export function layoutProjectionSubrow(entries, minimumGap = PERIODIC_MIN_SERIAL_GAP) {
   const laneEnds = [];
   const laidOut = entries.slice()
     .sort((first, second) =>
@@ -159,7 +159,7 @@ function periodicItem(entry) {
   const title = [
     entry.attribute + ' · ' + entry.solidName + ' · ' + formatProjectionSerial(entry.serialNumber),
     entry.label,
-    'P' + entry.period,
+    'P' + entry.period + ' / H' + entry.hullVertices,
     'Outer hull ' + entry.hullVertices + ' · C' + entry.rotationalOrder
   ].join(' · ');
   const position = (entry.serialNumber / 999 * 100).toFixed(4) + '%';
@@ -171,8 +171,9 @@ function periodicItem(entry) {
     '" style="--projection-position:' + position + ';--projection-top:' + (7 + entry.lane * 70) + 'px' +
     '" title="' + escapeHtml(title) +
     '" aria-label="' + escapeHtml(
-      entry.attribute + ' ' + entry.solidName + ' 사영 번호 ' +
-      formatProjectionSerial(entry.serialNumber) + ' 사영도 열기'
+      entry.attribute + ' ' + entry.solidName + ' P' + entry.period + ' H' +
+      entry.hullVertices + ' 사영 번호 ' + formatProjectionSerial(entry.serialNumber) +
+      ' 사영도 열기'
     ) + '">' +
       '<div class="projection-periodic-thumb">' +
         entry.thumbnailSvg +
@@ -203,6 +204,7 @@ function phaseAxisMarkup() {
 export function renderProjectionPeriodicTable(root, entries) {
   const sorted = entries.slice().sort((first, second) =>
     first.period - second.period
+    || first.hullVertices - second.hullVertices
     || first.serialNumber - second.serialNumber
     || first.solidOrder - second.solidOrder
     || first.classOrder - second.classOrder
@@ -212,20 +214,35 @@ export function renderProjectionPeriodicTable(root, entries) {
 
   const rows = periods.map(period => {
     const periodEntries = sorted.filter(entry => entry.period === period);
-    const layout = layoutProjectionPeriod(periodEntries);
-    const label =
-      '<div class="projection-periodic-axis projection-periodic-period">' +
+    const hullGroups = [...new Set(periodEntries.map(entry => entry.hullVertices))]
+      .sort((first, second) => first - second);
+
+    const periodLabel =
+      '<div class="projection-periodic-axis projection-periodic-period" ' +
+        'style="--projection-period-span:' + hullGroups.length + '">' +
         '<span>PERIOD</span><strong>P' + period + '</strong>' +
         '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
       '</div>';
-    const track =
-      '<div class="projection-periodic-track" style="--projection-track-height:' +
-        (14 + layout.laneCount * 70) + 'px">' +
-        '<div class="projection-periodic-phase-field">' +
-          layout.entries.map(periodicItem).join('') +
-        '</div>' +
-      '</div>';
-    return label + track;
+
+    const subrows = hullGroups.map(hullVertices => {
+      const subrowEntries = periodEntries.filter(entry => entry.hullVertices === hullVertices);
+      const layout = layoutProjectionSubrow(subrowEntries);
+      const hullLabel =
+        '<div class="projection-periodic-axis projection-periodic-hull">' +
+          '<span>HULL</span><strong>H' + hullVertices + '</strong>' +
+          '<small>' + hullVertices + ' vertices</small>' +
+        '</div>';
+      const track =
+        '<div class="projection-periodic-track" style="--projection-track-height:' +
+          (14 + layout.laneCount * 70) + 'px">' +
+          '<div class="projection-periodic-phase-field">' +
+            layout.entries.map(periodicItem).join('') +
+          '</div>' +
+        '</div>';
+      return hullLabel + track;
+    }).join('');
+
+    return periodLabel + subrows;
   }).join('');
 
   const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
@@ -233,18 +250,20 @@ export function renderProjectionPeriodicTable(root, entries) {
     '<div class="card projection-periodic-card">' +
       '<div class="projection-periodic-legend">' +
         '<span><strong>P</strong> Convex Hull depth</span>' +
+        '<span><strong>H</strong> Outer Convex Hull vertex count</span>' +
         '<span><strong>#</strong> Global projection coordinate · 1D MDS</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' +
           eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
         '<div class="projection-periodic-grid">' +
-          '<div class="projection-periodic-corner"><span>PERIOD</span><b>×</b><span>#ID</span></div>' +
+          '<div class="projection-periodic-header projection-periodic-header-period">P</div>' +
+          '<div class="projection-periodic-header projection-periodic-header-hull">H</div>' +
           phaseAxisMarkup() +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">#000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 번호 차이가 작을수록 대체로 가까운 사영이지만, 정확한 회전각 자체를 뜻하지는 않는다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">세로축은 P(Convex Hull 층수) 안을 H(최외곽 Convex Hull 정점 수)로 다시 나눈다. 가로 #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 같은 P·H에서 번호가 너무 가까운 경우에만 겹침 방지용 보조 lane을 사용한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
