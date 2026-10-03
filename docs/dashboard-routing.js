@@ -1,5 +1,6 @@
 export const DASHBOARD_VIEW_IDS = Object.freeze([
   'overview',
+  'story',
   'systems',
   'combat',
   'attributes',

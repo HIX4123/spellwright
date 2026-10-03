@@ -8,6 +8,7 @@ import {
 
 test('dashboard tabs expose stable hash links while overview stays at the root', () => {
   assert.equal(dashboardViewHref('overview'), './');
+  assert.ok(DASHBOARD_VIEW_IDS.includes('story'));
 
   for (const viewId of DASHBOARD_VIEW_IDS.filter(id => id !== 'overview')) {
     assert.equal(dashboardViewHref(viewId), '#' + viewId);
