@@ -9,6 +9,7 @@ import {
   projectVertices,
   projectionScreenTransform,
   projectionEvents,
+  rotateFrame,
   swipeDirection,
   viewFrame,
   wrapIndex
@@ -349,7 +350,182 @@ export function projectionSerialLayout(classes, viewsByClass, geometry, symmetry
   return { orderedClasses, serialsByClass, totalRotationRadians };
 }
 
+
+const GLOBAL_PROJECTION_SERIAL_CACHE = new Map();
+
+function globalProjectionKey(solidId, classId) {
+  return solidId + ':' + classId;
+}
+
+function symmetryReducedFrameDistance(first, second) {
+  let best = Infinity;
+  for (const rotation of first.symmetryRotations) {
+    const source = rotateFrame(first.frame, rotation);
+    const candidate = nearestSymmetryEquivalentFrame(
+      source,
+      second.frame,
+      second.symmetryRotations
+    ).angle;
+    if (candidate < best) best = candidate;
+  }
+  return best;
+}
+
+function multiplyMatrixVector(matrix, vector) {
+  return matrix.map(row => row.reduce(
+    (sum, value, index) => sum + value * vector[index],
+    0
+  ));
+}
+
+function dotVector(first, second) {
+  return first.reduce((sum, value, index) => sum + value * second[index], 0);
+}
+
+function normalizeVector(vector) {
+  const length = Math.sqrt(dotVector(vector, vector)) || 1;
+  return vector.map(value => value / length);
+}
+
+function dominantEigenpair(matrix) {
+  const size = matrix.length;
+  const shift = Math.max(
+    1,
+    ...matrix.map(row => row.reduce((sum, value) => sum + Math.abs(value), 0))
+  );
+  let vector = normalizeVector(Array.from(
+    { length: size },
+    (_, index) => Math.sin((index + 1) * 1.731) + Math.cos((index + 1) * 0.713)
+  ));
+
+  for (let iteration = 0; iteration < 1000; iteration += 1) {
+    const multiplied = multiplyMatrixVector(matrix, vector)
+      .map((value, index) => value + shift * vector[index]);
+    const next = normalizeVector(multiplied);
+    const delta = Math.sqrt(next.reduce(
+      (sum, value, index) => sum + (value - vector[index]) ** 2,
+      0
+    ));
+    vector = next;
+    if (delta < 1e-13) break;
+  }
+
+  const matrixVector = multiplyMatrixVector(matrix, vector);
+  return {
+    value: dotVector(vector, matrixVector),
+    vector
+  };
+}
+
+export function globalProjectionSerialLayout(solids, viewSolids) {
+  const cacheKey = JSON.stringify({
+    classes: solids.map(solid => [solid.id, solid.classes.map(item => item.id)]),
+    views: viewSolids.map(solid => [
+      solid.id,
+      solid.views.map(view => [view.classId, view.viewDirection, view.rollDegrees])
+    ])
+  });
+  const cached = GLOBAL_PROJECTION_SERIAL_CACHE.get(cacheKey);
+  if (cached) return cached;
+
+  const viewsBySolid = new Map(viewSolids.map(solid => [solid.name, solid]));
+  const nodes = [];
+
+  solids.forEach(solid => {
+    const viewSolid = viewsBySolid.get(solid.name);
+    if (!viewSolid) return;
+    const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
+    const geometry = geometryForSolid(solid.name);
+    const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
+
+    solid.classes.forEach(item => {
+      const view = viewsByClass.get(item.id);
+      if (!view) return;
+      nodes.push({
+        key: globalProjectionKey(solid.id, item.id),
+        solidId: solid.id,
+        classId: item.id,
+        frame: viewFrame(view.viewDirection, view.rollDegrees),
+        symmetryRotations
+      });
+    });
+  });
+
+  const count = nodes.length;
+  const distances = Array.from({ length: count }, () => Array(count).fill(0));
+  for (let first = 0; first < count; first += 1) {
+    for (let second = first + 1; second < count; second += 1) {
+      const distance = symmetryReducedFrameDistance(nodes[first], nodes[second]);
+      distances[first][second] = distance;
+      distances[second][first] = distance;
+    }
+  }
+
+  const squared = distances.map(row => row.map(value => value * value));
+  const rowMeans = squared.map(row =>
+    row.reduce((sum, value) => sum + value, 0) / Math.max(1, count));
+  const totalMean = rowMeans.reduce((sum, value) => sum + value, 0)
+    / Math.max(1, count);
+  const gram = Array.from({ length: count }, (_, row) =>
+    Array.from({ length: count }, (_, column) =>
+      -0.5 * (
+        squared[row][column]
+        - rowMeans[row]
+        - rowMeans[column]
+        + totalMean
+      )));
+
+  const eigenpair = dominantEigenpair(gram);
+  let coordinates = eigenpair.vector.map(value =>
+    value * Math.sqrt(Math.max(0, eigenpair.value)));
+
+  let ordered = nodes.map((node, index) => ({
+    ...node,
+    coordinate: coordinates[index]
+  })).sort((first, second) =>
+    first.coordinate - second.coordinate || first.key.localeCompare(second.key));
+
+  if (ordered.length > 1
+      && ordered[ordered.length - 1].key.localeCompare(ordered[0].key) < 0) {
+    coordinates = coordinates.map(value => -value);
+    ordered = nodes.map((node, index) => ({
+      ...node,
+      coordinate: coordinates[index]
+    })).sort((first, second) =>
+      first.coordinate - second.coordinate || first.key.localeCompare(second.key));
+  }
+
+  const minimum = Math.min(...ordered.map(item => item.coordinate));
+  const maximum = Math.max(...ordered.map(item => item.coordinate));
+  const span = maximum - minimum;
+  const serialsByKey = new Map();
+  let previous = -1;
+
+  ordered.forEach((item, index) => {
+    const desired = span > 1e-12
+      ? Math.round((item.coordinate - minimum) / span * 999)
+      : Math.round(index * 999 / Math.max(1, ordered.length - 1));
+    const maximumAllowed = 999 - (ordered.length - 1 - index);
+    const serial = Math.min(
+      maximumAllowed,
+      Math.max(index, previous + 1, desired)
+    );
+    serialsByKey.set(item.key, serial);
+    previous = serial;
+  });
+
+  const result = {
+    serialsByKey,
+    orderedKeys: ordered.map(item => item.key),
+    distances,
+    nodes
+  };
+  GLOBAL_PROJECTION_SERIAL_CACHE.set(cacheKey, result);
+  return result;
+}
+
 function selectorEntries(elements, solids, viewSolids) {
+  const globalSerials = globalProjectionSerialLayout(solids, viewSolids).serialsByKey;
   return elements.map(element => {
     const solid = solids.find(item => item.name === element.solid);
     const viewSolid = viewSolids.find(item => item.name === element.solid);
@@ -358,12 +534,16 @@ function selectorEntries(elements, solids, viewSolids) {
     if (solid.classes.some(item => !viewsByClass.has(item.id))) return null;
     const geometry = geometryForSolid(solid.name);
     const symmetryRotations = platonicRotationSymmetries(geometry.vertices);
-    const { orderedClasses, serialsByClass } = projectionSerialLayout(
+    const orderedClasses = minimalRotationClassOrder(
       solid.classes,
       viewsByClass,
       geometry,
       symmetryRotations
     );
+    const serialsByClass = new Map(solid.classes.map(item => [
+      item.id,
+      globalSerials.get(globalProjectionKey(solid.id, item.id))
+    ]));
     const orderedSolid = { ...solid, classes: orderedClasses };
     const classificationsByClass = new Map(orderedClasses.map(item => {
       const view = viewsByClass.get(item.id);
