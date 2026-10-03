@@ -1,7 +1,7 @@
 import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=projection-serials-20261002-1';
-import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-serials-20261002-1';
+import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-1';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=global-projection-axis-20261003-1';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=linked-dashboard-tabs-20261001-1';
 
 let data;
@@ -376,7 +376,7 @@ function renderAttributes() {
       <p class="core-statement">삶이란 상실의 연속이다.</p>
       ${background}
     </div>
-    ${section('Projection periodic table','Period = Convex Hull 층수 · Group = 최외곽 Convex Hull 정점 수')}
+    ${section('Projection periodic table','Period = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
     <div id="projectionSimulation"></div>
