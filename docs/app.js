@@ -2,7 +2,7 @@ import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-1';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=global-projection-axis-20261003-1';
-import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=linked-dashboard-tabs-20261001-1';
+import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=story-world-20261003-1';
 
 let data;
 let relationships;
@@ -15,7 +15,7 @@ const view = $('#view');
 const dialog = $('#editorDialog');
 
 const navItems = [
-  ['overview','Overview'], ['systems','Systems'], ['combat','Combat'], ['attributes','Attributes'],
+  ['overview','Overview'], ['story','Story & World'], ['systems','Systems'], ['combat','Combat'], ['attributes','Attributes'],
   ['mvp','MVP'], ['decisions','Decisions'], ['graveyard','Graveyard'], ['questions','Open Questions']
 ];
 
@@ -40,6 +40,8 @@ async function contentRevision(content) {
 
 function isProjectData(value) {
   return Boolean(value?.project
+    && (value.narrative === undefined || (value.narrative !== null
+      && ['story', 'worldbuilding'].every(key => typeof value.narrative[key] === 'string')))
     && ['statuses', 'systems', 'elements', 'priorities', 'openQuestions', 'mvp', 'decisions']
       .every(key => Array.isArray(value[key]))
     && value.systems.every(system => typeof system?.id === 'string'
@@ -139,6 +141,7 @@ function categoryLabel(id) {
 function render() {
   const fn = ({
     overview:renderOverview,
+    story:renderStory,
     systems:renderSystems,
     combat:renderCombat,
     attributes:renderAttributes,
@@ -172,6 +175,27 @@ function renderOverview() {
     ${section('Recent decisions')}
     <div class="card timeline">${data.decisions.slice(0,4).map(decisionRow).join('')}</div>
   `;
+}
+
+function renderStory() {
+  view.innerHTML = `${section('Story & World', '게임의 스토리와 전반적인 세계관')}
+    <p class="muted">작성 후 상단의 Save local draft로 이 브라우저에 저장할 수 있어요. Export JSON으로 작성한 내용을 내보낼 수 있어요.</p>
+    <div class="grid">
+      ${[['story', '스토리', '줄거리와 사건의 흐름을 작성하세요.'],
+        ['worldbuilding', '세계관', '세계의 배경과 설정을 작성하세요.']].map(([key, title, placeholder]) => `
+        <div class="card narrative-editor">
+          <label for="narrative-${key}">${title}</label>
+          <textarea id="narrative-${key}" data-narrative="${key}" rows="14" placeholder="${placeholder}">${escapeHtml(data.narrative?.[key] || '')}</textarea>
+        </div>`).join('')}
+    </div>`;
+
+  view.querySelectorAll('[data-narrative]').forEach(input => {
+    input.oninput = () => {
+      data.narrative ??= { story: '', worldbuilding: '' };
+      data.narrative[input.dataset.narrative] = input.value;
+      markDirty();
+    };
+  });
 }
 
 function priorityCard(p) {
