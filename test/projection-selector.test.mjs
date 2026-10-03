@@ -20,6 +20,7 @@ import {
   filteredProjectionIndices,
   filteredProjectionTargets,
   formatProjectionSerial,
+  globalProjectionSerialLayout,
   minimalRotationClassOrder,
   projectionSerialLayout
 } from '../docs/projection-selector.js';
@@ -339,24 +340,30 @@ test('default class order minimizes the symmetry-aware cyclic rotation path', ()
 
 
 
-test('projection serials map optimized cyclic rotation distance into unique #000-#999 identifiers', () => {
-  for (const solid of projections.solids) {
-    const geometry = geometryForSolid(solid.name);
-    const rotations = platonicRotationSymmetries(geometry.vertices);
-    const viewSolid = views.solids.find(item => item.name === solid.name);
-    const viewsByClass = new Map(viewSolid.views.map(view => [view.classId, view]));
-    const { orderedClasses, serialsByClass } = projectionSerialLayout(
-      solid.classes,
-      viewsByClass,
-      geometry,
-      rotations
-    );
-    const serials = orderedClasses.map(item => serialsByClass.get(item.id));
 
-    assert.equal(serials[0], 0, solid.name + ' begins at #000');
-    assert.equal(new Set(serials).size, serials.length, solid.name + ' serials stay unique');
-    assert.ok(serials.every(value => Number.isInteger(value) && value >= 0 && value <= 999));
-    assert.ok(serials.every((value, index) => index === 0 || value > serials[index - 1]));
-    assert.equal(formatProjectionSerial(serials[0]), '#000');
+
+
+test('global projection serials assign all 43 views unique #000-#999 coordinates', () => {
+  const layout = globalProjectionSerialLayout(projections.solids, views.solids);
+  const serials = [];
+  let count = 0;
+
+  for (const solid of projections.solids) {
+    for (const item of solid.classes) {
+      const key = solid.id + ':' + item.id;
+      const serial = layout.serialsByKey.get(key);
+      assert.ok(Number.isInteger(serial), key);
+      assert.ok(serial >= 0 && serial <= 999, key);
+      serials.push(serial);
+      count += 1;
+    }
   }
+
+  assert.equal(count, 43);
+  assert.equal(layout.serialsByKey.size, 43);
+  assert.equal(new Set(serials).size, 43);
+  assert.equal(Math.min(...serials), 0);
+  assert.equal(Math.max(...serials), 999);
+  assert.equal(formatProjectionSerial(0), '#000');
+  assert.equal(formatProjectionSerial(999), '#999');
 });
