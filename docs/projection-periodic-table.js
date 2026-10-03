@@ -168,7 +168,7 @@ function periodicItem(entry) {
     '" type="button" data-solid="' + escapeHtml(entry.solidId) +
     '" data-class-id="' + entry.classId +
     '" data-serial="' + entry.serialNumber +
-    '" style="--projection-position:' + position + ';--projection-lane:' + entry.lane +
+    '" style="--projection-position:' + position + ';--projection-top:' + (7 + entry.lane * 70) + 'px' +
     '" title="' + escapeHtml(title) +
     '" aria-label="' + escapeHtml(
       entry.attribute + ' ' + entry.solidName + ' 사영 번호 ' +
@@ -219,8 +219,8 @@ export function renderProjectionPeriodicTable(root, entries) {
         '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
       '</div>';
     const track =
-      '<div class="projection-periodic-track" style="--projection-periodic-lanes:' +
-        layout.laneCount + '">' +
+      '<div class="projection-periodic-track" style="--projection-track-height:' +
+        (14 + layout.laneCount * 70) + 'px">' +
         '<div class="projection-periodic-phase-field">' +
           layout.entries.map(periodicItem).join('') +
         '</div>' +
