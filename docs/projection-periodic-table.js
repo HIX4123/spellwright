@@ -13,7 +13,7 @@ import {
   formatProjectionSerial,
   globalProjectionSerialLayout,
   selectProjectionTarget
-} from './projection-selector.js?v=global-projection-axis-20261003-1';
+} from './projection-selector.js?v=global-projection-axis-20261003-2';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 

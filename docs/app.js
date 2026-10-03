@@ -1,7 +1,7 @@
 import { escapeHtml, section } from './html.js';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-1';
-import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=global-projection-axis-20261003-1';
+import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=global-projection-axis-20261003-2';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=story-world-20261003-1';
 
 let data;
