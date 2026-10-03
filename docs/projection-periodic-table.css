@@ -41,13 +41,13 @@
 
 .projection-periodic-grid {
   display: grid;
-  grid-template-columns: 82px minmax(1500px, 1fr);
+  grid-template-columns: 70px 76px minmax(1500px, 1fr);
   gap: 6px;
-  min-width: 1588px;
+  min-width: 1658px;
   align-items: stretch;
 }
 
-.projection-periodic-corner,
+.projection-periodic-header,
 .projection-periodic-axis,
 .projection-periodic-phase-axis,
 .projection-periodic-track {
@@ -56,21 +56,19 @@
   background: var(--surface-2);
 }
 
-.projection-periodic-corner {
+.projection-periodic-header {
   min-height: 56px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
   place-items: center;
   padding: 8px;
   color: var(--muted);
-  font-size: 8px;
-  letter-spacing: .08em;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .12em;
 }
 
-.projection-periodic-corner b {
-  color: var(--line-strong);
-  font-size: 14px;
-}
+.projection-periodic-header-period { grid-column: 1; }
+.projection-periodic-header-hull { grid-column: 2; }
 
 .projection-periodic-axis {
   min-width: 0;
@@ -98,7 +96,25 @@
   font-size: 8px;
 }
 
+.projection-periodic-period {
+  grid-column: 1;
+  grid-row: span var(--projection-period-span);
+  min-height: 84px;
+  background: color-mix(in srgb, var(--surface-2) 82%, var(--surface));
+}
+
+.projection-periodic-hull {
+  grid-column: 2;
+  min-height: 84px;
+  background: color-mix(in srgb, var(--surface-2) 68%, var(--surface));
+}
+
+.projection-periodic-hull strong {
+  font-size: 13px;
+}
+
 .projection-periodic-phase-axis {
+  grid-column: 3;
   position: relative;
   min-height: 56px;
   overflow: hidden;
@@ -152,6 +168,7 @@
 }
 
 .projection-periodic-track {
+  grid-column: 3;
   --projection-track-height: 84px;
   position: relative;
   min-height: var(--projection-track-height);
@@ -301,8 +318,8 @@
   }
 
   .projection-periodic-grid {
-    grid-template-columns: 74px minmax(1420px, 1fr);
-    min-width: 1500px;
+    grid-template-columns: 64px 70px minmax(1420px, 1fr);
+    min-width: 1566px;
   }
 
   .projection-periodic-phase-field {
