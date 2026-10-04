@@ -208,6 +208,30 @@ button:active, .ghost:active, .file-label:active { transform: translateY(1px); }
 .core-statement { margin: 0; font-size: 16px; line-height: 1.65; }
 .muted { color: var(--muted); }
 .narrative-text { margin: 0; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.world-act-grid, .world-principle-grid, .world-pair-grid { display: grid; gap: 12px; }
+.world-act-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+.world-principle-grid, .world-pair-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.world-kicker { display: block; color: var(--muted); font-size: 11px; margin-bottom: 8px; }
+.world-act { border-top: 3px solid var(--primary); }
+.world-act h3 { font-size: 17px; line-height: 1.7; margin-bottom: 14px; }
+.world-act p, .world-principle p, .world-pair-description { margin: 0; font-size: 13px; line-height: 1.8; }
+.world-principle h3 { font-size: 15px; margin-bottom: 10px; }
+.world-pair-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.world-pair-heading > div:last-child { text-align: right; }
+.world-pair-heading h3 { margin: 0; font-size: 22px; }
+.world-pair-diagram { display: block; width: 100%; height: auto; margin-top: 22px; color: var(--primary); fill: none; stroke: currentColor; stroke-width: 2; }
+.world-point { fill: currentColor; }
+.world-diagram-arrow { color: var(--muted); }
+.world-diagram-label { margin: 0 0 16px; text-align: center; font-size: 12px; color: var(--muted); }
+.world-pair-description { border-top: 1px solid var(--line); padding-top: 14px; }
+.world-figure-note { font-size: 12px; line-height: 1.7; margin: 12px 0 0; }
+.world-questions { padding-left: 36px; }
+.world-questions li { padding: 5px 0; line-height: 1.7; }
+@media (max-width: 1050px) {
+  .world-principle-grid, .world-pair-grid { grid-template-columns: 1fr; }
+  .world-pair-diagram { max-width: 360px; margin-inline: auto; }
+}
+@media (max-width: 600px) { .world-act-grid { grid-template-columns: 1fr; } }
 .attribute-background { display: grid; gap: 12px; }
 .attribute-background p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.7; }
 .attribute-background .core-statement { color: var(--text); font-size: 16px; }
