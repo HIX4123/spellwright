@@ -1,4 +1,5 @@
 import { escapeHtml, section } from './html.js';
+import { isNarrativeData, renderStoryWorld } from './story-world.js?v=visual-worldbuilding-20261004-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-ph-subrows-20261003-1';
@@ -40,8 +41,7 @@ async function contentRevision(content) {
 
 function isProjectData(value) {
   return Boolean(value?.project
-    && (value.narrative === undefined || (value.narrative !== null
-      && ['story', 'worldbuilding'].every(key => typeof value.narrative[key] === 'string')))
+    && isNarrativeData(value.narrative)
     && ['statuses', 'systems', 'elements', 'priorities', 'openQuestions', 'mvp', 'decisions']
       .every(key => Array.isArray(value[key]))
     && value.systems.every(system => typeof system?.id === 'string'
@@ -178,12 +178,7 @@ function renderOverview() {
 }
 
 function renderStory() {
-  view.innerHTML = `${section('Story & World', '게임의 스토리와 전반적인 세계관')}
-    ${[['story', '스토리'], ['worldbuilding', '세계관']].map(([key, title]) => `
-      ${section(title)}
-      <article class="card">
-        <p class="narrative-text${data.narrative?.[key] ? '' : ' muted'}">${escapeHtml(data.narrative?.[key] || `아직 정리된 ${title} 내용이 없어요.`)}</p>
-      </article>`).join('')}`;
+  view.innerHTML = renderStoryWorld(data.narrative);
 }
 
 function priorityCard(p) {
