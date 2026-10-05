@@ -67,8 +67,8 @@
   letter-spacing: .12em;
 }
 
-.projection-periodic-header-period { grid-column: 1; }
-.projection-periodic-header-hull { grid-column: 2; }
+.projection-periodic-header-hull { grid-column: 1; }
+.projection-periodic-header-period { grid-column: 2; }
 
 .projection-periodic-axis {
   min-width: 0;
@@ -96,20 +96,20 @@
   font-size: 8px;
 }
 
-.projection-periodic-period {
+.projection-periodic-hull {
   grid-column: 1;
-  grid-row: span var(--projection-period-span);
+  grid-row: span var(--projection-hull-span);
   min-height: 84px;
   background: color-mix(in srgb, var(--surface-2) 82%, var(--surface));
 }
 
-.projection-periodic-hull {
+.projection-periodic-period {
   grid-column: 2;
   min-height: 84px;
   background: color-mix(in srgb, var(--surface-2) 68%, var(--surface));
 }
 
-.projection-periodic-hull strong {
+.projection-periodic-period strong {
   font-size: 13px;
 }
 
