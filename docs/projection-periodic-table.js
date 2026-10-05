@@ -129,24 +129,69 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
 
 const PERIODIC_MIN_SERIAL_GAP = 54;
 
-export function layoutProjectionSubrow(entries, minimumGap = PERIODIC_MIN_SERIAL_GAP) {
-  const laneEnds = [];
-  const laidOut = entries.slice()
-    .sort((first, second) =>
-      first.serialNumber - second.serialNumber
-      || first.solidOrder - second.solidOrder
-      || first.classOrder - second.classOrder)
-    .map(entry => {
-      let lane = laneEnds.findIndex(lastSerial =>
-        entry.serialNumber - lastSerial >= minimumGap);
-      if (lane < 0) lane = laneEnds.length;
-      laneEnds[lane] = entry.serialNumber;
-      return { ...entry, lane };
+function isotonicRegression(values) {
+  const blocks = [];
+
+  values.forEach((value, index) => {
+    blocks.push({
+      start: index,
+      end: index,
+      weight: 1,
+      mean: value
     });
 
+    while (blocks.length >= 2) {
+      const right = blocks[blocks.length - 1];
+      const left = blocks[blocks.length - 2];
+      if (left.mean <= right.mean) break;
+
+      blocks.pop();
+      blocks.pop();
+      const weight = left.weight + right.weight;
+      blocks.push({
+        start: left.start,
+        end: right.end,
+        weight,
+        mean: (left.mean * left.weight + right.mean * right.weight) / weight
+      });
+    }
+  });
+
+  const result = Array(values.length);
+  blocks.forEach(block => {
+    for (let index = block.start; index <= block.end; index += 1) {
+      result[index] = block.mean;
+    }
+  });
+  return result;
+}
+
+export function layoutProjectionSubrow(entries, minimumGap = PERIODIC_MIN_SERIAL_GAP) {
+  const ordered = entries.slice().sort((first, second) =>
+    first.serialNumber - second.serialNumber
+    || first.solidOrder - second.solidOrder
+    || first.classOrder - second.classOrder
+  );
+  if (!ordered.length) return { entries: [], minimumGap };
+
+  const effectiveGap = Math.min(
+    minimumGap,
+    ordered.length > 1 ? 999 / (ordered.length - 1) : minimumGap
+  );
+  const adjustedTargets = ordered.map((entry, index) =>
+    entry.serialNumber - index * effectiveGap
+  );
+  const upperBound = 999 - (ordered.length - 1) * effectiveGap;
+  const fitted = isotonicRegression(adjustedTargets).map(value =>
+    Math.max(0, Math.min(upperBound, value))
+  );
+
   return {
-    entries: laidOut,
-    laneCount: Math.max(1, laneEnds.length)
+    entries: ordered.map((entry, index) => ({
+      ...entry,
+      packedSerial: fitted[index] + index * effectiveGap
+    })),
+    minimumGap: effectiveGap
   };
 }
 
@@ -162,13 +207,14 @@ function periodicItem(entry) {
     'P' + entry.period + ' / H' + entry.hullVertices,
     'Outer hull ' + entry.hullVertices + ' · C' + entry.rotationalOrder
   ].join(' · ');
-  const position = (entry.serialNumber / 999 * 100).toFixed(4) + '%';
+  const position = (entry.packedSerial / 999 * 100).toFixed(4) + '%';
 
   return '<button class="projection-periodic-item' + eulerClass + circuitClass +
     '" type="button" data-solid="' + escapeHtml(entry.solidId) +
     '" data-class-id="' + entry.classId +
     '" data-serial="' + entry.serialNumber +
-    '" style="--projection-position:' + position + ';--projection-top:' + (7 + entry.lane * 70) + 'px' +
+    '" data-packed-serial="' + entry.packedSerial.toFixed(3) +
+    '" style="--projection-position:' + position +
     '" title="' + escapeHtml(title) +
     '" aria-label="' + escapeHtml(
       entry.attribute + ' ' + entry.solidName + ' P' + entry.period + ' H' +
@@ -233,8 +279,7 @@ export function renderProjectionPeriodicTable(root, entries) {
           '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
         '</div>';
       const track =
-        '<div class="projection-periodic-track" style="--projection-track-height:' +
-          (14 + layout.laneCount * 70) + 'px">' +
+        '<div class="projection-periodic-track">' +
           '<div class="projection-periodic-phase-field">' +
             layout.entries.map(periodicItem).join('') +
           '</div>' +
@@ -263,7 +308,7 @@ export function renderProjectionPeriodicTable(root, entries) {
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. 가로 #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 같은 H·P에서 번호가 너무 가까운 경우에만 겹침 방지용 보조 lane을 사용한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 ID다. 같은 H·P 행에서는 ID 순서를 보존하면서 타일 간 최소 간격을 강제하고, 원래 ID 위치에서의 총 제곱 이동량이 최소가 되도록 한 줄로 패킹한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
