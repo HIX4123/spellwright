@@ -90,7 +90,7 @@ test('global serials are unique across all 43 periodic-table entries', () => {
   assert.equal(Math.max(...serials), 999);
 });
 
-test('subrow layout keeps one H-P pair fixed and only adds auxiliary lanes for collisions', () => {
+test('subrow layout packs one H-P pair into one line with minimum displacement', () => {
   const sample = [
     { serialNumber: 100, solidOrder: 0, classOrder: 0, hullVertices: 6, period: 3 },
     { serialNumber: 120, solidOrder: 1, classOrder: 0, hullVertices: 6, period: 3 },
@@ -102,8 +102,33 @@ test('subrow layout keeps one H-P pair fixed and only adds auxiliary lanes for c
   assert.deepEqual(layout.entries.map(entry => entry.serialNumber), [100, 120, 180, 240]);
   assert.deepEqual(layout.entries.map(entry => entry.hullVertices), [6, 6, 6, 6]);
   assert.deepEqual(layout.entries.map(entry => entry.period), [3, 3, 3, 3]);
-  assert.deepEqual(layout.entries.map(entry => entry.lane), [0, 1, 0, 0]);
-  assert.equal(layout.laneCount, 2);
+  assert.deepEqual(layout.entries.map(entry => entry.packedSerial), [79, 133, 187, 241]);
+  assert.equal(layout.minimumGap, 54);
+});
+
+test('packed subrows preserve order, bounds, and minimum spacing for real data', () => {
+  const entries = buildProjectionPeriodicEntries(projections, views);
+  const groups = new Map();
+
+  for (const entry of entries) {
+    const key = entry.hullVertices + ':' + entry.period;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(entry);
+  }
+
+  for (const [key, group] of groups) {
+    const layout = layoutProjectionSubrow(group, 54);
+    const packed = layout.entries.map(entry => entry.packedSerial);
+
+    assert.ok(packed.every(value => value >= -1e-9 && value <= 999 + 1e-9), key);
+    for (let index = 1; index < packed.length; index += 1) {
+      assert.ok(packed[index] > packed[index - 1], key + ' order');
+      assert.ok(
+        packed[index] - packed[index - 1] >= layout.minimumGap - 1e-9,
+        key + ' minimum gap'
+      );
+    }
+  }
 });
 
 test('projection thumbnails are derived from the current representative view', () => {
