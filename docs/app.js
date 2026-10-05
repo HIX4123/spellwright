@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { isNarrativeData, renderStoryWorld } from './story-world.js?v=story-causal-loop-20261005-1';
+import { isNarrativeData, renderStoryWorld } from './story-world.js?v=story-cast-20261005-2';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-min-displacement-pack-20261005-1';

@@ -7,7 +7,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -48,15 +48,27 @@ function causalLoop(items) {
   if (items?.length !== 4) return '';
   const positions = [[105, 52], [335, 52], [335, 232], [105, 232]];
   return `${section('히로인과 주인공의 인과 고리', '주인공과 히로인의 경험 순서가 다르다')}
-    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 과거행의 세부 동기는 미정.">
+    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 엘린은 배양 계획을 막으러 과거로 향한다.">
       <defs><marker id="story-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs>
       <g class="world-loop-arrows" marker-end="url(#story-loop-arrow)"><path d="M192 52H242"/><path d="M335 88V189"/><path d="M247 232H197"/><path d="M105 196V95"/></g>
       ${items.map((item, i) => { const [x, y] = positions[i]; return `<g><rect x="${x - 86}" y="${y - 34}" width="172" height="68" rx="12"/>
         <text x="${x}" y="${y - 8}">${i + 1}</text><text x="${x}" y="${y + 15}">${escapeHtml(item.title)}</text></g>`; }).join('')}
       <text class="world-loop-center" x="220" y="146">단일 역사 · 인과 연결</text>
       <text class="world-loop-center" x="220" y="168">역사 전체의 반복 여부는 미정</text>
-    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 과거행의 목적과 실행 경위는 아직 다듬고 있어요.</figcaption></figure>
+    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 과거행의 목적은 배양 계획 저지이며, 사고의 구체적 형태는 아직 다듬고 있어요.</figcaption></figure>
     ${steps(items, '고리의 각 사건')}`;
+}
+
+function conflictDiagram(items) {
+  if (items?.length !== 3) return '';
+  const positions = [[220, 45], [370, 265], [70, 265]];
+  return `${section('세 친구의 삼파전', '화살표는 막거나 노리는 방향 · 동기는 아래 카드 참조')}
+    <figure class="card world-loop"><svg viewBox="0 0 440 340" role="img" aria-label="${escapeHtml(items.map(i => i.title).join(', '))}">
+    <defs><marker id="story-conflict-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs>
+    <g class="world-loop-arrows" marker-end="url(#story-conflict-arrow)"><path d="M250 82L349 224"/><path d="M310 265H132"/><path d="M89 224L190 82"/></g>
+    ${items.map((item, i) => { const [x,y] = positions[i]; return `<g><rect x="${x-58}" y="${y-28}" width="116" height="56" rx="12"/><text x="${x}" y="${y+5}">${escapeHtml(item.title.split(' → ')[0])}</text></g>`; }).join('')}
+    <text class="world-loop-center" x="220" y="174">공통의 상실</text><text class="world-loop-center" x="220" y="195">갈라지는 해석</text></svg></figure>
+    ${cards(items, '충돌의 이유')}`;
 }
 
 export function renderStoryWorld(n = {}) {
@@ -67,6 +79,10 @@ export function renderStoryWorld(n = {}) {
     ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `
       <article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span>
         <h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
+    ${cards(n.cast, '등장인물과 스탯', '이름은 모두 가명 · 직업 체계의 세부 기믹은 검토 중')}
+    ${conflictDiagram(n.conflict)}
+    ${steps(n.sacrifice, '1부 · 상실에서 삼파전까지')}
+    ${cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획')}
     ${cards(n.eras, '두 시대의 생활', '현재 설정')}
     ${steps(n.plot, '스토리 진행', '현재 플롯 · 미정인 연결은 별도 표시')}
     ${causalLoop(n.loop)}
