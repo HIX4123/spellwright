@@ -541,3 +541,17 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .theory-card p { margin:0; color:var(--secondary); font-size:11px; line-height:1.6; }
 .theory-card .theory-note { margin-top:7px; color:var(--muted); font-size:10px; }
 @media (max-width:900px) { .theory-grid { grid-template-columns:1fr; } }
+
+.world-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; margin: 0; counter-reset: none; }
+.world-step { display: flex; align-items: flex-start; gap: 14px; }
+.world-step-number { display: grid; place-items: center; flex: 0 0 30px; height: 30px; border-radius: 50%; color: var(--primary); border: 1px solid var(--primary); font-weight: 700; }
+.world-step h3 { margin: 0 0 10px; font-size: 15px; line-height: 1.6; }
+.world-step p { margin: 0; font-size: 13px; line-height: 1.8; }
+.world-loop { margin: 0; }
+.world-loop svg { display: block; width: 100%; max-width: 620px; margin: auto; color: var(--primary); overflow: visible; }
+.world-loop rect { fill: var(--surface); stroke: currentColor; }
+.world-loop text { fill: var(--text); text-anchor: middle; font-size: 14px; }
+.world-loop .world-loop-center { fill: var(--muted); font-size: 12px; }
+.world-loop-arrows { fill: none; stroke: currentColor; stroke-width: 2; }
+.world-loop figcaption { font-size: 12px; line-height: 1.7; margin-top: 12px; }
+@media (max-width: 650px) { .world-steps { grid-template-columns: 1fr; } .world-step { gap: 10px; } }
