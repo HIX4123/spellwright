@@ -5,10 +5,10 @@ import { isNarrativeData, renderStoryWorld } from '../docs/story-world.js';
 
 const { narrative } = JSON.parse(await readFile(new URL('../docs/data/project.json', import.meta.url), 'utf8'));
 
-test('actual worldbuilding renders two act questions and three accessible concept diagrams without an editor', () => {
+test('actual worldbuilding renders two act questions and accessible concept and causal diagrams without an editor', () => {
   assert.equal(isNarrativeData(narrative), true);
   const html = renderStoryWorld(narrative);
-  assert.equal((html.match(/role="img"/g) || []).length, 3);
+  assert.equal((html.match(/role="img"/g) || []).length, 4);
   for (const act of narrative.acts) assert.ok(html.includes(act.question));
   for (const pair of narrative.pairs) {
     assert.ok(html.includes(pair.divine));
@@ -16,6 +16,11 @@ test('actual worldbuilding renders two act questions and three accessible concep
   }
   assert.match(html, /모식도/);
   assert.doesNotMatch(html, /<textarea|contenteditable/);
+  for (const key of ['plot', 'loop', 'harvest', 'eras', 'characters', 'origins']) {
+    for (const item of narrative[key]) assert.ok(html.includes(item.title));
+    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
+  }
+  assert.match(html, /과거행의 목적과 실행 경위/);
 });
 
 test('old text drafts remain readable and imported structured content is validated and escaped', () => {
