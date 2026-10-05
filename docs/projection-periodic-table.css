@@ -1,6 +1,9 @@
 .projection-periodic-card {
+  width: 100%;
+  min-width: 0;
   padding: 14px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .projection-periodic-legend {
@@ -33,17 +36,22 @@
 }
 
 .projection-periodic-scroll {
+  width: 100%;
   max-width: 100%;
-  overflow-x: auto;
+  min-width: 0;
+  overflow-x: hidden;
   padding-bottom: 4px;
-  scrollbar-width: thin;
 }
 
 .projection-periodic-grid {
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 70px 76px minmax(1500px, 1fr);
-  gap: 6px;
-  min-width: 1658px;
+  grid-template-columns:
+    clamp(44px, 5vw, 64px)
+    clamp(48px, 5.5vw, 70px)
+    minmax(0, 1fr);
+  gap: clamp(2px, .45vw, 6px);
   align-items: stretch;
 }
 
@@ -57,10 +65,10 @@
 }
 
 .projection-periodic-header {
-  min-height: 56px;
+  min-height: 48px;
   display: grid;
   place-items: center;
-  padding: 8px;
+  padding: clamp(4px, .6vw, 8px);
   color: var(--muted);
   font-size: 9px;
   font-weight: 750;
@@ -72,7 +80,7 @@
 
 .projection-periodic-axis {
   min-width: 0;
-  padding: 9px 8px;
+  padding: clamp(4px, .55vw, 8px);
   display: grid;
   align-content: center;
   gap: 2px;
@@ -81,53 +89,56 @@
 
 .projection-periodic-axis span {
   color: var(--muted);
-  font-size: 7px;
+  font-size: clamp(6px, .55vw, 7px);
   font-weight: 700;
   letter-spacing: .12em;
 }
 
 .projection-periodic-axis strong {
-  font-size: 15px;
+  font-size: clamp(11px, 1.15vw, 15px);
   font-weight: 700;
 }
 
 .projection-periodic-axis small {
   color: var(--muted);
-  font-size: 8px;
+  font-size: clamp(6px, .62vw, 8px);
+  line-height: 1.2;
 }
 
 .projection-periodic-hull {
   grid-column: 1;
   grid-row: span var(--projection-hull-span);
-  min-height: 84px;
+  min-height: clamp(58px, 6vw, 76px);
   background: color-mix(in srgb, var(--surface-2) 82%, var(--surface));
 }
 
 .projection-periodic-period {
   grid-column: 2;
-  min-height: 84px;
+  min-height: clamp(58px, 6vw, 76px);
   background: color-mix(in srgb, var(--surface-2) 68%, var(--surface));
 }
 
 .projection-periodic-period strong {
-  font-size: 13px;
+  font-size: clamp(10px, 1vw, 13px);
 }
 
 .projection-periodic-phase-axis {
   grid-column: 3;
+  min-width: 0;
   position: relative;
-  min-height: 56px;
+  min-height: 48px;
   overflow: hidden;
 }
 
 .projection-periodic-phase-field {
   position: absolute;
-  inset: 0 42px;
+  inset-block: 0;
+  inset-inline: 2.8%;
 }
 
 .projection-periodic-phase-axis .projection-periodic-phase-field {
-  top: 6px;
-  bottom: 5px;
+  top: 5px;
+  bottom: 4px;
 }
 
 .projection-periodic-tick {
@@ -154,7 +165,7 @@
   top: 0;
   left: 0;
   transform: translateX(-50%);
-  font-size: 8px;
+  font-size: clamp(6px, .62vw, 8px);
   font-weight: 650;
   white-space: nowrap;
 }
@@ -169,8 +180,9 @@
 
 .projection-periodic-track {
   grid-column: 3;
+  min-width: 0;
   position: relative;
-  min-height: 76px;
+  min-height: clamp(42px, 5.8vw, 64px);
   overflow: hidden;
   background: color-mix(in srgb, var(--surface-2) 74%, var(--surface));
 }
@@ -194,9 +206,10 @@
   --projection-attribute-material: var(--surface-3);
   position: absolute;
   left: var(--projection-position);
-  top: 7px;
-  width: 74px;
-  height: 62px;
+  top: 50%;
+  width: min(64px, 5%);
+  height: auto;
+  aspect-ratio: 1.16 / 1;
   margin: 0;
   padding: 3px;
   border: 0;
@@ -207,12 +220,12 @@
   font: inherit;
   appearance: none;
   cursor: pointer;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   transition: transform .12s ease, filter .12s ease;
 }
 
 .projection-periodic-item:hover {
-  transform: translateX(-50%) translateY(-2px);
+  transform: translate(-50%, calc(-50% - 2px));
   filter: brightness(1.06);
   z-index: 4;
 }
@@ -243,7 +256,7 @@
 .projection-periodic-live-svg {
   display: block;
   width: 100%;
-  height: 56px;
+  height: 100%;
   overflow: visible;
   pointer-events: none;
 }
@@ -275,16 +288,16 @@
   position: absolute;
   top: 2px;
   right: 2px;
-  min-width: 18px;
-  height: 16px;
-  padding: 0 4px;
+  min-width: clamp(12px, 1.4vw, 18px);
+  height: clamp(11px, 1.25vw, 16px);
+  padding: 0 clamp(2px, .3vw, 4px);
   display: inline-grid;
   place-items: center;
   border: 1px solid color-mix(in srgb, #44c58a 72%, var(--line));
   border-radius: 999px;
   background: color-mix(in srgb, #44c58a 18%, var(--surface));
   color: color-mix(in srgb, #44c58a 72%, var(--text));
-  font-size: 7px;
+  font-size: clamp(5px, .52vw, 7px);
   font-weight: 750;
   letter-spacing: .02em;
 }
@@ -307,25 +320,43 @@
 
 @media (max-width: 900px) {
   .projection-periodic-card {
-    padding: 10px;
+    padding: 8px;
   }
 
   .projection-periodic-legend {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+    gap: 4px 10px;
+    margin-bottom: 8px;
+    font-size: 8px;
   }
 
   .projection-periodic-grid {
-    grid-template-columns: 64px 70px minmax(1420px, 1fr);
-    min-width: 1566px;
+    grid-template-columns: 38px 42px minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .projection-periodic-axis {
+    padding: 3px 2px;
+  }
+
+  .projection-periodic-axis small {
+    display: none;
   }
 
   .projection-periodic-phase-field {
-    inset-inline: 38px;
+    inset-inline: 2.5%;
   }
 
   .projection-periodic-item {
-    width: 70px;
+    width: 5%;
+    border-radius: 5px;
+    padding: 2px;
+  }
+
+  .projection-periodic-euler-badge {
+    display: none;
+  }
+
+  .projection-periodic-note {
+    font-size: 8px;
   }
 }
