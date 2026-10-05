@@ -38,29 +38,47 @@ test('projection periodic table preserves all 43 projections on P1-P4', () => {
   assert.equal(entries.filter(entry => entry.eulerCircuit).length, 4);
 });
 
-test('P-H subrows match the structural distribution of the projection set', () => {
+test('H-P subrows match the structural distribution and H-first order', () => {
   const entries = buildProjectionPeriodicEntries(projections, views);
   const matrix = new Map();
 
   for (const entry of entries) {
-    const key = 'P' + entry.period + ':H' + entry.hullVertices;
+    const key = 'H' + entry.hullVertices + ':P' + entry.period;
     matrix.set(key, (matrix.get(key) || 0) + 1);
   }
 
   assert.deepEqual(Object.fromEntries(matrix), {
-    'P1:H3': 2,
-    'P1:H4': 4,
-    'P2:H3': 1,
-    'P2:H4': 5,
-    'P2:H6': 6,
-    'P3:H6': 2,
-    'P3:H8': 3,
-    'P3:H10': 10,
-    'P4:H6': 3,
-    'P4:H8': 2,
-    'P4:H10': 2,
-    'P4:H12': 3
+    'H3:P1': 2,
+    'H3:P2': 1,
+    'H4:P1': 4,
+    'H4:P2': 5,
+    'H6:P2': 6,
+    'H6:P3': 2,
+    'H6:P4': 3,
+    'H8:P3': 3,
+    'H8:P4': 2,
+    'H10:P3': 10,
+    'H10:P4': 2,
+    'H12:P4': 3
   });
+
+  const hierarchy = [...new Set(
+    entries
+      .slice()
+      .sort((first, second) =>
+        first.hullVertices - second.hullVertices
+        || first.period - second.period)
+      .map(entry => 'H' + entry.hullVertices + ':P' + entry.period)
+  )];
+
+  assert.deepEqual(hierarchy, [
+    'H3:P1', 'H3:P2',
+    'H4:P1', 'H4:P2',
+    'H6:P2', 'H6:P3', 'H6:P4',
+    'H8:P3', 'H8:P4',
+    'H10:P3', 'H10:P4',
+    'H12:P4'
+  ]);
 });
 
 test('global serials are unique across all 43 periodic-table entries', () => {
@@ -72,17 +90,18 @@ test('global serials are unique across all 43 periodic-table entries', () => {
   assert.equal(Math.max(...serials), 999);
 });
 
-test('subrow layout keeps H fixed and only adds auxiliary lanes for collisions', () => {
+test('subrow layout keeps one H-P pair fixed and only adds auxiliary lanes for collisions', () => {
   const sample = [
-    { serialNumber: 100, solidOrder: 0, classOrder: 0, hullVertices: 6 },
-    { serialNumber: 120, solidOrder: 1, classOrder: 0, hullVertices: 6 },
-    { serialNumber: 180, solidOrder: 2, classOrder: 0, hullVertices: 6 },
-    { serialNumber: 240, solidOrder: 3, classOrder: 0, hullVertices: 6 }
+    { serialNumber: 100, solidOrder: 0, classOrder: 0, hullVertices: 6, period: 3 },
+    { serialNumber: 120, solidOrder: 1, classOrder: 0, hullVertices: 6, period: 3 },
+    { serialNumber: 180, solidOrder: 2, classOrder: 0, hullVertices: 6, period: 3 },
+    { serialNumber: 240, solidOrder: 3, classOrder: 0, hullVertices: 6, period: 3 }
   ];
   const layout = layoutProjectionSubrow(sample, 54);
 
   assert.deepEqual(layout.entries.map(entry => entry.serialNumber), [100, 120, 180, 240]);
   assert.deepEqual(layout.entries.map(entry => entry.hullVertices), [6, 6, 6, 6]);
+  assert.deepEqual(layout.entries.map(entry => entry.period), [3, 3, 3, 3]);
   assert.deepEqual(layout.entries.map(entry => entry.lane), [0, 1, 0, 0]);
   assert.equal(layout.laneCount, 2);
 });

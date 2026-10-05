@@ -203,34 +203,34 @@ function phaseAxisMarkup() {
 
 export function renderProjectionPeriodicTable(root, entries) {
   const sorted = entries.slice().sort((first, second) =>
-    first.period - second.period
-    || first.hullVertices - second.hullVertices
+    first.hullVertices - second.hullVertices
+    || first.period - second.period
     || first.serialNumber - second.serialNumber
     || first.solidOrder - second.solidOrder
     || first.classOrder - second.classOrder
   );
-  const maxPeriod = Math.max(...sorted.map(entry => entry.period));
-  const periods = Array.from({ length: maxPeriod }, (_, index) => index + 1);
+  const hullGroups = [...new Set(sorted.map(entry => entry.hullVertices))]
+    .sort((first, second) => first - second);
 
-  const rows = periods.map(period => {
-    const periodEntries = sorted.filter(entry => entry.period === period);
-    const hullGroups = [...new Set(periodEntries.map(entry => entry.hullVertices))]
+  const rows = hullGroups.map(hullVertices => {
+    const hullEntries = sorted.filter(entry => entry.hullVertices === hullVertices);
+    const periods = [...new Set(hullEntries.map(entry => entry.period))]
       .sort((first, second) => first - second);
 
-    const periodLabel =
-      '<div class="projection-periodic-axis projection-periodic-period" ' +
-        'style="--projection-period-span:' + hullGroups.length + '">' +
-        '<span>PERIOD</span><strong>P' + period + '</strong>' +
-        '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
+    const hullLabel =
+      '<div class="projection-periodic-axis projection-periodic-hull" ' +
+        'style="--projection-hull-span:' + periods.length + '">' +
+        '<span>HULL</span><strong>H' + hullVertices + '</strong>' +
+        '<small>' + hullVertices + ' vertices</small>' +
       '</div>';
 
-    const subrows = hullGroups.map(hullVertices => {
-      const subrowEntries = periodEntries.filter(entry => entry.hullVertices === hullVertices);
+    const subrows = periods.map(period => {
+      const subrowEntries = hullEntries.filter(entry => entry.period === period);
       const layout = layoutProjectionSubrow(subrowEntries);
-      const hullLabel =
-        '<div class="projection-periodic-axis projection-periodic-hull">' +
-          '<span>HULL</span><strong>H' + hullVertices + '</strong>' +
-          '<small>' + hullVertices + ' vertices</small>' +
+      const periodLabel =
+        '<div class="projection-periodic-axis projection-periodic-period">' +
+          '<span>PERIOD</span><strong>P' + period + '</strong>' +
+          '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
         '</div>';
       const track =
         '<div class="projection-periodic-track" style="--projection-track-height:' +
@@ -239,31 +239,31 @@ export function renderProjectionPeriodicTable(root, entries) {
             layout.entries.map(periodicItem).join('') +
           '</div>' +
         '</div>';
-      return hullLabel + track;
+      return periodLabel + track;
     }).join('');
 
-    return periodLabel + subrows;
+    return hullLabel + subrows;
   }).join('');
 
   const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
   root.innerHTML =
     '<div class="card projection-periodic-card">' +
       '<div class="projection-periodic-legend">' +
-        '<span><strong>P</strong> Convex Hull depth</span>' +
-        '<span><strong>H</strong> Outer Convex Hull vertex count</span>' +
+        '<span><strong>H</strong> Outer Convex Hull vertex count · primary</span>' +
+        '<span><strong>P</strong> Convex Hull depth · secondary</span>' +
         '<span><strong>#</strong> Global projection coordinate · 1D MDS</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' +
           eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
         '<div class="projection-periodic-grid">' +
-          '<div class="projection-periodic-header projection-periodic-header-period">P</div>' +
           '<div class="projection-periodic-header projection-periodic-header-hull">H</div>' +
+          '<div class="projection-periodic-header projection-periodic-header-period">P</div>' +
           phaseAxisMarkup() +
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">세로축은 P(Convex Hull 층수) 안을 H(최외곽 Convex Hull 정점 수)로 다시 나눈다. 가로 #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 같은 P·H에서 번호가 너무 가까운 경우에만 겹침 방지용 보조 lane을 사용한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. 가로 #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 좌표다. 같은 H·P에서 번호가 너무 가까운 경우에만 겹침 방지용 보조 lane을 사용한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
