@@ -169,9 +169,8 @@
 
 .projection-periodic-track {
   grid-column: 3;
-  --projection-track-height: 84px;
   position: relative;
-  min-height: var(--projection-track-height);
+  min-height: 76px;
   overflow: hidden;
   background: color-mix(in srgb, var(--surface-2) 74%, var(--surface));
 }
@@ -195,7 +194,7 @@
   --projection-attribute-material: var(--surface-3);
   position: absolute;
   left: var(--projection-position);
-  top: var(--projection-top);
+  top: 7px;
   width: 74px;
   height: 62px;
   margin: 0;
