@@ -7,7 +7,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -59,6 +59,18 @@ function causalLoop(items) {
     ${steps(items, '고리의 각 사건')}`;
 }
 
+function restorationCycle(items) {
+  if (items?.length !== 4) return '';
+  const positions = [[105, 52], [335, 52], [335, 232], [105, 232]];
+  return `${section('중간 보스 · 복원 주기', '몸·기억·마법진이 함께 복원된다')}
+    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="${escapeHtml(items.map(i => i.title).join(' → '))} → 전투와 대응. 복원 범위와 종료 조건은 미정.">
+    <defs><marker id="restoration-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs>
+    <g class="world-loop-arrows" marker-end="url(#restoration-arrow)"><path d="M192 52H242"/><path d="M335 88V189"/><path d="M247 232H197"/><path d="M105 196V95"/></g>
+    ${items.map((item,i) => { const [x,y] = positions[i]; return `<g><rect x="${x-86}" y="${y-34}" width="172" height="68" rx="12"/><text x="${x}" y="${y+5}">${escapeHtml(item.title)}</text></g>`; }).join('')}
+    <text class="world-loop-center" x="220" y="143">경험은 지워지고</text><text class="world-loop-center" x="220" y="165">사전 설계는 복원된다</text></svg>
+    <figcaption class="muted">${escapeHtml(items.map(i => i.description).join(' '))}</figcaption></figure>`;
+}
+
 function conflictDiagram(items) {
   if (items?.length !== 3) return '';
   const positions = [[220, 45], [370, 265], [70, 265]];
@@ -81,7 +93,13 @@ export function renderStoryWorld(n = {}) {
         <h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
     ${cards(n.cast, '등장인물과 스탯', '이름은 모두 가명 · 직업 체계의 세부 기믹은 검토 중')}
     ${conflictDiagram(n.conflict)}
+    ${steps(n.meeting, '삼파전 직전 · 대화에서 전투로')}
     ${steps(n.sacrifice, '1부 · 상실에서 삼파전까지')}
+    ${steps(n.bossPlan, '중간 보스 · 구제 계획과 자기 적용')}
+    ${restorationCycle(n.restoration)}
+    ${cards(n.bossRules, '복원 마법의 규칙과 한계')}
+    ${cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '보스의 믿음은 객관적인 세계관 설정과 구분한다')}
+    ${cards(n.foreshadowing, '1부에서 2부로 이어지는 복선')}
     ${cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획')}
     ${cards(n.eras, '두 시대의 생활', '현재 설정')}
     ${steps(n.plot, '스토리 진행', '현재 플롯 · 미정인 연결은 별도 표시')}
