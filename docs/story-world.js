@@ -13,6 +13,14 @@ export function isNarrativeData(n) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
       || !n[key].every(item => fields.every(field => typeof item?.[field] === 'string')))) return false;
   }
+  if (n.timeline !== undefined && (!Array.isArray(n.timeline) || !n.timeline.every(e => e
+    && ['id', 'era'].every(k => typeof e[k] === 'string') && /^[a-z0-9-]+$/.test(e.id)
+    && (e.source ? ['plot', 'sacrifice'].includes(e.source) && Number.isInteger(e.index) && !!n[e.source]?.[e.index]
+      : typeof e.title === 'string' && typeof e.description === 'string')
+    && (e.note === undefined || typeof e.note === 'string')
+    && ['links', 'details'].every(k => e[k] === undefined || Array.isArray(e[k]) && e[k].every(v => typeof v === 'string'))))) return false;
+  if (n.questionGroups !== undefined && (!Array.isArray(n.questionGroups) || !n.questionGroups.every(g => g
+    && typeof g.title === 'string' && Array.isArray(g.indices) && g.indices.every(i => Number.isInteger(i) && typeof n.unresolved?.[i] === 'string')))) return false;
   return (n.pairs === undefined || n.pairs.every(pair => ['time', 'space', 'existence'].includes(pair.diagram)))
     && (n.unresolved === undefined || (Array.isArray(n.unresolved) && n.unresolved.every(item => typeof item === 'string')));
 }
@@ -83,40 +91,76 @@ function conflictDiagram(items) {
     ${cards(items, '충돌의 이유')}`;
 }
 
-export function renderStoryWorld(n = {}) {
+const tabs = [['overview', '전체 개요'], ['world', '세계관'], ['cast', '등장인물'], ['plot', '사건과 플롯'], ['questions', '미정 사항']];
+const destinations = {
+  principles: ['world', '세계의 규칙'], eras: ['world', '두 시대'], harvest: ['world', '배양판의 구조'],
+  chronos: ['world', '크로노스 · 인식과 진실'], conflict: ['cast', '세 친구의 갈등'], circuits: ['cast', '리오의 회로'],
+  memories: ['cast', '기억과 마력회로'], causality: ['plot', '엘린의 인과 고리'], questions: ['questions', '열어둔 질문']
+};
+
+export function storyLocation(hash = '') {
+  const [, tab, target] = hash.split('/');
+  return { tab: tabs.some(([id]) => id === tab) ? tab : 'overview', target: target || '' };
+}
+
+function relatedLinks(ids, n) {
+  return `<div class="story-related" aria-label="관련 사항">${ids.map(id => {
+    const castIndex = /^cast-(\d+)$/.exec(id)?.[1];
+    const [tab, label] = castIndex !== undefined ? ['cast', n.cast?.[castIndex]?.title || '등장인물']
+      : id.startsWith('event-') ? ['plot', '프롤로그로 연결'] : destinations[id] || ['questions', '미정 사항'];
+    return `<a href="#story/${tab}/${escapeHtml(id)}">${escapeHtml(label)} <span aria-hidden="true">↗</span></a>`;
+  }).join('')}</div>`;
+}
+
+function timeline(n) {
+  if (!n.timeline?.length) return steps(n.plot, '스토리 진행');
+  const detailRenderers = {
+    bossPlan: () => steps(n.bossPlan, '구제 계획과 자기 적용'),
+    restoration: () => restorationCycle(n.restoration),
+    bossRules: () => cards(n.bossRules, '복원 마법의 규칙과 한계'),
+    foreshadowing: () => cards(n.foreshadowing, '1부에서 2부로 이어지는 복선'),
+    sacrifice: () => steps(n.sacrifice?.slice(1), '위기와 희생의 전개'),
+    meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로')
+  };
+  return `${section('사건과 플롯', '플레이어가 경험하는 순서 · 정확한 연결이 미정인 곳은 따로 표시')}
+    <ol class="story-timeline">${n.timeline.map((event, i) => {
+      const item = event.source ? n[event.source]?.[event.index] : event;
+      if (!item) return '';
+      return `<li id="event-${escapeHtml(event.id)}" class="story-event" tabindex="-1">
+        <span class="story-dot" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+        <article class="card"><span class="world-kicker">${escapeHtml(event.era)}</span>
+        <h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p>
+        ${event.note ? `<p class="story-open">미정 · ${escapeHtml(event.note)}</p>` : ''}
+        ${relatedLinks(event.links || [], n)}
+        ${event.details?.length ? `<details class="story-details"><summary>사건의 세부 설정 펼치기</summary>${event.details.map(key => detailRenderers[key]?.() || '').join('')}</details>` : ''}
+        </article></li>`;
+    }).join('')}</ol>`;
+}
+
+export function renderStoryWorld(n = {}, activeTab = 'overview') {
   const textCard = (text, empty) => `<article class="card"><p class="narrative-text${text ? '' : ' muted'}">${escapeHtml(text || empty)}</p></article>`;
-  return `${section('Story & World', '게임의 스토리와 전반적인 세계관')}
-    ${section('스토리의 방향', '구상 단계')}
-    ${textCard(n.story, '아직 정리된 스토리 내용이 없어요.')}
-    ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `
-      <article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span>
-        <h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
-    ${cards(n.cast, '등장인물과 스탯', '이름은 모두 가명 · 직업 체계의 세부 기믹은 검토 중')}
-    ${conflictDiagram(n.conflict)}
-    ${steps(n.meeting, '삼파전 직전 · 대화에서 전투로')}
-    ${steps(n.sacrifice, '1부 · 상실에서 삼파전까지')}
-    ${steps(n.bossPlan, '중간 보스 · 구제 계획과 자기 적용')}
-    ${restorationCycle(n.restoration)}
-    ${cards(n.bossRules, '복원 마법의 규칙과 한계')}
-    ${cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '보스의 믿음은 객관적인 세계관 설정과 구분한다')}
-    ${cards(n.foreshadowing, '1부에서 2부로 이어지는 복선')}
-    ${cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획')}
-    ${cards(n.eras, '두 시대의 생활', '현재 설정')}
-    ${steps(n.plot, '스토리 진행', '현재 플롯 · 미정인 연결은 별도 표시')}
-    ${causalLoop(n.loop)}
-    ${cards(n.characters, '두 사람의 기억과 마력회로')}
-    ${steps(n.harvest, '엘로이 문명: 배양판의 구조', '거대한 손의 주인이 의도한 계획 · 구동과 수집 원리는 미정')}
-    ${section('세계의 구조')}
-    ${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `
-      <article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>`
-      : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}
-    ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념 대응 · 현재안')}
-      <div class="world-pair-grid">${n.pairs.map(pair => `
-        <article class="card world-pair">
-          <div class="world-pair-heading"><div><span class="world-kicker">삼신수</span><h3>${escapeHtml(pair.divine)}</h3></div>
-            <span class="muted" aria-hidden="true">↔</span><div><span class="world-kicker">삼환수</span><h3>${escapeHtml(pair.mythical)}</h3></div></div>
-          ${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p>
-        </article>`).join('')}</div><p class="world-figure-note muted">도형은 개념의 대응을 나타내는 모식도예요. 세부 능력과 작동 규칙은 아직 정하지 않았어요.</p>` : ''}
-    ${cards(n.origins, '기원과 권능: 열어둔 안', '대안과 능력 예시 · 확정 설정과 구분')}
-    ${n.unresolved?.length ? `${section('열어둔 질문')}<ul class="card world-questions">${n.unresolved.map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul>` : ''}`;
+  const block = (id, content) => `<div id="${id}" class="story-block" tabindex="-1">${content}</div>`;
+  const panels = {
+    overview: `${section('상실에서 시작해, 미래를 아는 자의 선택으로')}
+      ${textCard(n.story, '아직 정리된 스토리 내용이 없어요.')}
+      ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `<article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span><h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
+      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">전지와 운명의 인식</a><a href="#story/plot/event-departure">종말에 대한 저항과 과거행</a></div>
+      <p class="muted">연대표의 점을 따라 사건을 읽고, 관련 링크로 인물과 세계의 규칙을 확인해요. 세부 기믹은 사건 안에서 펼쳐볼 수 있어요.</p>`,
+    world: `${block('principles', `${section('세계의 규칙')}${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `<article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>` : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}`)}
+      ${block('eras', cards(n.eras, '두 시대의 생활'))}
+      ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념 대응 · 이름은 가명')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 개념의 대응을 나타내는 모식도예요. 세부 능력과 작동 규칙은 아직 정하지 않았어요.</p>` : ''}
+      ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '인물의 믿음과 세계의 실제 설정을 구분해요. 공개 시점은 미정.'))}
+      ${block('harvest', steps(n.harvest, '엘로이 문명: 배양판의 구조', '계획의 작동 순서 · 실제 발동 대상과 수집 원리는 미정'))}`,
+    cast: `${section('등장인물과 스탯', '이름은 모두 가명 · 개별 항목의 미정 사항은 본문에 표시')}
+      <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
+      ${block('conflict', conflictDiagram(n.conflict))}
+      ${block('circuits', cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획'))}
+      ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
+    plot: `${timeline(n)}${block('causality', causalLoop(n.loop))}`,
+    questions: `${cards(n.origins, '기원과 권능: 열어둔 안', '대안과 능력 예시 · 아직 채택하지 않은 안')}
+      ${block('questions', `${section('열어둔 질문')}${n.questionGroups?.length ? n.questionGroups.map(group => `<section class="card story-question-group"><h3>${escapeHtml(group.title)}</h3><ul>${group.indices.map(i => `<li>${escapeHtml(n.unresolved?.[i])}</li>`).join('')}</ul></section>`).join('') : `<ul class="card world-questions">${(n.unresolved || []).map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul>`}`)}`
+  };
+  return `${section('Story & World', '상실 · 세계와의 거래 · 하나의 역사')}
+    <nav class="story-nav" aria-label="스토리와 세계관 분류">${tabs.map(([id,label]) => `<a href="#story/${id}"${id === activeTab ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>
+    ${tabs.map(([id,label]) => `<section class="story-panel" aria-label="${label}"${id !== activeTab ? ' hidden' : ''}>${panels[id]}</section>`).join('')}`;
 }

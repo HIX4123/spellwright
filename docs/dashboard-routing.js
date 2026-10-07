@@ -18,6 +18,7 @@ export function dashboardViewFromHash(hash = '') {
 
   try {
     const decoded = decodeURIComponent(raw);
+    if (decoded.startsWith('story/')) return 'story';
     return DASHBOARD_VIEW_SET.has(decoded) ? decoded : 'overview';
   } catch {
     return 'overview';

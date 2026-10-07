@@ -555,3 +555,39 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .world-loop-arrows { fill: none; stroke: currentColor; stroke-width: 2; }
 .world-loop figcaption { font-size: 12px; line-height: 1.7; margin-top: 12px; }
 @media (max-width: 650px) { .world-steps { grid-template-columns: 1fr; } .world-step { gap: 10px; } }
+
+/* Story reference: one reading order, linked detail pages. */
+.story-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 28px; }
+.story-nav a, .story-related a { color: var(--primary); text-decoration: none; border: 1px solid var(--line-strong); border-radius: 20px; padding: 9px 15px; font-size: 13px; }
+.story-nav a[aria-current] { background: var(--primary-container); color: var(--on-primary-container); border-color: var(--primary); }
+.story-nav a:hover, .story-related a:hover { background: var(--hover); }
+.story-panel[hidden] { display: none; }
+.story-block, .story-event, [id^="cast-"] { scroll-margin-top: 24px; }
+.story-timeline { list-style: none; padding: 0; margin: 24px 0 40px; }
+.story-event { position: relative; padding: 0 0 28px 56px; }
+.story-event::before { content: ''; position: absolute; left: 17px; top: 0; bottom: 0; width: 2px; background: var(--line-strong); }
+.story-event:last-child::before { bottom: calc(100% - 25px); }
+.story-dot { position: absolute; left: 0; top: 20px; width: 36px; height: 36px; display: grid; place-items: center; background: var(--surface); color: var(--primary); border: 2px solid var(--primary); border-radius: 50%; font-size: 12px; font-weight: 700; }
+.story-event h3 { margin: 0 0 12px; }
+.story-event p { line-height: 1.8; font-size: 14px; }
+.story-related { display: flex; flex-wrap: wrap; gap: 8px; position: relative; margin: 20px 0 0; padding-left: 16px; border-left: 2px solid var(--line-strong); }
+.story-related a { padding: 6px 10px; font-size: 12px; }
+.story-open { padding-left: 12px; border-left: 3px dotted var(--primary); color: var(--muted); }
+.story-details { border-top: 1px solid var(--line-strong); margin-top: 20px; padding-top: 16px; }
+.story-details summary { cursor: pointer; color: var(--primary); font-size: 13px; }
+.story-details .world-act-grid, .story-details .world-steps { grid-template-columns: 1fr; }
+.story-question-group { margin-bottom: 12px; }
+.story-question-group li { line-height: 1.8; padding: 6px 0; }
+.story-overview-path { margin: 28px 0; display: grid; gap: 0; padding-left: 14px; }
+.story-overview-path a { position: relative; color: var(--primary); text-decoration: none; padding: 14px 24px; border-left: 2px solid var(--line-strong); }
+.story-overview-path a::before { content: ''; position: absolute; left: -6px; top: 21px; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
+.story-panel .world-pair-heading h3 { font-size: 17px; }
+.story-panel :focus-visible, .story-nav :focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+@media (max-width: 600px) {
+  .story-event { padding-left: 34px; }
+  .story-dot { left: 0; width: 24px; height: 24px; font-size: 9px; }
+  .story-event::before { left: 11px; }
+  .story-event > .card { padding: 16px; }
+  .story-nav a { padding: 8px 12px; }
+  .story-related { padding-left: 8px; }
+}

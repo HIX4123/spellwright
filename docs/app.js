@@ -1,9 +1,9 @@
 import { escapeHtml, section } from './html.js';
-import { isNarrativeData, renderStoryWorld } from './story-world.js?v=story-restoration-20261006-1';
+import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=story-timeline-20261007-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-min-displacement-pack-20261005-1';
-import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=story-world-20261003-1';
+import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=story-timeline-20261007-1';
 
 let data;
 let relationships;
@@ -178,7 +178,15 @@ function renderOverview() {
 }
 
 function renderStory() {
-  view.innerHTML = renderStoryWorld(data.narrative);
+  const { tab, target } = storyLocation(location.hash);
+  view.innerHTML = renderStoryWorld(data.narrative, tab);
+  if (target) {
+    const element = document.getElementById(target);
+    if (element && !element.closest('[hidden]')) {
+      element.scrollIntoView({ block: 'start' });
+      element.focus({ preventScroll: true });
+    }
+  }
 }
 
 function priorityCard(p) {
@@ -557,11 +565,11 @@ $('#importInput').onchange = async e => {
 
 window.addEventListener('hashchange', () => {
   const nextView = dashboardViewFromHash(location.hash);
-  if (nextView === currentView) return;
+  if (nextView === currentView && nextView !== 'story') return;
   currentView = nextView;
   renderNav();
   if (data) render();
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  if (nextView !== 'story' || !storyLocation(location.hash).target) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 });
 
 window.addEventListener('beforeunload',e=>{
