@@ -7,7 +7,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -115,6 +115,8 @@ function relatedLinks(ids, n) {
 function timeline(n) {
   if (!n.timeline?.length) return steps(n.plot, '스토리 진행');
   const detailRenderers = {
+    experimentLineage: () => steps(n.experimentLineage, '이원화 실험의 계보', '토마·테라의 우발적 사례에서 강경파·온건파 분화와 완성체까지'),
+    circuitLoss: () => steps(n.circuitLoss, '마력회로 소실의 5단계', '사영도의 상실 범위를 역순으로 따라 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'),
     bossPlan: () => steps(n.bossPlan, '구제 계획과 자기 적용'),
     restoration: () => restorationCycle(n.restoration),
     bossRules: () => cards(n.bossRules, '복원 마법의 규칙과 한계'),
@@ -155,6 +157,8 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
       ${block('conflict', conflictDiagram(n.conflict))}
       ${block('circuits', cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획'))}
+      ${block('dualization', steps(n.experimentLineage, '이원화 실험의 계보', '최초의 우발적 성공 → 부작용 발견 → 연구진 분화'))}
+      ${block('circuit-loss', steps(n.circuitLoss, '회로 소실과 상실의 역순', '정이십면체의 가능에서 정사면체의 경계까지, 바깥층부터 붕괴한다'))}
       ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
     plot: `${timeline(n)}${block('causality', causalLoop(n.loop))}`,
     questions: `${cards(n.origins, '기원과 권능: 열어둔 안', '대안과 능력 예시 · 아직 채택하지 않은 안')}
