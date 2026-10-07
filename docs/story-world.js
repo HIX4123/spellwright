@@ -7,7 +7,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -31,7 +31,7 @@ function pairDiagram(pair) {
     space: '<path d="M25 20H115V76H25Z M55 20V76 M85 20V76 M25 48H115"/><circle cx="255" cy="48" r="6" class="world-point"/>',
     existence: '<circle cx="70" cy="48" r="6" class="world-point"/><path d="M215 28H295V70H215Z M215 28L235 14H315L295 28 M295 70L315 56V14 M235 14V56H315 M215 70L235 56"/>'
   };
-  const label = { time: '모든 시각 → 하나의 점', space: '공간의 선·면 → 점', existence: '존재의 점 → 선·면' }[pair.diagram];
+  const label = { time: '역사와 지속의 대칭', space: 'brane의 재단 ↔ 무간의 현현', existence: '존재 ↔ 표상과 인지' }[pair.diagram];
   return `<svg class="world-pair-diagram" viewBox="0 0 340 96" role="img" aria-label="${escapeHtml(label)}">
     ${shapes[pair.diagram]}<path class="world-diagram-arrow" d="M145 48H185 M178 41L185 48L178 55"/>
     </svg><p class="world-diagram-label">${escapeHtml(label)}</p>`;
@@ -93,9 +93,13 @@ function conflictDiagram(items) {
 
 const tabs = [['overview', '전체 개요'], ['world', '세계관'], ['cast', '등장인물'], ['plot', '사건과 플롯'], ['questions', '미정 사항']];
 const destinations = {
-  principles: ['world', '세계의 규칙'], eras: ['world', '두 시대'], harvest: ['world', '배양판의 구조'],
-  chronos: ['world', '크로노스 · 인식과 진실'], conflict: ['cast', '세 친구의 갈등'], circuits: ['cast', '리오의 회로'],
-  memories: ['cast', '기억과 마력회로'], causality: ['plot', '엘린의 인과 고리'], questions: ['questions', '열어둔 질문']
+  principles: ['world', '세계의 규칙'], eras: ['world', '세 시대'], harvest: ['world', '배양판의 구조'],
+  chronos: ['world', '크로노스 · 인식과 진실'], constraints: ['world', '육환신수의 상호 제약'],
+  'beast-war': ['world', '패러독스 실험과 신수전쟁'], conflict: ['cast', '세 친구의 갈등'],
+  circuits: ['cast', '리오의 회로'], 'loss-jinx': ['cast', '상실의 징크스'],
+  'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
+  causality: ['plot', '엘린의 인과 고리'], 'third-act-plan': ['plot', '3부 설계'],
+  'time-map': ['plot', '세계 연대기와 데미우르 개인 시간'], questions: ['questions', '열어둔 질문']
 };
 
 export function storyLocation(hash = '') {
@@ -122,7 +126,17 @@ function timeline(n) {
     bossRules: () => cards(n.bossRules, '복원 마법의 규칙과 한계'),
     foreshadowing: () => cards(n.foreshadowing, '1부에서 2부로 이어지는 복선'),
     sacrifice: () => steps(n.sacrifice?.slice(1), '위기와 희생의 전개'),
-    meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로')
+    meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로'),
+    chronosKnowledge: () => cards(n.chronosKnowledge, '시간 신위 · 인식과 진실'),
+    beastConstraintNetwork: () => cards(n.beastConstraintNetwork, '육환신수의 다자간 상호 제약'),
+    beastEschatology: () => cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징'),
+    paradoxExperiment: () => steps(n.paradoxExperiment, '데미우르의 자기반증 실험'),
+    beastWar: () => steps(n.beastWar, '패러독스 실험에서 신수전쟁까지'),
+    thirdActPlan: () => cards(n.thirdActPlan, '3부 · 카이 토벌과 인간 데미우르'),
+    lossJinx: () => cards(n.lossJinx, '상실의 징크스', '테라의 회로 소실과 구별되는 삶의 조소'),
+    elinLastWords: () => cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건'),
+    worldChronology: () => steps(n.worldChronology, '세계 연대기'),
+    demiurgeChronology: () => steps(n.demiurgeChronology, '데미우르의 개인 시간')
   };
   return `${section('사건과 플롯', '플레이어가 경험하는 순서 · 정확한 연결이 미정인 곳은 따로 표시')}
     <ol class="story-timeline">${n.timeline.map((event, i) => {
@@ -146,22 +160,29 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
     overview: `${section('상실에서 시작해, 미래를 아는 자의 선택으로')}
       ${textCard(n.story, '아직 정리된 스토리 내용이 없어요.')}
       ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `<article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span><h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
-      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">전지와 운명의 인식</a><a href="#story/plot/event-departure">종말에 대한 저항과 과거행</a></div>
-      <p class="muted">연대표의 점을 따라 사건을 읽고, 관련 링크로 인물과 세계의 규칙을 확인해요. 세부 기믹은 사건 안에서 펼쳐볼 수 있어요.</p>`,
+      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">시간 신위와 운명의 인식</a><a href="#story/plot/event-collapse">엘로이 종말과 신격화</a><a href="#story/plot/event-third-act">과거 시대의 3부 · 카이 토벌</a></div>
+      <p class="muted">기본 연대표는 플레이어가 이야기를 접하는 순서예요. 3부부터는 세계시간과 인물의 개인 시간이 크게 어긋나므로 ‘세계 연대기와 데미우르 개인 시간’을 함께 확인해요.</p>`,
     world: `${block('principles', `${section('세계의 규칙')}${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `<article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>` : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}`)}
-      ${block('eras', cards(n.eras, '두 시대의 생활'))}
-      ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념 대응 · 이름은 가명')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 개념의 대응을 나타내는 모식도예요. 세부 능력과 작동 규칙은 아직 정하지 않았어요.</p>` : ''}
-      ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '인물의 믿음과 세계의 실제 설정을 구분해요. 공개 시점은 미정.'))}
-      ${block('harvest', steps(n.harvest, '엘로이 문명: 배양판의 구조', '계획의 작동 순서 · 실제 발동 대상과 수집 원리는 미정'))}`,
+      ${block('eras', cards(n.eras, '세 시대의 배치와 생활', '작품 순서와 세계 연대기는 일치하지 않아요.'))}
+      ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념적 대칭 · 실제 제약은 육자 전체의 다자간 네트워크')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 상징적 대응을 나타내는 모식도예요. 서로만을 제약하는 일대일 맞계약을 뜻하지 않아요.</p>` : ''}
+      ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
+      ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
+      ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르의 정체, 시간 신위의 인식 범위를 구분해요.'))}
+      ${block('harvest', steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획'))}`,
     cast: `${section('등장인물과 스탯', '이름은 모두 가명 · 개별 항목의 미정 사항은 본문에 표시')}
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
       ${block('conflict', conflictDiagram(n.conflict))}
       ${block('circuits', cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획'))}
       ${block('dualization', steps(n.experimentLineage, '이원화 실험의 계보', '최초의 우발적 성공 → 부작용 발견 → 연구진 분화'))}
-      ${block('circuit-loss', steps(n.circuitLoss, '회로 소실과 상실의 역순', '정이십면체의 가능에서 정사면체의 경계까지, 바깥층부터 붕괴한다'))}
+      ${block('circuit-loss', steps(n.circuitLoss, '테라의 회로 소실 · 병리적 역순', '실제 회로 강탈·편극으로 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'))}
+      ${block('loss-jinx', cards(n.lossJinx, '마법사들에게 전해진 상실의 징크스', '테라의 질환과는 별개인 삶의 조소 · 카이는 이를 서사적으로 핵심화한다'))}
+      ${block('elin-last-words', cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건', '정확한 문구보다 사고 장면과 대화의 자연스러운 연결을 먼저 정한다'))}
       ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
-    plot: `${timeline(n)}${block('causality', causalLoop(n.loop))}`,
-    questions: `${cards(n.origins, '기원과 권능: 열어둔 안', '대안과 능력 예시 · 아직 채택하지 않은 안')}
+    plot: `${timeline(n)}
+          ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 인간 데미우르', '작품상 후속편이면서 세계시간상 전일담'))}
+          ${block('time-map', `${steps(n.worldChronology, '세계 연대기', '세계시간 기준 · 3부가 1부보다 앞선다')}${steps(n.demiurgeChronology, '데미우르의 개인 시간', '같은 인물이 시간축을 오가며 자기 인과를 완성한다')}`)}
+          ${block('causality', causalLoop(n.loop))}`,
+    questions: `${cards(n.origins, '기원과 권능: 설계 메모', '현재 설정과 아직 검토 중인 능력 예시를 함께 정리')}
       ${block('questions', `${section('열어둔 질문')}${n.questionGroups?.length ? n.questionGroups.map(group => `<section class="card story-question-group"><h3>${escapeHtml(group.title)}</h3><ul>${group.indices.map(i => `<li>${escapeHtml(n.unresolved?.[i])}</li>`).join('')}</ul></section>`).join('') : `<ul class="card world-questions">${(n.unresolved || []).map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul>`}`)}`
   };
   return `${section('Story & World', '상실 · 세계와의 거래 · 하나의 역사')}
