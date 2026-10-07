@@ -36,3 +36,22 @@ test('old text drafts remain readable and imported structured content is validat
   assert.match(html, /&lt;img src=x&gt;/);
   assert.doesNotMatch(html, /<img src=x>/);
 });
+
+test('story navigation preserves content and links every timeline destination to a unique target', async () => {
+  const { storyLocation } = await import('../docs/story-world.js');
+  const { dashboardViewFromHash } = await import('../docs/dashboard-routing.js');
+  assert.equal(dashboardViewFromHash('#story/plot/event-prologue'), 'story');
+  assert.deepEqual(storyLocation('#story/plot/event-prologue'), { tab: 'plot', target: 'event-prologue' });
+  assert.equal(storyLocation('#story/unknown').tab, 'overview');
+  const html = renderStoryWorld(narrative, 'plot');
+  assert.equal((html.match(/class="story-panel"/g) || []).length, 5);
+  assert.equal((html.match(/class="story-panel"[^>]+ hidden/g) || []).length, 4);
+  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const [, id] of html.matchAll(/href="#story\/[^/" ]+\/([^" ]+)"/g)) assert.ok(ids.includes(id), id);
+  assert.equal((html.match(/class="story-event"/g) || []).length, narrative.timeline.length);
+  const questions = narrative.questionGroups.flatMap(g => g.indices).sort((a,b) => a-b);
+  assert.deepEqual(questions, narrative.unresolved.map((_,i) => i));
+  assert.equal(isNarrativeData({ ...narrative, timeline: [null] }), false);
+  assert.equal(isNarrativeData({ ...narrative, questionGroups: [{ title: 'bad', indices: [-1] }] }), false);
+});
