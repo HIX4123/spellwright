@@ -57,7 +57,7 @@ export function storyFlow(n) {
         <span class="story-flow-key-item join">교차 인과</span>
       </div>
       <div class="story-flow-scroll" tabindex="0" role="region" aria-label="시간선 다이어그램. 화면이 좁으면 좌우로 스크롤하여 탐색">
-        <svg xmlns="http://www.w3.org/2000/svg" class="story-flow-svg" viewBox="0 0 1910 835" role="img"
+        <svg xmlns="http://www.w3.org/2000/svg" class="story-flow-svg" viewBox="0 0 1910 835" role="group"
           aria-label="세계시간은 왼쪽에서 오른쪽. 카이는 현대에서 미래를 거쳐 3부 과거로, 엘로이 히로인은 미래에서 현대 과거로 이동한다. 우르는 3부 과거에서 시간 신위를 계승해 신수전쟁과 낙원 건설을 거친다. 굵은 연결선은 카이와 우르의 만남, 전투와 계승을 나타낸다.">
           <defs>
             ${lanes.map(lane => `<marker id="story-flow-arrow-${lane.id}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" viewBox="0 0 8 8"><path d="M0 0L8 4L0 8Z" class="story-flow-marker-${lane.id}"/></marker>`).join('')}
