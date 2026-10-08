@@ -20,6 +20,25 @@ export function isNarrativeData(n) {
       : typeof e.title === 'string' && typeof e.description === 'string')
     && (e.note === undefined || typeof e.note === 'string')
     && ['links', 'details'].every(k => e[k] === undefined || Array.isArray(e[k]) && e[k].every(v => typeof v === 'string'))))) return false;
+  if (n.storyFlow !== undefined) {
+    const graph = n.storyFlow;
+    const allowedLanes = ['kai', 'ur', 'heroine', 'join'];
+    if (!graph || !Array.isArray(graph.nodes) || !Array.isArray(graph.edges)) return false;
+    const ids = new Set();
+    for (const node of graph.nodes) {
+      if (!node || !['id', 'title', 'era', 'lane', 'href'].every(k => typeof node[k] === 'string')
+        || !/^[a-z0-9-]+$/.test(node.id) || !allowedLanes.slice(0, 3).includes(node.lane)
+        || !/^#story\\/(?:plot|world|cast|questions)\\/[a-z0-9-]+$/.test(node.href)
+        || !Number.isFinite(node.x) || !Number.isFinite(node.y) || ids.has(node.id)) return false;
+      ids.add(node.id);
+    }
+    if (!graph.edges.every(edge => edge && ids.has(edge.from) && ids.has(edge.to)
+      && allowedLanes.includes(edge.lane)
+      && (edge.path === undefined || typeof edge.path === 'string')
+      && (edge.label === undefined || typeof edge.label === 'string')
+      && (edge.kind === undefined || ['normal', 'jump', 'join', 'uncertain'].includes(edge.kind))
+      && (edge.label === undefined || Number.isFinite(edge.labelX) && Number.isFinite(edge.labelY)))) return false;
+  }
   if (n.questionGroups !== undefined && (!Array.isArray(n.questionGroups) || !n.questionGroups.every(g => g
     && typeof g.title === 'string' && Array.isArray(g.indices) && g.indices.every(i => Number.isInteger(i) && typeof n.unresolved?.[i] === 'string')))) return false;
   return (n.pairs === undefined || n.pairs.every(pair => ['time', 'space', 'existence'].includes(pair.diagram)))
@@ -100,7 +119,7 @@ const destinations = {
   circuits: ['cast', '리오의 회로'], 'loss-jinx': ['cast', '상실의 징크스'],
   'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
   causality: ['plot', '엘린의 인과 고리'], 'third-act-plan': ['plot', '3부 설계'],
-  'time-map': ['plot', '세계 연대기와 데미우르고스 개인 시간'], questions: ['questions', '열어둔 질문']
+  'time-map': ['plot', '세계시간 · 교차 사건도'], questions: ['questions', '열어둔 질문']
 };
 
 export function storyLocation(hash = '') {
