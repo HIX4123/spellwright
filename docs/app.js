@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=story-timeline-20261007-1';
+import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=interwoven-20261008-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-min-displacement-pack-20261005-1';
@@ -183,6 +183,9 @@ function renderStory() {
   if (target) {
     const element = document.getElementById(target);
     if (element && !element.closest('[hidden]')) {
+      // Deep links from the shared graph reveal the requested event description.
+      const expander = element.querySelector('details.story-event-expander');
+      if (expander) expander.open = true;
       element.scrollIntoView({ block: 'start' });
       element.focus({ preventScroll: true });
     }
