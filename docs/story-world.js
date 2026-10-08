@@ -28,7 +28,7 @@ export function isNarrativeData(n) {
     for (const node of graph.nodes) {
       if (!node || !['id', 'title', 'era', 'lane', 'href'].every(k => typeof node[k] === 'string')
         || !/^[a-z0-9-]+$/.test(node.id) || !allowedLanes.slice(0, 3).includes(node.lane)
-        || !/^#story\\/(?:plot|world|cast|questions)\\/[a-z0-9-]+$/.test(node.href)
+        || !/^#story\/(?:plot|world|cast|questions)\/[a-z0-9-]+$/.test(node.href)
         || !Number.isFinite(node.x) || !Number.isFinite(node.y) || ids.has(node.id)) return false;
       ids.add(node.id);
     }
