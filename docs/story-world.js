@@ -136,7 +136,7 @@ function timeline(n) {
     lossJinx: () => cards(n.lossJinx, '상실의 징크스', '테라의 회로 소실과 구별되는 삶의 조소'),
     elinLastWords: () => cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건'),
     worldChronology: () => steps(n.worldChronology, '세계 연대기'),
-    demiurgeChronology: () => steps(n.demiurgeChronology, '우르 → 데미우르고스고스 · 개인 시간')
+    demiurgeChronology: () => steps(n.demiurgeChronology, '우르 → 데미우르고스 · 개인 시간')
   };
   return `${section('사건과 플롯', '플레이어가 경험하는 순서 · 정확한 연결이 미정인 곳은 따로 표시')}
     <ol class="story-timeline">${n.timeline.map((event, i) => {
@@ -180,7 +180,7 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
     plot: `${timeline(n)}
           ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
-          ${block('time-map', `${steps(n.worldChronology, '세계 연대기', '세계시간 기준 · 3부가 1부보다 앞선다')}${steps(n.demiurgeChronology, '우르 → 데미우르고스고스 · 개인 시간', '같은 인물이 시간축을 오가며 자기 인과를 완성한다')}`)}
+          ${block('time-map', `${steps(n.worldChronology, '세계 연대기', '세계시간 기준 · 3부가 1부보다 앞선다')}${steps(n.demiurgeChronology, '우르 → 데미우르고스 · 개인 시간', '같은 인물이 시간축을 오가며 자기 인과를 완성한다')}`)}
           ${block('causality', causalLoop(n.loop))}`,
     questions: `${cards(n.origins, '기원과 권능: 설계 메모', '현재 설정과 아직 검토 중인 능력 예시를 함께 정리')}
       ${block('questions', `${section('열어둔 질문')}${n.questionGroups?.length ? n.questionGroups.map(group => `<section class="card story-question-group"><h3>${escapeHtml(group.title)}</h3><ul>${group.indices.map(i => `<li>${escapeHtml(n.unresolved?.[i])}</li>`).join('')}</ul></section>`).join('') : `<ul class="card world-questions">${(n.unresolved || []).map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul>`}`)}`
