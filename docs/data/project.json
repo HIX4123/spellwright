@@ -814,7 +814,7 @@
     }
   ],
   "narrative": {
-    "story": "마법은 세계와의 거래이며, 이야기는 인간관계와 심리에 남는 상실을 중심으로 전개된다. 1부에서는 반복되는 상실이 세 친구를 갈라놓고, 2부에서는 미래까지 인식하게 된 카이가 엘린의 죽음과 엘로이 문명의 종말을 통과해 신위에 오른다. 3부는 작품상 후속편이지만 세계시간상 1부 이전에 놓이며, 모든 것을 잃고 자기만 남은 카이를 새로운 주인공이 토벌·해방하려는 이야기로 이어진다. 상실을 모두 마법의 대가로 환원하지 않는다.",
+    "story": "마법은 세계와의 거래이며, 이야기는 인간관계와 심리에 남는 상실을 중심으로 전개된다. 1부에서는 반복되는 상실이 세 친구를 갈라놓고, 2부에서는 미래까지 인식하게 된 카이가 엘린의 죽음과 엘로이 문명의 종말을 통과해 신위에 오른다. 3부는 작품상 후속편이지만 세계시간상 1부 이전에 놓이며, 모든 것을 잃고 자기만 남은 카이를 새로운 주인공이 토벌하려는 이야기로 이어진다. 상실을 모두 마법의 대가로 환원하지 않는다.",
     "worldbuilding": "역사는 분기하지 않는 하나의 시간선이며 마법도 그 인과 안에 포함된다. 육환신수의 권능은 서로 복잡하게 얽힌 다자간 제약망을 이루어 세계의 논리적·인과적 무결성을 보존한다.",
     "acts": [
       {
@@ -1482,7 +1482,7 @@
       {
         "id": "third-act",
         "title": "3부 · 과거 시대에 나타난 신격 카이",
-        "description": "작품상 2부 이후이지만 세계시간상 1부 이전. 모든 상실 끝에 신위를 얻은 카이가 이 시대에 나타나고, 새로운 주인공이 카이를 토벌·해방하기 위한 여정을 시작한다.",
+        "description": "작품상 2부 이후이지만 세계시간상 1부 이전. 모든 상실 끝에 신위를 얻은 카이가 이 시대에 나타나고, 새로운 주인공이 카이를 토벌하기 위한 여정을 시작한다.",
         "era": "3부 · 세계시간상 1부 이전",
         "links": [
           "cast-8",
@@ -1922,6 +1922,311 @@
         "description": "엘로이 시대 말미에서 카이에게 시간 신위를 넘기게 되는 토벌·흡수를 겪는다. 이것이 데미우르고스 개인사의 마지막일 수 있지만, 그는 그 전에 여러 세계시간에 필요한 개입을 이미 남길 수 있다.",
         "status": "현재 설정"
       }
-    ]
+    ],
+    "storyFlow": {
+      "nodes": [
+        {
+          "id": "kai-third",
+          "title": "3부 · 카이 출현",
+          "era": "과거로 역행",
+          "x": 175,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-third-act"
+        },
+        {
+          "id": "kai-dissoc",
+          "title": "토벌·해리",
+          "era": "신위 분리 · 구상",
+          "x": 400,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-kai-dissociation",
+          "note": "3부 주인공의 목적은 미정"
+        },
+        {
+          "id": "kai-childhood",
+          "title": "어린 카이",
+          "era": "회로 획득",
+          "x": 1010,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-prologue"
+        },
+        {
+          "id": "kai-hand",
+          "title": "블랙홀과 손",
+          "era": "미래로 전이",
+          "x": 1210,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-hand"
+        },
+        {
+          "id": "kai-reunion",
+          "title": "엘로이 재회",
+          "era": "2부",
+          "x": 1425,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-reunion"
+        },
+        {
+          "id": "kai-chronos",
+          "title": "시간 신위 획득",
+          "era": "데미우르고스 토벌",
+          "x": 1620,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-omniscience"
+        },
+        {
+          "id": "kai-collapse",
+          "title": "문명의 종말",
+          "era": "통합 신격화",
+          "x": 1790,
+          "y": 228,
+          "lane": "kai",
+          "href": "#story/plot/event-collapse"
+        },
+        {
+          "id": "ur-arrive",
+          "title": "우르 유입",
+          "era": "본명 우르",
+          "x": 145,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/plot/event-human-demiurge",
+          "note": "납치 전의 시대는 아직 미정"
+        },
+        {
+          "id": "ur-party",
+          "title": "3부 토벌대 동행",
+          "era": "가명 미정",
+          "x": 310,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/plot/event-human-demiurge"
+        },
+        {
+          "id": "ur-inherit",
+          "title": "시간 신위 계승",
+          "era": "데미우르고스",
+          "x": 465,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/plot/event-demiurge-inheritance"
+        },
+        {
+          "id": "ur-paradox",
+          "title": "미래 반증 실험",
+          "era": "호흡 → 좌절",
+          "x": 650,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/world/beast-war"
+        },
+        {
+          "id": "ur-war",
+          "title": "신수전쟁·낙원",
+          "era": "이후의 설계",
+          "x": 835,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/world/harvest"
+        },
+        {
+          "id": "ur-hand",
+          "title": "카이를 이동시킴",
+          "era": "1부 마지막",
+          "x": 1210,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/plot/event-hand"
+        },
+        {
+          "id": "ur-end",
+          "title": "카이에게 흡수",
+          "era": "2부 · 종막",
+          "x": 1620,
+          "y": 444,
+          "lane": "ur",
+          "href": "#story/plot/event-chronos-battle"
+        },
+        {
+          "id": "hero-childhood",
+          "title": "어린 카이와 만남",
+          "era": "미래에서 과거로",
+          "x": 1000,
+          "y": 648,
+          "lane": "heroine",
+          "href": "#story/plot/event-prologue"
+        },
+        {
+          "id": "hero-circuit",
+          "title": "사고·회로 전달",
+          "era": "1부 프롤로그",
+          "x": 1210,
+          "y": 648,
+          "lane": "heroine",
+          "href": "#story/plot/event-prologue"
+        },
+        {
+          "id": "hero-reunion",
+          "title": "2부의 재회",
+          "era": "아직 과거 경험 전",
+          "x": 1450,
+          "y": 648,
+          "lane": "heroine",
+          "href": "#story/plot/event-reunion"
+        },
+        {
+          "id": "hero-depart",
+          "title": "과거행 결정",
+          "era": "배양 계획 저지",
+          "x": 1790,
+          "y": 648,
+          "lane": "heroine",
+          "href": "#story/plot/event-departure"
+        }
+      ],
+      "edges": [
+        {
+          "from": "kai-third",
+          "to": "kai-dissoc",
+          "lane": "kai"
+        },
+        {
+          "from": "kai-childhood",
+          "to": "kai-hand",
+          "lane": "kai"
+        },
+        {
+          "from": "kai-hand",
+          "to": "kai-reunion",
+          "lane": "kai"
+        },
+        {
+          "from": "kai-reunion",
+          "to": "kai-chronos",
+          "lane": "kai"
+        },
+        {
+          "from": "kai-chronos",
+          "to": "kai-collapse",
+          "lane": "kai"
+        },
+        {
+          "from": "kai-collapse",
+          "to": "kai-third",
+          "lane": "kai",
+          "kind": "jump",
+          "path": "M 1790 191 V 136 H 175 V 189",
+          "label": "카이 · 미래에서 3부 과거로",
+          "labelX": 990,
+          "labelY": 128
+        },
+        {
+          "from": "ur-arrive",
+          "to": "ur-party",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-party",
+          "to": "ur-inherit",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-inherit",
+          "to": "ur-paradox",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-paradox",
+          "to": "ur-war",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-war",
+          "to": "ur-hand",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-hand",
+          "to": "ur-end",
+          "lane": "ur"
+        },
+        {
+          "from": "ur-war",
+          "to": "ur-arrive",
+          "lane": "ur",
+          "kind": "uncertain",
+          "path": "M 810 516 H 145 V 483",
+          "label": "자기 과거 이송 · 발신 시점 미정",
+          "labelX": 468,
+          "labelY": 506
+        },
+        {
+          "from": "hero-reunion",
+          "to": "hero-depart",
+          "lane": "heroine"
+        },
+        {
+          "from": "hero-depart",
+          "to": "hero-childhood",
+          "lane": "heroine",
+          "kind": "jump",
+          "path": "M 1790 686 V 761 H 1000 V 685",
+          "label": "히로인 · 미래에서 어린 카이의 시대로",
+          "labelX": 1360,
+          "labelY": 785
+        },
+        {
+          "from": "hero-childhood",
+          "to": "hero-circuit",
+          "lane": "heroine"
+        },
+        {
+          "from": "kai-dissoc",
+          "to": "ur-inherit",
+          "lane": "join",
+          "kind": "join",
+          "path": "M 400 265 V 336 H 465 V 407",
+          "label": "시간 신위 분리",
+          "labelX": 545,
+          "labelY": 328
+        },
+        {
+          "from": "ur-hand",
+          "to": "kai-hand",
+          "lane": "join",
+          "kind": "join",
+          "path": "M 1210 407 V 267",
+          "label": "이송의 주체",
+          "labelX": 1310,
+          "labelY": 348
+        },
+        {
+          "from": "ur-end",
+          "to": "kai-chronos",
+          "lane": "join",
+          "kind": "join",
+          "path": "M 1620 407 V 267",
+          "label": "신위 계승",
+          "labelX": 1720,
+          "labelY": 354
+        },
+        {
+          "from": "hero-circuit",
+          "to": "kai-childhood",
+          "lane": "join",
+          "kind": "join",
+          "path": "M 1210 610 C 1405 530 1380 345 1093 267",
+          "label": "회로 전달",
+          "labelX": 1372,
+          "labelY": 383
+        }
+      ]
+    }
   }
 }
