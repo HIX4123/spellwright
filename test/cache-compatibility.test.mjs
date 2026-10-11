@@ -10,8 +10,8 @@ const project = JSON.parse(read('data/project.json'));
 
 test('changed JSON schema cannot be loaded with a stale cached module', () => {
   // New story schema requires a fresh module URL; keep the old baseline as a regression guard.
-  assert.match(index, /app\.js\?v=[\\w-]+/);
-  assert.match(app, /story-world\.js\?v=[\\w-]+/);
+  assert.match(index, /app\.js\?v=[\w-]+/);
+  assert.match(app, /story-world\.js\?v=[\w-]+/);
   assert.doesNotMatch(index, /app\.js\?v=cache-schema-fix-20261011-3/);
   assert.doesNotMatch(app, /story-world\.js\?v=cache-schema-fix-20261011-3/);
   assert.match(index, /styles\.css\?v=cache-schema-fix-20261011-3/);
