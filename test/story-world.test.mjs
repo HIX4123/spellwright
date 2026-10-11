@@ -70,3 +70,17 @@ test('legacy story question URLs resolve to consolidated Open Questions', async 
   const { dashboardViewFromHash } = await import('../docs/dashboard-routing.js');
   assert.equal(dashboardViewFromHash('#story/questions/questions'), 'questions');
 });
+
+
+test('first act timeline may reference canon actOneArc data and validates its fields', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  const event = narrative.timeline.find(entry => entry.source === 'actOneArc');
+  assert.ok(event, 'the first-act arc is referenced by the timeline');
+  assert.equal(narrative.actOneArc[event.index].title.length > 0, true);
+  assert.equal(isNarrativeData({ ...narrative, actOneArc: [{ title: 'bad' }] }), false);
+  assert.equal(isNarrativeData({
+    ...narrative, timeline: narrative.timeline.map(entry => (
+      entry.source === 'actOneArc' ? { ...entry, source: 'unknown' } : entry
+    ))
+  }), false);
+});

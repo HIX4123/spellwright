@@ -9,10 +9,10 @@ const story = read('story-world.js');
 const project = JSON.parse(read('data/project.json'));
 
 test('changed JSON schema cannot be loaded with a stale cached module', () => {
-  assert.match(index, /app\.js\?v=cache-schema-fix-20261011-2/);
-  assert.match(index, /styles\.css\?v=cache-schema-fix-20261011-2/);
-  assert.match(app, /story-world\.js\?v=cache-schema-fix-20261011-2/);
-  assert.match(app, /dashboard-routing\.js\?v=cache-schema-fix-20261011-2/);
+  assert.match(index, /app\.js\?v=cache-schema-fix-20261011-3/);
+  assert.match(index, /styles\.css\?v=cache-schema-fix-20261011-3/);
+  assert.match(app, /story-world\.js\?v=cache-schema-fix-20261011-3/);
+  assert.match(app, /dashboard-routing\.js\?v=cache-schema-fix-20261011-3/);
   assert.equal('worldbuilding' in project.narrative, false);
   assert.match(story, /typeof n\.story !== 'string'/);
 });

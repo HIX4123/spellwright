@@ -8,7 +8,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'circuitAscension'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -16,7 +16,7 @@ export function isNarrativeData(n) {
   }
   if (n.timeline !== undefined && (!Array.isArray(n.timeline) || !n.timeline.every(e => e
     && ['id', 'era'].every(k => typeof e[k] === 'string') && /^[a-z0-9-]+$/.test(e.id)
-    && (e.source ? ['plot', 'sacrifice'].includes(e.source) && Number.isInteger(e.index) && !!n[e.source]?.[e.index]
+    && (e.source ? ['plot', 'sacrifice', 'actOneArc'].includes(e.source) && Number.isInteger(e.index) && !!n[e.source]?.[e.index]
       : typeof e.title === 'string' && typeof e.description === 'string')
     && (e.note === undefined || typeof e.note === 'string')
     && ['links', 'details'].every(k => e[k] === undefined || Array.isArray(e[k]) && e[k].every(v => typeof v === 'string'))))) return false;
