@@ -16,8 +16,8 @@ const view = $('#view');
 const dialog = $('#editorDialog');
 
 const navItems = [
-  ['overview','Overview'], ['story','Story & World'], ['systems','Systems'], ['combat','Combat'], ['attributes','Attributes'],
-  ['mvp','MVP'], ['decisions','Decisions'], ['graveyard','Graveyard'], ['questions','Open Questions']
+  ['overview','Overview'], ['story','Story & World'], ['systems','Systems'],
+  ['character','Character'], ['projections','Projections'], ['questions','Open Questions'], ['archive','Archive']
 ];
 
 const THEORY_CARDS = [
@@ -143,12 +143,10 @@ function render() {
     overview:renderOverview,
     story:renderStory,
     systems:renderSystems,
-    combat:renderCombat,
-    attributes:renderAttributes,
-    mvp:renderMvp,
-    decisions:renderDecisions,
-    graveyard:renderGraveyard,
-    questions:renderQuestions
+    character:renderCharacter,
+    projections:renderProjections,
+    questions:renderQuestions,
+    archive:renderArchive
   })[currentView];
   fn();
 }
@@ -174,6 +172,8 @@ function renderOverview() {
     <div class="grid cols-2">${data.priorities.map(priorityCard).join('')}</div>
     ${section('Recent decisions')}
     <div class="card timeline">${data.decisions.slice(0,4).map(decisionRow).join('')}</div>
+    ${section('MVP scope',data.project.mvpQuestion)}
+    <div class="card"><table class="table"><tbody>${data.mvp.map(x=>`<tr><th>${escapeHtml(x.item)}</th><td>${escapeHtml(x.value)}</td></tr>`).join('')}</tbody></table></div>
   `;
 }
 
@@ -212,7 +212,13 @@ function renderSystems() {
       <select id="categoryFilter"><option value="">모든 카테고리</option>${CATEGORY_ORDER.map(c=>`<option value="${c}">${categoryLabel(c)}</option>`).join('')}</select>
     </div>
     <div class="map-note"><span>위 → 아래 = 관계 흐름</span><span>실선 = 상하위 · 점선 = 기능 의존 · 파선 = 단계 순서</span></div>
-    <div id="systemMap"></div>`;
+    <div id="systemMap"></div>
+    ${section('Combat design order', '전투의 핵심 판단 과정')}
+    <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>
+    ${section('Magic theory', '전투와 마법 구현 원리')}
+    <div class="theory-grid">${THEORY_CARDS.map(([title, body, note]) => `
+      <article class="card theory-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p><p class="theory-note">${escapeHtml(note)}</p></article>`).join('')}</div>
+    <p class="muted">캐릭터 능력치와 직업안은 <a href="#character">Character</a>에서, 사영도는 <a href="#projections">Projections</a>에서 확인할 수 있어요.</p>`;
 
   const refresh = () => {
     const q = $('#search').value.trim().toLowerCase();
@@ -369,20 +375,7 @@ function bindSystemCards() {
   });
 }
 
-function renderCombat() {
-  const combatIds = new Set(['karma','engraving','circle','engraving-capacity']);
-  const combat = activeSystems().filter(x => x.category === 'combat' || combatIds.has(x.id));
-
-  view.innerHTML = `${section('Combat core','계층과 기능 의존 관계')}
-    <div class="map-note"><span>위 → 아래 = 관계 흐름</span><span>실선 = 상하위 · 점선 = 기능 의존</span></div>
-    <div id="combatMap"></div>
-    ${section('Design order')}
-    <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>`;
-
-  renderSystemMap($('#combatMap'), combat);
-}
-
-function renderAttributes() {
+function renderProjections() {
   const attributeSystem = data.systems.find(system => system.id === 'five-elements');
   const background = attributeSystem.details
     .split('\n\n')
@@ -398,29 +391,68 @@ function renderAttributes() {
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
     <div id="projectionSimulation"></div>
-    ${section('Magic theory', '현재까지 정립된 마법 구현 원리와 전투 해석')}
-    <div class="theory-grid">${THEORY_CARDS.map(([title, body, note]) => `
-      <article class="card theory-card">
-        <h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p><p class="theory-note">${escapeHtml(note)}</p>
-      </article>`).join('')}</div>
-    ${section('Related systems')}
-    <div class="system-grid">${data.systems.filter(x=>x.category==='attribute').map(systemCard).join('')}</div>`;
+    <p class="muted">사영 연산자와 관련된 마법 규칙은 <a href="#systems">Systems</a>에서 관리해요.</p>`;
 
   mountProjectionPeriodicTable(data.elements);
   mountProjectionSelector();
-  bindSystemCards();
 }
 
-function renderMvp() {
-  view.innerHTML = `${section('MVP scope',data.project.mvpQuestion)}
-    <div class="card"><table class="table"><tbody>${data.mvp.map(x=>`<tr><th>${escapeHtml(x.item)}</th><td>${escapeHtml(x.value)}</td></tr>`).join('')}</tbody></table></div>
-    ${section('Priority stack')}
-    <div class="grid cols-2">${data.priorities.map(priorityCard).join('')}</div>`;
+
+let characterDataPromise;
+async function renderCharacter() {
+  view.innerHTML = `${section('Character', '능력치와 직업 초안을 한곳에서 확인')}
+    <div class="card"><p class="muted">캐릭터 설계 데이터를 불러오는 중…</p></div>`;
+  try {
+    characterDataPromise ||= Promise.all([
+      fetch('./data/stats.json', { cache: 'no-store' }).then(response => {
+        if (!response.ok) throw new Error('Stats load failed');
+        return response.json();
+      }),
+      fetch('./data/classes.json', { cache: 'no-store' }).then(response => {
+        if (!response.ok) throw new Error('Classes load failed');
+        return response.json();
+      })
+    ]);
+    const [statsData, classesData] = await characterDataPromise;
+    if (currentView !== 'character') return;
+    if (!Array.isArray(statsData.stats) || !Array.isArray(classesData.classes)) throw new Error('Invalid character data');
+    const stats = [...statsData.stats].sort((left,right) => left.order - right.order);
+    const regular = classesData.classes.filter(item => item.id !== classesData.assignmentRule.potential.classId);
+    const potential = classesData.classes.find(item => item.id === classesData.assignmentRule.potential.classId);
+    const statCard = stat => `<article class="card system-card"><span class="status confirmed">확정</span>
+      <h3>${escapeHtml(stat.name)}</h3><p>${escapeHtml(stat.details)}</p>
+      <div class="meta"><span>${escapeHtml(stat.role)}</span></div></article>`;
+    const classCard = item => `<article class="card system-card"><span class="status review">검토 중</span>
+      <h3>${escapeHtml(item.name)} <small class="muted">${escapeHtml(item.englishName)}</small></h3>
+      <p class="muted">${escapeHtml(item.stats.join(' + '))}</p>
+      <p><strong>${escapeHtml(item.mechanic)}</strong> · ${escapeHtml(item.mechanicDescription)}</p>
+      <p>${escapeHtml(item.playstyle)}</p></article>`;
+    view.innerHTML = `
+      ${section('Character stats', '체력 · 마력 · 서클 · 각인력 · 통찰력 · 정신력 · 잠재력')}
+      <div class="card"><p>런 시작 시 여섯 기초 스탯에 포인트를 분배하고, 남은 포인트는 잠재력으로 전환해요.</p>
+      <p class="muted">스탯 마지막 정리: ${escapeHtml(statsData.updatedAt)} · 직업 마지막 정리: ${escapeHtml(classesData.updatedAt)}</p></div>
+      <div class="card"><table class="table"><thead><tr><th>#</th><th>능력치</th><th>역할</th></tr></thead>
+      <tbody>${stats.map(stat=>`<tr><td>${stat.order}</td><td>${escapeHtml(stat.name)}</td><td>${escapeHtml(stat.role)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="system-grid">${stats.map(statCard).join('')}</div>
+      ${section('Classes', '15개 일반 직업 + 잠재력 특수 직업 1개 · 모두 검토 중')}
+      <div class="card"><p>${escapeHtml(classesData.assignmentRule.summary)}</p></div>
+      <div class="system-grid">${regular.map(classCard).join('')}</div>
+      ${potential ? `${section('Potential class')}<div class="system-grid">${classCard(potential)}</div>
+        <p class="muted">${escapeHtml(classesData.assignmentRule.potential.note)}</p>` : ''}`;
+  } catch (error) {
+    characterDataPromise = null;
+    if (currentView === 'character') {
+      view.innerHTML = `${section('Character')}<div class="card">캐릭터 데이터를 불러오지 못했어요.</div>`;
+    }
+    console.error(error);
+  }
 }
 
-function renderDecisions() {
+function renderArchive() {
   view.innerHTML = `${section('Decision log','결정을 삭제하지 않고 이유와 함께 축적')}
     <div class="card timeline">${data.decisions.map(decisionRow).join('')}</div>
+    ${section('Graveyard','폐기된 설계도 변경 이력으로 보존')}
+    <div class="system-grid">${data.systems.filter(x=>x.status==='rejected').map(systemCard).join('')}</div>
     ${section('Add decision')}
     <form class="card" id="decisionForm">
       <div class="grid cols-2">
@@ -441,14 +473,8 @@ function renderDecisions() {
       reason:$('#dReason').value
     });
     markDirty();
-    renderDecisions();
+    renderArchive();
   };
-}
-
-function renderGraveyard() {
-  const rejected = data.systems.filter(x=>x.status==='rejected');
-  view.innerHTML = `${section('Graveyard','폐기한 아이디어도 기록은 유지')}
-    <div class="system-grid">${rejected.map(systemCard).join('')}</div>`;
   bindSystemCards();
 }
 

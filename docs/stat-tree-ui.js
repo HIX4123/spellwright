@@ -56,8 +56,7 @@ document.addEventListener('click', event => {
   event.preventDefault();
   event.stopImmediatePropagation();
 
-  const statsButton = document.querySelector('#nav .nav-btn[data-view="stats"]');
-  statsButton?.click();
+  window.location.hash = '#character';
 }, true);
 
 const observer = new MutationObserver(() => queueMicrotask(refreshDashboardDecorations));
