@@ -84,3 +84,26 @@ test('first act timeline may reference canon actOneArc data and validates its fi
     ))
   }), false);
 });
+
+test('Eloi late-life visual rules and Kai four-stage design render as text-only canon proposals', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  assert.equal(narrative.kaiDesignStages.length, 4);
+  for (const [index, item] of narrative.kaiDesignStages.entries()) {
+    assert.ok(item.title.startsWith(String(index + 1) + '단계'));
+    assert.ok(item.status.length > 0);
+  }
+  const world = renderStoryWorld(narrative, 'world');
+  const cast = renderStoryWorld(narrative, 'cast');
+  assert.match(world, /엘로이족 · 외형과 노년 색채/);
+  assert.match(world, /머리카락 끝/);
+  assert.match(world, /자주빛 금속광/);
+  assert.match(cast, /카이 · 외형 변화 4단계/);
+  assert.match(cast, /고속 회전/);
+  assert.match(cast, /등 뒤/);
+  assert.match(cast, /엘린/);
+  assert.match(cast, /케이프·망토/);
+  assert.doesNotMatch(cast, /<img\b/);
+  for (const key of ['eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes']) {
+    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
+  }
+});

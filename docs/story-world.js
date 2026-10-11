@@ -8,7 +8,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'circuitAscension'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes', 'circuitAscension'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -118,6 +118,7 @@ const destinations = {
   'beast-war': ['world', '패러독스 실험과 신수전쟁'], conflict: ['cast', '세 친구의 갈등'],
   circuits: ['cast', '리오의 회로'], 'loss-jinx': ['cast', '상실의 징크스'],
   'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
+  'kai-design': ['cast', '카이의 외형 4단계'], 'eloi-appearance': ['world', '엘로이족 외형과 수명'],
   causality: ['plot', '엘린의 인과 고리'], 'third-act-plan': ['plot', '3부 설계'],
   'time-map': ['plot', '세계시간 · 교차 사건도'], questions: ['questions', '열어둔 질문']
 };
@@ -194,11 +195,12 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
       ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
       ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
-      ${block('harvest', `${steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획')}${cards(n.eloiEcology, '엘로이족 · 생애와 사회', '수명 · 회로 계승 · 공동체 가족 · 감정과 인구')}${steps(n.circuitAscension, '회로의 분화에서 신격화까지', '인간의 고정 계통 ↔ 순수 회로의 합일 · 그릇의 교정')}`)}
+      ${block('harvest', `${steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획')}${cards(n.eloiEcology, '엘로이족 · 생애와 사회', '수명 · 회로 계승 · 공동체 가족 · 감정과 인구')}${block('eloi-appearance', cards(n.eloiAppearance, '엘로이족 · 외형과 노년 색채', '공통 형질 · 머리끝 · 홍채 · 금속광'))}${steps(n.circuitAscension, '회로의 분화에서 신격화까지', '인간의 고정 계통 ↔ 순수 회로의 합일 · 그릇의 교정')}`)}
       ${cards(n.origins, '기원과 권능 · 추가 검토안', '중복된 낙원 설정은 수확 연대기에서만 관리합니다.')}
       ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
     cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
+      ${block('kai-design', `${steps(n.kaiDesignStages, '카이 · 외형 변화 4단계', '소년 → 청소년 → 성장한 청소년과 6익 → 회로 합일 이후 성년체')}${cards(n.kaiDesignNotes, '최종 형태 · 디자인 원칙', '회로 수렴 · 서브 컬러 · 회전 훈륜 · 케이프와 망토')}`)}
       ${block('conflict', conflictDiagram(n.conflict))}
       ${block('fourth-answer', cards(n.fourthAnswer, '제4의 답 · 비마법사 히로인 후보', '세 사람의 삼파전과 다른 해법 · 구체적인 답은 아직 미정'))}
       ${block('circuits', cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획'))}
