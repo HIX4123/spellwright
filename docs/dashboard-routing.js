@@ -25,6 +25,7 @@ export function dashboardViewFromHash(hash = '') {
 
   try {
     const decoded = decodeURIComponent(raw);
+    if (decoded === 'story/questions' || decoded.startsWith('story/questions/')) return 'questions';
     if (decoded.startsWith('story/')) return 'story';
     return DASHBOARD_VIEW_SET.has(decoded) ? decoded : LEGACY_VIEW_ALIASES[decoded] || 'overview';
   } catch {

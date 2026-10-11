@@ -1,4 +1,5 @@
 import { escapeHtml, section } from './html.js';
+import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=interwoven-20261008-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
@@ -7,6 +8,8 @@ import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js
 
 let data;
 let relationships;
+let statsDocument;
+let statsCatalog;
 let repositoryRevision;
 let currentView = 'overview';
 let dirty = false;
@@ -46,7 +49,8 @@ function isProjectData(value) {
       .every(key => Array.isArray(value[key]))
     && value.systems.every(system => typeof system?.id === 'string'
       && typeof system.name === 'string'
-      && Array.isArray(system.dependencies))
+      && Array.isArray(system.dependencies)
+      && (system.statRef === undefined || typeof system.statRef === 'string'))
     && value.elements.every(element => ['name', 'solid', 'motto', 'loss', 'meaning']
       .every(key => typeof element?.[key] === 'string')
       && Number.isInteger(element.projectionClasses)));
@@ -61,20 +65,24 @@ function isRelationshipData(value) {
 }
 
 async function load() {
-  const [projectResponse, relationshipResponse] = await Promise.all([
+  const [projectResponse, relationshipResponse, statsResponse] = await Promise.all([
     fetch('./data/project.json', { cache: 'no-store' }),
-    fetch('./data/relationships.json', { cache: 'no-store' })
+    fetch('./data/relationships.json', { cache: 'no-store' }),
+    fetch('./data/stats.json', { cache: 'no-store' })
   ]);
-  if (!projectResponse.ok || !relationshipResponse.ok) {
+  if (!projectResponse.ok || !relationshipResponse.ok || !statsResponse.ok) {
     throw new Error('Failed to load dashboard data');
   }
-  const projectSource = await projectResponse.text();
+  const [projectSource, statsSource] = await Promise.all([projectResponse.text(), statsResponse.text()]);
   const remote = JSON.parse(projectSource);
   relationships = await relationshipResponse.json();
-  if (!isProjectData(remote) || !isRelationshipData(relationships)) {
+  statsDocument = JSON.parse(statsSource);
+  statsCatalog = new Map((statsDocument.stats || []).map(item => [item.id, item]));
+  if (!isProjectData(remote) || !isRelationshipData(relationships)
+    || remote.systems.some(system => system.statRef && !statsCatalog.has(system.statRef))) {
     throw new Error('Invalid dashboard data');
   }
-  repositoryRevision = await contentRevision(projectSource);
+  repositoryRevision = await contentRevision(projectSource + '\n' + statsSource);
   const draft = localStorage.getItem(DRAFT_KEY);
 
   if (draft) {
@@ -201,7 +209,8 @@ function decisionRow(d) {
 }
 
 function activeSystems() {
-  return data.systems.filter(x => x.category !== 'legacy' && x.status !== 'rejected');
+  return data.systems.filter(x => x.category !== 'legacy' && x.status !== 'rejected')
+    .map(system => resolveSystem(system, statsCatalog));
 }
 
 function renderSystems() {
@@ -363,7 +372,7 @@ function systemCard(s) {
     <div class="meta">
       <span>${escapeHtml(categoryLabel(s.category))}</span>
       <span>·</span>
-      <span>${escapeHtml(s.lastModified)}</span>
+      <span>${escapeHtml(s.lastModifiedAt || s.lastModified + ' · 날짜 미기록')}</span>
       ${s.dependencies?.length ? `<span>· ${escapeHtml(s.dependencies.length)} deps</span>` : ''}
     </div>
   </article>`;
@@ -404,10 +413,7 @@ async function renderCharacter() {
     <div class="card"><p class="muted">캐릭터 설계 데이터를 불러오는 중…</p></div>`;
   try {
     characterDataPromise ||= Promise.all([
-      fetch('./data/stats.json', { cache: 'no-store' }).then(response => {
-        if (!response.ok) throw new Error('Stats load failed');
-        return response.json();
-      }),
+      Promise.resolve(statsDocument),
       fetch('./data/classes.json', { cache: 'no-store' }).then(response => {
         if (!response.ok) throw new Error('Classes load failed');
         return response.json();
@@ -479,8 +485,16 @@ function renderArchive() {
 }
 
 function renderQuestions() {
-  view.innerHTML = `${section('Open questions','현재 확정되지 않은 설계 질문')}
-    <div class="question-list">${data.openQuestions.map((q,i)=>`<div class="question"><span class="muted">${String(i+1).padStart(2,'0')}</span> &nbsp;${escapeHtml(q)}</div>`).join('')}</div>`;
+  const narrative = data.narrative || {};
+  const worldQuestions = narrative.unresolved || [];
+  view.innerHTML = `${section('Open questions','게임 시스템과 세계관의 미결정 사항을 통합 관리')}
+    ${section('Game systems', `${data.openQuestions.length}개`)}
+    <div class="question-list">${data.openQuestions.map((q,i)=>`<div class="question"><span class="muted">${String(i+1).padStart(2,'0')}</span> &nbsp;${escapeHtml(q)}</div>`).join('')}</div>
+    ${section('Story & World', `${worldQuestions.length}개`)}
+    ${(narrative.questionGroups || []).map(group => `<details class="card question-group">
+      <summary>${escapeHtml(group.title)} · ${group.indices.length}개</summary>
+      <ol>${group.indices.map(index=>`<li>${escapeHtml(worldQuestions[index])}</li>`).join('')}</ol>
+    </details>`).join('') || `<div class="question-list">${worldQuestions.map(q=>`<div class="question">${escapeHtml(q)}</div>`).join('')}</div>`}`;
 }
 
 function renderEditorExtra(item) {
@@ -513,6 +527,8 @@ function renderEditorExtra(item) {
     <div class="detail-block">
       <h3>속성</h3>
       <div class="detail-row"><span>도입</span><strong>${escapeHtml(item.introduced || '-')}</strong></div>
+      <div class="detail-row"><span>최종 수정일</span><strong>${escapeHtml(item.lastModifiedAt || '기록 없음')}</strong></div>
+      ${item.statRef ? `<div class="detail-row"><span>정의 원본</span><strong>Character · ${escapeHtml(item.statRef)}</strong></div>` : ''}
       ${previousTerms}
     </div>
     ${senses}
@@ -526,11 +542,14 @@ function openEditor(id) {
   $('#editStatus').innerHTML = data.statuses
     .map(s=>`<option value="${escapeHtml(s.id)}" ${s.id===item.status?'selected':''}>${escapeHtml(s.icon)} ${escapeHtml(s.label)}</option>`)
     .join('');
-  $('#editDefinition').value = item.definition || '';
-  $('#editDetails').value = item.details || item.definition || '';
+  const display = resolveSystem(item, statsCatalog);
+  $('#editDefinition').value = display.definition || '';
+  $('#editDetails').value = display.details || display.definition || '';
+  $('#editDefinition').readOnly = Boolean(item.statRef);
+  $('#editDetails').readOnly = Boolean(item.statRef);
   $('#editCategory').value = item.category;
   $('#editVersion').value = item.lastModified;
-  $('#editorExtra').innerHTML = renderEditorExtra(item);
+  $('#editorExtra').innerHTML = (item.statRef ? '<p class="muted">스탯 설명은 Character의 정식 데이터에서 관리해요. 여기서는 읽기 전용이에요.</p>' : '') + renderEditorExtra(item);
   dialog.showModal();
 }
 
@@ -538,16 +557,23 @@ $('#editorForm').addEventListener('submit', e => {
   e.preventDefault();
   const item = data.systems.find(x=>x.id===$('#editId').value);
   item.status = $('#editStatus').value;
-  item.definition = $('#editDefinition').value.trim();
-  item.details = $('#editDetails').value.trim();
+  if (!item.statRef) {
+    item.definition = $('#editDefinition').value.trim();
+    item.details = $('#editDetails').value.trim();
+  } else {
+    delete item.definition;
+    delete item.details;
+  }
   item.category = $('#editCategory').value.trim();
   item.lastModified = $('#editVersion').value.trim() || data.project.version;
+  item.lastModifiedAt = new Date().toLocaleDateString('sv-SE');
   markDirty();
   dialog.close();
   render();
 });
 
 function markDirty() {
+  data.project.updatedAt = new Date().toLocaleDateString('sv-SE');
   dirty = true;
   $('#saveBtn').textContent = 'Save local draft *';
 }

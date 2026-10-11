@@ -111,7 +111,7 @@ function conflictDiagram(items) {
     ${cards(items, '충돌의 이유')}`;
 }
 
-const tabs = [['overview', '전체 개요'], ['world', '세계관'], ['cast', '등장인물'], ['plot', '사건과 플롯'], ['questions', '미정 사항']];
+const tabs = [['overview', '전체 개요'], ['world', '세계관'], ['cast', '등장인물'], ['plot', '사건과 플롯']];
 const destinations = {
   principles: ['world', '세계의 규칙'], eras: ['world', '세 시대'], harvest: ['world', '배양판의 구조'],
   chronos: ['world', '크로노스 · 인식과 진실'], constraints: ['world', '육환신수의 상호 제약'],
@@ -132,7 +132,7 @@ function relatedLinks(ids, n) {
     const castIndex = /^cast-(\d+)$/.exec(id)?.[1];
     const [tab, label] = castIndex !== undefined ? ['cast', n.cast?.[castIndex]?.title || '등장인물']
       : id.startsWith('event-') ? ['plot', '프롤로그로 연결'] : destinations[id] || ['questions', '미정 사항'];
-    return `<a href="#story/${tab}/${escapeHtml(id)}">${escapeHtml(label)} <span aria-hidden="true">↗</span></a>`;
+    return `<a href="${tab === 'questions' ? '#questions' : '#story/' + tab + '/' + escapeHtml(id)}">${escapeHtml(label)} <span aria-hidden="true">↗</span></a>`;
   }).join('')}</div>`;
 }
 
@@ -193,6 +193,7 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
       ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
       ${block('harvest', steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획'))}
+      ${cards(n.origins, '기원과 권능 · 추가 검토안', '중복된 낙원 설정은 수확 연대기에서만 관리합니다.')}
       ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
     cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
@@ -207,9 +208,8 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
           ${timeline(n)}
           ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
           
-          ${block('causality', causalLoop(n.loop))}`,
-    questions: `${cards(n.origins, '기원과 권능: 설계 메모', '현재 설정과 아직 검토 중인 능력 예시를 함께 정리')}
-      ${block('questions', `${section('열어둔 질문')}${n.questionGroups?.length ? n.questionGroups.map(group => `<section class="card story-question-group"><h3>${escapeHtml(group.title)}</h3><ul>${group.indices.map(i => `<li>${escapeHtml(n.unresolved?.[i])}</li>`).join('')}</ul></section>`).join('') : `<ul class="card world-questions">${(n.unresolved || []).map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul>`}`)}`
+          ${block('causality', causalLoop(n.loop))}`
+
   };
   return `${section('Story & World', '상실 · 세계와의 거래 · 하나의 역사')}
     <nav class="story-nav" aria-label="스토리와 세계관 분류">${tabs.map(([id,label]) => `<a href="#story/${id}"${id === activeTab ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>

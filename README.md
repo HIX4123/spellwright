@@ -43,3 +43,16 @@ Repository **Settings → Pages**에서 다음 값만 지정하면 됩니다.
 대시보드에서 수정한 내용은 브라우저 `localStorage`에 로컬 초안으로 저장되며, 저장소의 공식 데이터 변경은 Git commit으로 관리합니다. 따라서 대시보드는 공개 조회용 UI이면서 동시에 설계 초안을 실험하는 프런트엔드 역할을 합니다.
 
 그래프 모델의 최소 회귀 검사는 `node --test test/graph-model.test.mjs`로 실행합니다.
+
+## Design data ownership (2026-10-11)
+
+The dashboard now has seven sections: Overview, Story & World, Systems, Character, Projections, Open Questions, and Archive. Legacy hash links are mapped to their merged views.
+
+- `docs/data/project.json` owns system relationships, story canon, MVP scope, decisions and open questions. Story events reference canonical plot records through `source` and `index` instead of copying descriptions.
+- `docs/data/stats.json` is the single source for character stat descriptions. System nodes with `statRef` use that source; the corresponding fields are read-only in the browser system editor.
+- `docs/data/classes.json` is the single source for class drafts. Character composes the stat and class data without duplicating the records.
+- Unknown historical edit dates remain unrecorded. Subsequent system edits set `lastModifiedAt` to the local edit date, while `lastModified` records the version.
+- World questions are owned by `narrative.unresolved` and grouped by `questionGroups`; gameplay questions are owned by `openQuestions`. Both appear in Open Questions without copying source text.
+- The browser editor persists local drafts only. Official updates require a Git commit of data files. Draft freshness includes both the project and stat data hashes; stale drafts are retained in a local backup.
+
+Run `node --test test/*.test.mjs` after editing content or navigation.

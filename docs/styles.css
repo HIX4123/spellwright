@@ -667,3 +667,9 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
   .story-event-expander > summary { padding: 12px; min-height: 60px; }
   .story-event-body { padding: 2px 12px 14px; }
 }
+
+/* Consolidated questions and canonical stat definitions */
+.question-group { margin: 10px 0; }
+.question-group summary { cursor: pointer; font-weight: 650; }
+.question-group li { margin: 10px 0; line-height: 1.6; }
+#editDefinition[readonly], #editDetails[readonly] { opacity: .78; cursor: not-allowed; }

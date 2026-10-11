@@ -44,8 +44,8 @@ test('story navigation preserves content and links every timeline destination to
   assert.deepEqual(storyLocation('#story/plot/event-prologue'), { tab: 'plot', target: 'event-prologue' });
   assert.equal(storyLocation('#story/unknown').tab, 'overview');
   const html = renderStoryWorld(narrative, 'plot');
-  assert.equal((html.match(/class="story-panel"/g) || []).length, 5);
-  assert.equal((html.match(/class="story-panel"[^>]+ hidden/g) || []).length, 4);
+  assert.equal((html.match(/class="story-panel"/g) || []).length, 4);
+  assert.equal((html.match(/class="story-panel"[^>]+ hidden/g) || []).length, 3);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
   assert.equal(new Set(ids).size, ids.length);
   for (const [, id] of html.matchAll(/href="#story\/[^/" ]+\/([^" ]+)"/g)) assert.ok(ids.includes(id), id);
@@ -63,4 +63,10 @@ test('canonical plot records supply third-act timeline events and world chronolo
   for (const entry of narrative.worldChronology) assert.ok(html.includes(entry.title));
   assert.equal(narrative.origins.length, 1, 'duplicated harvest notes are represented only once');
   assert.equal('worldbuilding' in narrative, false, 'world rules live in structured principles');
+});
+
+
+test('legacy story question URLs resolve to consolidated Open Questions', async () => {
+  const { dashboardViewFromHash } = await import('../docs/dashboard-routing.js');
+  assert.equal(dashboardViewFromHash('#story/questions/questions'), 'questions');
 });
