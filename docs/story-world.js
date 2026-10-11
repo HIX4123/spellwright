@@ -76,14 +76,14 @@ function causalLoop(items) {
   if (items?.length !== 4) return '';
   const positions = [[105, 52], [335, 52], [335, 232], [105, 232]];
   return `${section('히로인과 주인공의 인과 고리', '주인공과 히로인의 경험 순서가 다르다')}
-    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 엘린은 배양 계획을 막으러 과거로 향한다.">
+    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 카이는 회로 합일 순간에 엘린을 살리고자 과거행을 선택한다.">
       <defs><marker id="story-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs>
       <g class="world-loop-arrows" marker-end="url(#story-loop-arrow)"><path d="M192 52H242"/><path d="M335 88V189"/><path d="M247 232H197"/><path d="M105 196V95"/></g>
       ${items.map((item, i) => { const [x, y] = positions[i]; return `<g><rect x="${x - 86}" y="${y - 34}" width="172" height="68" rx="12"/>
         <text x="${x}" y="${y - 8}">${i + 1}</text><text x="${x}" y="${y + 15}">${escapeHtml(item.title)}</text></g>`; }).join('')}
       <text class="world-loop-center" x="220" y="146">단일 역사 · 인과 연결</text>
       <text class="world-loop-center" x="220" y="168">역사 전체의 반복 여부는 미정</text>
-    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 과거행의 목적은 배양 계획 저지이며, 사고의 구체적 형태는 아직 다듬고 있어요.</figcaption></figure>
+    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 카이는 엘린이 과거에서 결국 사고로 죽을 것을 알면서도 합일 순간보다 더 오래 평온하게 살 기회를 주려 과거로 보냅니다. 엘린의 의사와 사고의 구체적 형태는 아직 미정입니다.</figcaption></figure>
     ${steps(items, '고리의 각 사건')}`;
 }
 
@@ -147,6 +147,8 @@ function timeline(n) {
     foreshadowing: () => cards(n.foreshadowing, '1부에서 2부로 이어지는 복선'),
     sacrifice: () => steps(n.sacrifice?.slice(1), '위기와 희생의 전개'),
     meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로'),
+    actOneEpisodes: () => cards(n.actOneEpisodes, '1부 초반 · 에피소드 구상'),
+    fourthAnswer: () => cards(n.fourthAnswer, '삼파전의 제4의 답 · 비마법사 동료'),
     chronosKnowledge: () => cards(n.chronosKnowledge, '시간 신위 · 인식과 진실'),
     beastConstraintNetwork: () => cards(n.beastConstraintNetwork, '육환신수의 다자간 상호 제약'),
     beastEschatology: () => cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징'),
@@ -192,12 +194,13 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
       ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
       ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
-      ${block('harvest', steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획'))}
+      ${block('harvest', `${steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획')}${cards(n.eloiEcology, '엘로이족 · 생애와 사회', '수명 · 회로 계승 · 공동체 가족 · 감정과 인구')}${steps(n.circuitAscension, '회로의 분화에서 신격화까지', '인간의 고정 계통 ↔ 순수 회로의 합일 · 그릇의 교정')}`)}
       ${cards(n.origins, '기원과 권능 · 추가 검토안', '중복된 낙원 설정은 수확 연대기에서만 관리합니다.')}
       ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
     cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
       ${block('conflict', conflictDiagram(n.conflict))}
+      ${block('fourth-answer', cards(n.fourthAnswer, '제4의 답 · 비마법사 히로인 후보', '세 사람의 삼파전과 다른 해법 · 구체적인 답은 아직 미정'))}
       ${block('circuits', cards(n.circuitOptions, '리오의 연결성과 마법 제거 계획'))}
       ${block('dualization', steps(n.experimentLineage, '이원화 실험의 계보', '최초의 우발적 성공 → 부작용 발견 → 연구진 분화'))}
       ${block('circuit-loss', steps(n.circuitLoss, '테라의 회로 소실 · 병리적 역순', '실제 회로 강탈·편극으로 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'))}
@@ -205,6 +208,7 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('elin-last-words', cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건', '정확한 문구보다 사고 장면과 대화의 자연스러운 연결을 먼저 정한다'))}
       ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
     plot: `${storyFlow(n)}
+          ${block('act-one-arc', steps(n.actOneArc, '1부 · 도입부 구상', '카이 합류 → 독립 에피소드 → 새 동료 → 위기'))}
           ${timeline(n)}
           ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
           

@@ -1,23 +1,34 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31",
+  "updatedAt": "2026-10-11",
   "status": "review",
   "assignmentRule": {
-    "summary": "잠재력 특수 직업 조건을 먼저 검사하고, 조건을 만족하지 않으면 잠재력을 제외한 6개 스탯 중 상위 2개의 조합으로 15개 일반 직업 중 하나를 결정한다.",
+    "summary": "잠재력 특수 직업 조건을 먼저 검사하고, 그 외에는 최초 회로 발현 당시의 여섯 기본 스탯 중 상위 두 축의 조합으로 15개 계통 중 하나를 정하는 초기 구현안. 세계관에서는 개인의 신체·자아·살아온 역사가 첫 회로 분화를 규정하며, 발현한 계통은 후천적으로 바뀌지 않는다.",
     "normal": {
-      "stats": ["health", "mana", "circle", "engraving-capacity", "insight", "mental-strength"],
-      "rule": "잠재력 특수 조건 미충족 시 상위 2개 스탯의 순서 없는 조합으로 직업을 결정한다."
+      "stats": [
+        "health",
+        "mana",
+        "circle",
+        "engraving-capacity",
+        "insight",
+        "mental-strength"
+      ],
+      "rule": "최초 발현 당시 상위 2개 스탯의 순서 없는 조합으로 계통을 표시하는 게임 설계 초안. 최초 확정 후 스탯 변화로 재판정하거나 전직하지 않는다."
     },
     "potential": {
       "classId": "prodigy",
       "symbol": "P",
-      "topStatSymbols": ["S1", "S2"],
+      "topStatSymbols": [
+        "S1",
+        "S2"
+      ],
       "conditions": [
         "P >= S1 + S2",
         "P >= 초기 총 포인트의 40%"
       ],
       "note": "두 조건은 모두 검토 중인 초기안이다. 잠재력 직업은 일반 직업으로 가기 전의 임시 단계가 아니라, 초반 전투력을 포기하고 후반의 더 큰 스노우볼을 노리는 챌린지형 직업을 목표로 한다."
-    }
+    },
+    "lore": "인간의 고유 계통은 마력회로 최초 발현 당시 몸과 자아에 맞춰 순수 회로가 분화된 고정 특성이다. 직업·사회적 역할과는 무관하며, 엘로이족은 순수 회로를 계통 분화 없이 사용한다. 카이의 상위 회로 합일은 예외적인 구조 재편이다."
   },
   "classes": [
     {
@@ -25,7 +36,10 @@
       "name": "전투마법사",
       "englishName": "Battlemage",
       "status": "review",
-      "stats": ["체력", "마력"],
+      "stats": [
+        "체력",
+        "마력"
+      ],
       "mechanic": "전투순환",
       "mechanicDescription": "피해를 받으면 일부가 마력 운용에 유리한 형태로 전환되고, 마력을 적극적으로 소비하면 생존 측면의 이득을 얻는 체력·마력 순환형 기믹.",
       "playstyle": "맞으면서도 마법 출력을 유지하는 정면전형."
@@ -35,7 +49,10 @@
       "name": "수호술사",
       "englishName": "Warden",
       "status": "review",
-      "stats": ["체력", "서클"],
+      "stats": [
+        "체력",
+        "서클"
+      ],
       "mechanic": "진지화",
       "mechanicDescription": "유지 중인 서클을 공간에 고정해 영역으로 만들고, 서클이나 영역이 받는 부담 일부를 자신의 체력으로 대신 떠안아 유지 시간을 늘리는 기믹.",
       "playstyle": "여러 결계와 영역을 오래 유지하며 버티는 영역 장악형."
@@ -45,7 +62,10 @@
       "name": "각인기사",
       "englishName": "Spellblade",
       "status": "review",
-      "stats": ["체력", "각인력"],
+      "stats": [
+        "체력",
+        "각인력"
+      ],
       "mechanic": "육체각인",
       "mechanicDescription": "일부 각인을 서클이 아니라 자신의 육체에 직접 새겨 지속 효과를 얻고, 그 대가를 체력·회복·신체 부담으로 치르는 기믹.",
       "playstyle": "자신의 몸을 하나의 마법 구조처럼 다루는 근접·강화형."
@@ -55,7 +75,10 @@
       "name": "마도사냥꾼",
       "englishName": "Mage Hunter",
       "status": "review",
-      "stats": ["체력", "통찰력"],
+      "stats": [
+        "체력",
+        "통찰력"
+      ],
       "mechanic": "간파",
       "mechanicDescription": "적의 공격을 관찰하거나 직접 겪을수록 해당 적의 규칙과 취약점이 드러나고, 충분히 간파한 뒤 특정 행동을 카운터하거나 약점을 노리는 기믹.",
       "playstyle": "버티면서 상대를 학습하고 파훼하는 대응형."
@@ -65,7 +88,10 @@
       "name": "고행술사",
       "englishName": "Ascetic",
       "status": "review",
-      "stats": ["체력", "정신력"],
+      "stats": [
+        "체력",
+        "정신력"
+      ],
       "mechanic": "불굴",
       "mechanicDescription": "체력이 0 이하로 내려가도 즉시 전투 불능이 되지 않고 정신력을 대가로 행동을 지속하며, 극한 상태 자체에서 추가 이득을 얻을 수 있는 기믹.",
       "playstyle": "죽기 직전의 한계를 오래 버티며 싸우는 극한 생존형."
@@ -75,7 +101,10 @@
       "name": "대마법사",
       "englishName": "Archmage",
       "status": "review",
-      "stats": ["마력", "서클"],
+      "stats": [
+        "마력",
+        "서클"
+      ],
       "mechanic": "병렬영창",
       "mechanicDescription": "활성화된 여러 서클 사이에서 마력을 재분배하고, 복수 서클을 동시에 운용할수록 전체 마력 효율을 높이는 기믹.",
       "playstyle": "다수의 마법을 동시에 운영하는 대규모 캐스터."
@@ -85,7 +114,10 @@
       "name": "방출술사",
       "englishName": "Evoker",
       "status": "review",
-      "stats": ["마력", "각인력"],
+      "stats": [
+        "마력",
+        "각인력"
+      ],
       "mechanic": "마력주입",
       "mechanicDescription": "완성된 각인이나 서클에 추가 마력을 밀어 넣어 구조는 유지한 채 개별 효과의 출력을 규격 이상으로 증폭하는 기믹.",
       "playstyle": "하나의 고성능 서클에 자원을 집중하는 고출력형."
@@ -95,7 +127,10 @@
       "name": "현자",
       "englishName": "Sage",
       "status": "review",
-      "stats": ["마력", "통찰력"],
+      "stats": [
+        "마력",
+        "통찰력"
+      ],
       "mechanic": "해석영창",
       "mechanicDescription": "적과 상황에 대해 알아낸 정보가 많을수록 그 정보에 맞는 마법의 마력 효율이 상승하는 기믹.",
       "playstyle": "정답을 읽어낸 뒤 자원 효율로 우위를 만드는 대응형."
@@ -105,7 +140,10 @@
       "name": "소서러",
       "englishName": "Sorcerer",
       "status": "review",
-      "stats": ["마력", "정신력"],
+      "stats": [
+        "마력",
+        "정신력"
+      ],
       "mechanic": "초과영창",
       "mechanicDescription": "보유 마력을 넘어선 비용 일부를 정신력과 위험으로 대신 감당해 현재의 출력을 앞당겨 쓰는 기믹.",
       "playstyle": "후유증을 감수하고 순간 화력을 끌어올리는 고위험 캐스터."
@@ -115,7 +153,10 @@
       "name": "의식술사",
       "englishName": "Ritualist",
       "status": "review",
-      "stats": ["서클", "각인력"],
+      "stats": [
+        "서클",
+        "각인력"
+      ],
       "mechanic": "복합식",
       "mechanicDescription": "여러 서클이 서로의 각인이나 기능을 공유·보완해 개별 서클을 넘어선 하나의 거대한 복합 구조를 성립시키는 기믹.",
       "playstyle": "다수의 복잡한 서클을 연결해 큰 술식을 구축하는 설계형."
@@ -125,7 +166,10 @@
       "name": "술식가",
       "englishName": "Spellweaver",
       "status": "review",
-      "stats": ["서클", "통찰력"],
+      "stats": [
+        "서클",
+        "통찰력"
+      ],
       "mechanic": "예약식",
       "mechanicDescription": "서클에 조건과 발동 순서를 지정해 특정 상황에서 자동으로 연쇄 작동하도록 구성하는 기믹. 통찰력이 높을수록 더 복잡한 조건을 다룬다는 방향을 검토한다.",
       "playstyle": "전투 상황을 예상하고 마법의 실행 순서를 미리 프로그래밍하는 제어형."
@@ -135,7 +179,10 @@
       "name": "결속술사",
       "englishName": "Binder",
       "status": "review",
-      "stats": ["서클", "정신력"],
+      "stats": [
+        "서클",
+        "정신력"
+      ],
       "mechanic": "강제유지",
       "mechanicDescription": "원래 종료되거나 한계를 넘어선 서클을 정신력과 위험을 대가로 계속 유지해 동시 운용 한계를 일시적으로 초과하는 기믹.",
       "playstyle": "많은 지속 효과를 억지로 붙잡고 싸우는 유지형."
@@ -145,7 +192,10 @@
       "name": "마도학자",
       "englishName": "Arcanist",
       "status": "review",
-      "stats": ["각인력", "통찰력"],
+      "stats": [
+        "각인력",
+        "통찰력"
+      ],
       "mechanic": "재작성",
       "mechanicDescription": "완성된 서클을 폐기하지 않고 일부 각인을 전투 중 교체·수정해 상황에 맞게 구조를 다시 쓰는 기믹.",
       "playstyle": "서클을 사용하기보다 계속 편집하고 최적화하는 설계자형."
@@ -155,7 +205,10 @@
       "name": "금기술사",
       "englishName": "Occultist",
       "status": "review",
-      "stats": ["각인력", "정신력"],
+      "stats": [
+        "각인력",
+        "정신력"
+      ],
       "mechanic": "금기각인",
       "mechanicDescription": "정상적인 안정성을 의도적으로 벗어나는 특수 각인을 사용하고, 발생한 오식·이상현상·반동을 정신력으로 통제하거나 이득으로 전환하는 기믹.",
       "playstyle": "부작용과 실패 가능성까지 설계 자원으로 사용하는 고위험형."
@@ -165,17 +218,22 @@
       "name": "예언자",
       "englishName": "Oracle",
       "status": "review",
-      "stats": ["통찰력", "정신력"],
+      "stats": [
+        "통찰력",
+        "정신력"
+      ],
       "mechanic": "관측",
-      "mechanicDescription": "적의 다음 행동뿐 아니라 확률적 결과나 이상현상의 가능한 분기를 미리 보고, 정신력을 대가로 일부 가능성에 개입하는 기믹.",
-      "playstyle": "미래 정보를 바탕으로 불리한 결과를 피하거나 통제하는 예측형."
+      "mechanicDescription": "통찰력과 정신력을 이용한 고차원 연산으로 적의 다음 행동, 전투 변수와 가능한 미래 결과들을 예측한다. 예측을 토대로 선택을 바꾸거나 피해를 피할 수는 있지만, 운명이나 단일 시간선을 초자연적으로 수정하는 능력은 아니다. 구체적인 정보 공개 및 비용 규칙은 검토 중이다.",
+      "playstyle": "가능한 결과를 계산해 미래 정보를 확보하고 자신의 행동을 최적화하는 고차원 예측형."
     },
     {
       "id": "prodigy",
       "name": "기재",
       "englishName": "Prodigy",
       "status": "review",
-      "stats": ["잠재력"],
+      "stats": [
+        "잠재력"
+      ],
       "mechanic": "축적 · 개화",
       "mechanicDescription": "모든 직업에 공통인 잠재력의 기본 성장 기능은 그대로 유지하되, 이 직업만 사용하지 않고 남겨 둔 잠재력에 시간 가치를 부여한다. 특정 구간을 돌파할 때 남은 잠재력에 비례한 추가 잠재력을 얻고, 일정 임계치 이상에서는 성장 선택지나 성장 효율이 강화되는 방향을 검토한다. 구체적인 증가율과 임계치는 미정이다.",
       "playstyle": "초반 능력치와 안정성을 의도적으로 포기하고, 잠재력을 원금처럼 보존해 후반에 더 큰 복리 성장을 노리는 챌린지형 스노우볼 직업.",
