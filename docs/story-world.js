@@ -3,7 +3,7 @@ import { storyFlow } from './story-flow.js?v=interwoven-20261008-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;
-  if (!n || !['story', 'worldbuilding'].every(key => typeof n[key] === 'string')) return false;
+  if (!n || typeof n.story !== 'string' || (n.worldbuilding !== undefined && typeof n.worldbuilding !== 'string')) return false;
   for (const [key, fields] of [
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
@@ -192,7 +192,8 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
       ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
       ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
-      ${block('harvest', steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획'))}`,
+      ${block('harvest', steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획'))}
+      ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
     cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
       ${block('conflict', conflictDiagram(n.conflict))}

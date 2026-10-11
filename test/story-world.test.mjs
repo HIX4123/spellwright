@@ -55,3 +55,12 @@ test('story navigation preserves content and links every timeline destination to
   assert.equal(isNarrativeData({ ...narrative, timeline: [null] }), false);
   assert.equal(isNarrativeData({ ...narrative, questionGroups: [{ title: 'bad', indices: [-1] }] }), false);
 });
+
+
+test('canonical plot records supply third-act timeline events and world chronology is visible', () => {
+  const html = renderStoryWorld(narrative, 'plot');
+  for (const index of [8, 9, 10]) assert.ok(html.includes(narrative.plot[index].description));
+  for (const entry of narrative.worldChronology) assert.ok(html.includes(entry.title));
+  assert.equal(narrative.origins.length, 1, 'duplicated harvest notes are represented only once');
+  assert.equal('worldbuilding' in narrative, false, 'world rules live in structured principles');
+});
