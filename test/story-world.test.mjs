@@ -20,7 +20,7 @@ test('actual worldbuilding renders two act questions and accessible concept and 
     for (const item of narrative[key]) assert.ok(html.includes(item.title));
     assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
   }
-  assert.match(html, /과거행의 목적은 배양 계획 저지/);
+  assert.match(html, /단일 역사 · 인과 연결/);
 });
 
 test('old text drafts remain readable and imported structured content is validated and escaped', () => {
