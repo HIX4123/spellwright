@@ -119,5 +119,5 @@ test('six beast forms render as non-binding visual motifs without changing the d
   assert.match(world, /인간 출신/);
   assert.equal(isNarrativeData({ ...narrative, beastForms: [null] }), false);
   assert.equal(isNarrativeData({ ...narrative, beastForms: [{ title: '불완전한 기록' }] }), false);
-  assert.doesNotMatch(world, /<img\\b/);
+  assert.doesNotMatch(world, /<img\b/);
 });
