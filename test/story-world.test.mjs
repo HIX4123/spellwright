@@ -107,3 +107,17 @@ test('Eloi late-life visual rules and Kai four-stage design render as text-only 
     assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
   }
 });
+
+test('six beast forms render as non-binding visual motifs without changing the divine concepts', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  assert.equal(narrative.beastForms.length, 6);
+  const world = renderStoryWorld(narrative, 'world');
+  assert.match(world, /육환신수 · 본질 형상의 생물 모티브/);
+  for (const name of ['메가네우라', '물곰', '담요문어', '대왕고래', '메갈로케로스', '큰정원사새']) {
+    assert.ok(world.includes(name), name);
+  }
+  assert.match(world, /인간 출신/);
+  assert.equal(isNarrativeData({ ...narrative, beastForms: [null] }), false);
+  assert.equal(isNarrativeData({ ...narrative, beastForms: [{ title: '불완전한 기록' }] }), false);
+  assert.doesNotMatch(world, /<img\\b/);
+});

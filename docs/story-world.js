@@ -8,7 +8,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes', 'circuitAscension'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastForms', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes', 'circuitAscension'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -192,6 +192,7 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
     world: `${block('principles', `${section('세계의 규칙')}${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `<article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>` : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}`)}
       ${block('eras', cards(n.eras, '세 시대의 배치와 생활', '작품 순서와 세계 연대기는 일치하지 않아요.'))}
       ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념적 대칭 · 실제 제약은 육자 전체의 다자간 네트워크')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 상징적 대응을 나타내는 모식도예요. 서로만을 제약하는 일대일 맞계약을 뜻하지 않아요.</p>` : ''}
+      ${n.beastForms?.length ? block('beast-forms', `${cards(n.beastForms, '육환신수 · 본질 형상의 생물 모티브', '생물의 형태와 생태에서 출발한 디자인 기준 · 권능의 원리와 구분')}<p class="muted world-figure-note">여섯 생물은 신위의 본질 형상을 위한 시각적 원형이지, 권능의 생물학적 원인이나 모든 현현 형태를 규정하지 않아요. 우르처럼 인간 출신인 신위 보유자도 인간형 등 다른 모습으로 나타날 수 있으며, 정확한 진체 구조·크기·색채·변형 정도는 추후 결정합니다.</p>`) : ''}
       ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
       ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
       ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
