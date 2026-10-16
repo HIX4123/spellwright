@@ -8,7 +8,7 @@ export function isNarrativeData(n) {
     ['acts', ['title', 'question', 'knowledge']],
     ['principles', ['title', 'description']],
     ['pairs', ['divine', 'mythical', 'diagram', 'description']],
-    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastForms', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes', 'circuitAscension', 'kaiPsychology', 'kaiJoining', 'kaiAftermath', 'kaiNarration'].map(key => [key, ['title', 'description', 'status']]),
+    ...['eras', 'plot', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing', 'experimentLineage', 'circuitLoss', 'beastForms', 'beastConstraintNetwork', 'beastEschatology', 'paradoxExperiment', 'beastWar', 'lossJinx', 'elinLastWords', 'thirdActPlan', 'worldChronology', 'demiurgeChronology', 'actOneArc', 'actOneEpisodes', 'fourthAnswer', 'eloiEcology', 'eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes', 'circuitAscension', 'kaiPsychology', 'kaiJoining', 'kaiAftermath', 'kaiNarration', 'characterMotifs', 'groupFounding', 'creativeReferences', 'narrativeCraft'].map(key => [key, ['title', 'description', 'status']]),
     ...['loop', 'harvest'].map(key => [key, ['title', 'description']])
   ]) {
     if (n[key] !== undefined && (!Array.isArray(n[key])
@@ -118,6 +118,8 @@ const destinations = {
   'beast-war': ['world', '패러독스 실험과 신수전쟁'], conflict: ['cast', '세 친구의 갈등'],
   circuits: ['cast', '프레미아의 회로'], 'loss-jinx': ['cast', '상실의 징크스'],
   'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
+  'character-motifs': ['cast', '인물별 원전·디자인 모티프'], 'group-founding': ['cast', '창단 순서와 독립 동기'],
+  'creative-references': ['plot', '탐색·보류한 창작 참고'], 'narrative-craft': ['plot', '서사·작법 원칙'],
   'kai-design': ['cast', '카이의 외형 4단계'], 'kai-psychology': ['cast', '카이의 심리와 일상'],
   'kai-joining': ['plot', '카이의 합류 경위'], 'kai-aftermath': ['plot', '집단 붕괴 뒤의 카이'],
   'kai-narration': ['plot', '카이와 독자의 서술 거리'], 'eloi-appearance': ['world', '엘로이족 외형과 수명'],
@@ -204,7 +206,10 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       ${cards(n.origins, '기원과 권능 · 추가 검토안', '중복된 낙원 설정은 수확 연대기에서만 관리합니다.')}
       ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
     cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
-      <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>
+      <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p>${n.characterMotifs?.[i] ? `<p class="muted"><a href="#story/cast/motif-${i}">원전·모티프·인물상 자세히 보기 ↗</a></p>` : ''}</article>`).join('')}</div>
+      ${block('character-motifs', `${section('인물별 모티프와 차용 범위', '원전에서 무엇을 차용하고 무엇을 배제했는지 · 실재 설정과 보류안을 구분')}${n.characterMotifs?.length ? `<div class="world-act-grid">${n.characterMotifs.map((item,i)=>`
+        <article id="motif-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>` : ''}`)}
+      ${block('group-founding', steps(n.groupFounding, '모임의 결성과 관계 형성', '프레미아 → 라키르 → 니벨 → 카이 · 독립 동기와 가입 순서'))}
       ${block('kai-psychology', cards(n.kaiPsychology, '카이 · 일상과 상실에 대한 작가용 심리', '사교적인 평상시와 상실 후의 관성 · 실제 서술에서는 내면 설명을 점차 줄임'))}
       ${block('kai-design', `${steps(n.kaiDesignStages, '카이 · 외형 변화 4단계', '소년 → 청소년 → 성장한 청소년과 6익 → 회로 합일 이후 성년체')}${cards(n.kaiDesignNotes, '최종 형태 · 디자인 원칙', '회로 수렴 · 서브 컬러 · 회전 훈륜 · 케이프와 망토')}`)}
       ${block('conflict', conflictDiagram(n.conflict))}
@@ -220,6 +225,8 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
           ${block('kai-joining', steps(n.kaiJoining, '카이 · 경계에서 자발적 합류까지', '프레미아의 영입 포기 → 사적인 만남 → 카이가 역으로 가입 제안'))}
           ${block('kai-aftermath', cards(n.kaiAftermath, '카이 · 라키르와 니벨이 남긴 일상', '업무를 잇고 이전과 같은 자리에 결과물을 놓는 행동'))}
           ${block('kai-narration', cards(n.kaiNarration, '카이의 서술 거리 · B에서 A로', '독자와의 접근성 변화 · 심상은 작가용 참고'))}
+          ${block('creative-references', cards(n.creativeReferences, '창작 참고와 보류한 모티프', '아포토시스·식물·꽃무릇·고요한 동세 · 확정 설정과 분리'))}
+          ${block('narrative-craft', cards(n.narrativeCraft, '작법과 서사 운영 원칙', '앞서 논의한 서술 거리와 3부작 구조를 연결한 검토 기록'))}
           ${timeline(n)}
           ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
           

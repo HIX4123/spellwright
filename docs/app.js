@@ -1,6 +1,6 @@
 import { escapeHtml, section } from './html.js';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
-import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=kai-character-20261016-1';
+import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=story-motifs-20261016-2';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-min-displacement-pack-20261005-1';

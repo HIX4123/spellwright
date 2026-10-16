@@ -56,3 +56,13 @@ The dashboard now has seven sections: Overview, Story & World, Systems, Characte
 - The browser editor persists local drafts only. Official updates require a Git commit of data files. Draft freshness includes both the project and stat data hashes; stale drafts are retained in a local backup.
 
 Run `node --test test/*.test.mjs` after editing content or navigation.
+
+## Worldbuilding / character reference notes (2026-10-16)
+
+The **Story & World** area remains a four-subtab view (Overview, World, Cast, Plot). The design notes are canonical structured content in `docs/data/project.json`, not separate copies of the plot or private drafts:
+
+- **Cast:** `narrative.characterMotifs` records each cast member's referenced originals, borrowed characteristics, rejected interpretations, and provisional visual designs. Each cast card links directly to its motif entry. `narrative.groupFounding` records the proposed founding order and its open details.
+- **Plot:** `narrative.creativeReferences` retains explored but not necessarily adopted motifs (cell death, plants, flowers, detached landscapes, quiet perpetual motion), while `narrative.narrativeCraft` tracks narrative technique and scene design principles.
+- **Existing canon stays in place:** divine creature forms are owned by `beastForms`, Eloi appearance by `eloiAppearance`, Kai's form by `kaiDesignStages`/`kaiDesignNotes`, and event chronology by `timeline`/`plot`. The new notes point to those concepts without defining conflicting duplicates.
+- **Interpretation statuses matter:** a motif source, analogy, IF scene, or speculative image is not automatically an adopted story event. The only timeline is the one described by the existing plot rules; "IF" comparisons are not additional histories.
+

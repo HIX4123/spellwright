@@ -140,3 +140,28 @@ test('Kai psychology, voluntary joining, aftermath, and narration rules appear i
   assert.ok(narrative.timeline.some(e => e.id === 'aftermath' && e.source === 'actOneArc'));
   assert.deepEqual(narrative.questionGroups.flatMap(g => g.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
 });
+
+
+test('character motifs are discoverable from cast cards and speculative references are clearly separated', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  assert.equal(narrative.characterMotifs.length, narrative.cast.length);
+  for (const key of ['characterMotifs','groupFounding','creativeReferences','narrativeCraft']) {
+    assert.ok(narrative[key].length > 0, key);
+    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false, key);
+  }
+  const cast = renderStoryWorld(narrative, 'cast');
+  const plot = renderStoryWorld(narrative, 'plot');
+  for (let i=0;i<narrative.cast.length;i++) {
+    assert.match(cast, new RegExp('id="motif-'+i+'"'));
+    assert.match(cast, new RegExp('href="#story/cast/motif-'+i+'"'));
+  }
+  for (const motif of ['유마거사','프로메테우스','오펜하이머','리어왕','스테인드글라스']) assert.ok(cast.includes(motif), motif);
+  for (const ref of ['아포토시스','레이스플랜트','꽃무릇','고속으로 돌아','한 번의 역사']) {
+    if (ref==='한 번의 역사') continue;
+    assert.ok(plot.includes(ref), ref);
+  }
+  assert.match(plot, /작법과 서사 운영 원칙/);
+  assert.match(cast, /프레미아 → 라키르 → 니벨 → 카이/);
+  const ids=[...cast.matchAll(/\\bid="([^"]+)"/g)].map(x=>x[1]);
+  assert.equal(new Set(ids).size, ids.length);
+});
