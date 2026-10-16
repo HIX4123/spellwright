@@ -121,3 +121,22 @@ test('six beast forms render as non-binding visual motifs without changing the d
   assert.equal(isNarrativeData({ ...narrative, beastForms: [{ title: '불완전한 기록' }] }), false);
   assert.doesNotMatch(world, /<img\b/);
 });
+
+
+test('Kai psychology, voluntary joining, aftermath, and narration rules appear in the existing story tabs', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  for (const key of ['kaiPsychology', 'kaiJoining', 'kaiAftermath', 'kaiNarration']) {
+    assert.ok(narrative[key].length >= 3, key);
+    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false, key);
+  }
+  const cast = renderStoryWorld(narrative, 'cast');
+  const plot = renderStoryWorld(narrative, 'plot');
+  assert.match(cast, /카이 · 일상과 상실에 대한 작가용 심리/);
+  assert.match(cast, /엘린의 죽음/);
+  assert.match(plot, /카이 · 경계에서 자발적 합류까지/);
+  assert.match(plot, /카이 · 라키르와 니벨이 남긴 일상/);
+  assert.match(plot, /카이의 서술 거리 · B에서 A로/);
+  assert.match(plot, /마법사의 일상에서 시작한 호기심/);
+  assert.ok(narrative.timeline.some(e => e.id === 'aftermath' && e.source === 'actOneArc'));
+  assert.deepEqual(narrative.questionGroups.flatMap(g => g.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
+});
