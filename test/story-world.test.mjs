@@ -156,12 +156,9 @@ test('character motifs are discoverable from cast cards and speculative referenc
     assert.match(cast, new RegExp('href="#story/cast/motif-'+i+'"'));
   }
   for (const motif of ['유마거사','프로메테우스','오펜하이머','리어왕','스테인드글라스']) assert.ok(cast.includes(motif), motif);
-  for (const ref of ['아포토시스','레이스플랜트','꽃무릇','고속으로 돌아','한 번의 역사']) {
-    if (ref==='한 번의 역사') continue;
-    assert.ok(plot.includes(ref), ref);
-  }
+  for (const ref of ['아포토시스','레이스플랜트','꽃무릇','고속으로 돌아']) assert.ok(plot.includes(ref), ref);
   assert.match(plot, /작법과 서사 운영 원칙/);
   assert.match(cast, /프레미아 → 라키르 → 니벨 → 카이/);
-  const ids=[...cast.matchAll(/\\bid="([^"]+)"/g)].map(x=>x[1]);
+  const ids=[...cast.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   assert.equal(new Set(ids).size, ids.length);
 });
