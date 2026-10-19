@@ -66,3 +66,10 @@ The **Story & World** area remains a four-subtab view (Overview, World, Cast, Pl
 - **Existing canon stays in place:** divine creature forms are owned by `beastForms`, Eloi appearance by `eloiAppearance`, Kai's form by `kaiDesignStages`/`kaiDesignNotes`, and event chronology by `timeline`/`plot`. The new notes point to those concepts without defining conflicting duplicates.
 - **Interpretation statuses matter:** a motif source, analogy, IF scene, or speculative image is not automatically an adopted story event. The only timeline is the one described by the existing plot rules; "IF" comparisons are not additional histories.
 
+
+## Narrative naming and visual direction (2026-10-19)
+
+- **주인공:** 현행 통용 이름은 **카르**(로마자 **Kar**, 잠정). 옛 작업명 **카이**는 현행 화면에서 대체했다. 카르 자체가 본명인지, 카르-로 시작하는 긴 본명의 애칭인지는 미정이다. 내부 `kai*` 키와 `kai` 그래프 ID는 호환성을 위해 유지한다.
+- **공동체:** 프레미아가 주도해 결성한 비공식 마법사 모임의 이름 **이음새**는 확정이다. 서로 다른 사람을 잇는 연결과 방황하는 마법사의 머물 틈새라는 중의성을 가진다. 스테인드글라스 접합은 비유이며 공식 엠블럼으로 확정하지 않았다.
+- **엘로이 낙원:** 흐릿하거나 눈부신 드림코어보다 색채와 윤곽이 비정상적으로 또렷하고 인위적으로 완벽해서 이질적인 풍경을 지향한다. 미술 방향이며 정식 지형·장르 분류를 확정하지 않았다.
+- 탐색한 과학 용어, 명칭 아나그램, 이전 후보는 참고 기록으로만 관리한다. 서사의 기존 사건·연대표·연결 ID와 데이터 스키마는 보존한다.
