@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { storyFlow } from './story-flow.js?v=interwoven-20261008-1';
+import { storyFlow } from './story-flow.js?v=ieumsae-kar-20261019-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;
@@ -76,14 +76,14 @@ function causalLoop(items) {
   if (items?.length !== 4) return '';
   const positions = [[105, 52], [335, 52], [335, 232], [105, 232]];
   return `${section('히로인과 주인공의 인과 고리', '주인공과 히로인의 경험 순서가 다르다')}
-    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 카이는 회로 합일 순간에 엘린을 살리고자 과거행을 선택한다.">
+    <figure class="card world-loop"><svg viewBox="0 0 440 300" role="img" aria-label="회로 전달, 미래 재회, 전지와 희생 제안, 히로인의 과거행으로 이어지는 인과 고리. 카르는 회로 합일 순간에 엘린을 살리고자 과거행을 선택한다.">
       <defs><marker id="story-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="currentColor"/></marker></defs>
       <g class="world-loop-arrows" marker-end="url(#story-loop-arrow)"><path d="M192 52H242"/><path d="M335 88V189"/><path d="M247 232H197"/><path d="M105 196V95"/></g>
       ${items.map((item, i) => { const [x, y] = positions[i]; return `<g><rect x="${x - 86}" y="${y - 34}" width="172" height="68" rx="12"/>
         <text x="${x}" y="${y - 8}">${i + 1}</text><text x="${x}" y="${y + 15}">${escapeHtml(item.title)}</text></g>`; }).join('')}
       <text class="world-loop-center" x="220" y="146">단일 역사 · 인과 연결</text>
       <text class="world-loop-center" x="220" y="168">역사 전체의 반복 여부는 미정</text>
-    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 카이는 엘린이 과거에서 결국 사고로 죽을 것을 알면서도 합일 순간보다 더 오래 평온하게 살 기회를 주려 과거로 보냅니다. 엘린의 의사와 사고의 구체적 형태는 아직 미정입니다.</figcaption></figure>
+    </svg><figcaption class="muted">인과 고리와 시대 전체를 닫힌 시간선으로 만드는 시도는 구분해요. 카르는 엘린이 과거에서 결국 사고로 죽을 것을 알면서도 합일 순간보다 더 오래 평온하게 살 기회를 주려 과거로 보냅니다. 엘린의 의사와 사고의 구체적 형태는 아직 미정입니다.</figcaption></figure>
     ${steps(items, '고리의 각 사건')}`;
 }
 
@@ -120,9 +120,9 @@ const destinations = {
   'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
   'character-motifs': ['cast', '인물별 원전·디자인 모티프'], 'group-founding': ['cast', '창단 순서와 독립 동기'],
   'creative-references': ['plot', '탐색·보류한 창작 참고'], 'narrative-craft': ['plot', '서사·작법 원칙'],
-  'kai-design': ['cast', '카이의 외형 4단계'], 'kai-psychology': ['cast', '카이의 심리와 일상'],
-  'kai-joining': ['plot', '카이의 합류 경위'], 'kai-aftermath': ['plot', '집단 붕괴 뒤의 카이'],
-  'kai-narration': ['plot', '카이와 독자의 서술 거리'], 'eloi-appearance': ['world', '엘로이족 외형과 수명'],
+  'kai-design': ['cast', '카르의 외형 4단계'], 'kai-psychology': ['cast', '카르의 심리와 일상'],
+  'kai-joining': ['plot', '카르의 합류 경위'], 'kai-aftermath': ['plot', '집단 붕괴 뒤의 카르'],
+  'kai-narration': ['plot', '카르와 독자의 서술 거리'], 'eloi-appearance': ['world', '엘로이족 외형과 수명'],
   causality: ['plot', '엘린의 인과 고리'], 'third-act-plan': ['plot', '3부 설계'],
   'time-map': ['plot', '세계시간 · 교차 사건도'], questions: ['questions', '열어둔 질문']
 };
@@ -153,15 +153,15 @@ function timeline(n) {
     sacrifice: () => steps(n.sacrifice?.slice(1), '위기와 희생의 전개'),
     meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로'),
     actOneEpisodes: () => cards(n.actOneEpisodes, '1부 초반 · 에피소드 구상'),
-    kaiJoining: () => steps(n.kaiJoining, '카이 · 첫 만남부터 자발적 합류까지'),
-    kaiAftermath: () => cards(n.kaiAftermath, '집단 붕괴 이후 카이의 일상'),
+    kaiJoining: () => steps(n.kaiJoining, '카르 · 첫 만남부터 자발적 합류까지'),
+    kaiAftermath: () => cards(n.kaiAftermath, '집단 붕괴 이후 카르의 일상'),
     fourthAnswer: () => cards(n.fourthAnswer, '삼파전의 제4의 답 · 비마법사 동료'),
     chronosKnowledge: () => cards(n.chronosKnowledge, '시간 신위 · 인식과 진실'),
     beastConstraintNetwork: () => cards(n.beastConstraintNetwork, '육환신수의 다자간 상호 제약'),
     beastEschatology: () => cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징'),
     paradoxExperiment: () => steps(n.paradoxExperiment, '데미우르고스의 자기반증 실험'),
     beastWar: () => steps(n.beastWar, '패러독스 실험에서 신수전쟁까지'),
-    thirdActPlan: () => cards(n.thirdActPlan, '3부 · 카이 토벌과 우르'),
+    thirdActPlan: () => cards(n.thirdActPlan, '3부 · 카르 토벌과 우르'),
     lossJinx: () => cards(n.lossJinx, '상실의 징크스', '테라의 회로 소실과 구별되는 삶의 조소'),
     elinLastWords: () => cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건'),
     worldChronology: () => steps(n.worldChronology, '세계 연대기'),
@@ -193,8 +193,8 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
     overview: `${section('상실에서 시작해, 미래를 아는 자의 선택으로')}
       ${textCard(n.story, '아직 정리된 스토리 내용이 없어요.')}
       ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `<article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span><h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
-      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">시간 신위와 운명의 인식</a><a href="#story/plot/event-collapse">엘로이 종말과 신격화</a><a href="#story/plot/event-third-act">과거 시대의 3부 · 카이 토벌</a></div>
-      <p class="muted">사건과 플롯 탭의 교차 다이어그램에서는 세계 연대기, 카이·우르·히로인의 개인 시간을 한눈에 비교할 수 있어요. 아래 상세 기록만 플레이어가 경험하는 순서대로 정렬되어 있습니다.</p>`,
+      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">시간 신위와 운명의 인식</a><a href="#story/plot/event-collapse">엘로이 종말과 신격화</a><a href="#story/plot/event-third-act">과거 시대의 3부 · 카르 토벌</a></div>
+      <p class="muted">사건과 플롯 탭의 교차 다이어그램에서는 세계 연대기, 카르·우르·히로인의 개인 시간을 한눈에 비교할 수 있어요. 아래 상세 기록만 플레이어가 경험하는 순서대로 정렬되어 있습니다.</p>`,
     world: `${block('principles', `${section('세계의 규칙')}${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `<article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>` : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}`)}
       ${block('eras', cards(n.eras, '세 시대의 배치와 생활', '작품 순서와 세계 연대기는 일치하지 않아요.'))}
       ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념적 대칭 · 실제 제약은 육자 전체의 다자간 네트워크')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 상징적 대응을 나타내는 모식도예요. 서로만을 제약하는 일대일 맞계약을 뜻하지 않아요.</p>` : ''}
@@ -209,26 +209,26 @@ export function renderStoryWorld(n = {}, activeTab = 'overview') {
       <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p>${n.characterMotifs?.[i] ? `<p class="muted"><a href="#story/cast/motif-${i}">원전·모티프·인물상 자세히 보기 ↗</a></p>` : ''}</article>`).join('')}</div>
       ${block('character-motifs', `${section('인물별 모티프와 차용 범위', '원전에서 무엇을 차용하고 무엇을 배제했는지 · 실재 설정과 보류안을 구분')}${n.characterMotifs?.length ? `<div class="world-act-grid">${n.characterMotifs.map((item,i)=>`
         <article id="motif-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>` : ''}`)}
-      ${block('group-founding', steps(n.groupFounding, '모임의 결성과 관계 형성', '프레미아 → 라키르 → 니벨 → 카이 · 독립 동기와 가입 순서'))}
-      ${block('kai-psychology', cards(n.kaiPsychology, '카이 · 일상과 상실에 대한 작가용 심리', '사교적인 평상시와 상실 후의 관성 · 실제 서술에서는 내면 설명을 점차 줄임'))}
-      ${block('kai-design', `${steps(n.kaiDesignStages, '카이 · 외형 변화 4단계', '소년 → 청소년 → 성장한 청소년과 6익 → 회로 합일 이후 성년체')}${cards(n.kaiDesignNotes, '최종 형태 · 디자인 원칙', '회로 수렴 · 서브 컬러 · 회전 훈륜 · 케이프와 망토')}`)}
+      ${block('group-founding', steps(n.groupFounding, '모임의 결성과 관계 형성', '프레미아 → 라키르 → 니벨 → 카르 · 독립 동기와 가입 순서'))}
+      ${block('kai-psychology', cards(n.kaiPsychology, '카르 · 일상과 상실에 대한 작가용 심리', '사교적인 평상시와 상실 후의 관성 · 실제 서술에서는 내면 설명을 점차 줄임'))}
+      ${block('kai-design', `${steps(n.kaiDesignStages, '카르 · 외형 변화 4단계', '소년 → 청소년 → 성장한 청소년과 6익 → 회로 합일 이후 성년체')}${cards(n.kaiDesignNotes, '최종 형태 · 디자인 원칙', '회로 수렴 · 서브 컬러 · 회전 훈륜 · 케이프와 망토')}`)}
       ${block('conflict', conflictDiagram(n.conflict))}
       ${block('fourth-answer', cards(n.fourthAnswer, '제4의 답 · 비마법사 히로인 후보', '세 사람의 삼파전과 다른 해법 · 구체적인 답은 아직 미정'))}
       ${block('circuits', cards(n.circuitOptions, '프레미아의 연결성과 마법 제거 계획'))}
       ${block('dualization', steps(n.experimentLineage, '이원화 실험의 계보', '최초의 우발적 성공 → 부작용 발견 → 연구진 분화'))}
       ${block('circuit-loss', steps(n.circuitLoss, '테라의 회로 소실 · 병리적 역순', '실제 회로 강탈·편극으로 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'))}
-      ${block('loss-jinx', cards(n.lossJinx, '마법사들에게 전해진 상실의 징크스', '테라의 질환과는 별개인 삶의 조소 · 카이는 이를 서사적으로 핵심화한다'))}
+      ${block('loss-jinx', cards(n.lossJinx, '마법사들에게 전해진 상실의 징크스', '테라의 질환과는 별개인 삶의 조소 · 카르는 이를 서사적으로 핵심화한다'))}
       ${block('elin-last-words', cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건', '정확한 문구보다 사고 장면과 대화의 자연스러운 연결을 먼저 정한다'))}
       ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
     plot: `${storyFlow(n)}
-          ${block('act-one-arc', steps(n.actOneArc, '1부 · 도입부 구상', '카이 합류 → 독립 에피소드 → 새 동료 → 위기'))}
-          ${block('kai-joining', steps(n.kaiJoining, '카이 · 경계에서 자발적 합류까지', '프레미아의 영입 포기 → 사적인 만남 → 카이가 역으로 가입 제안'))}
-          ${block('kai-aftermath', cards(n.kaiAftermath, '카이 · 라키르와 니벨이 남긴 일상', '업무를 잇고 이전과 같은 자리에 결과물을 놓는 행동'))}
-          ${block('kai-narration', cards(n.kaiNarration, '카이의 서술 거리 · B에서 A로', '독자와의 접근성 변화 · 심상은 작가용 참고'))}
+          ${block('act-one-arc', steps(n.actOneArc, '1부 · 도입부 구상', '카르 합류 → 독립 에피소드 → 새 동료 → 위기'))}
+          ${block('kai-joining', steps(n.kaiJoining, '카르 · 경계에서 자발적 합류까지', '프레미아의 영입 포기 → 사적인 만남 → 카르가 역으로 가입 제안'))}
+          ${block('kai-aftermath', cards(n.kaiAftermath, '카르 · 라키르와 니벨이 남긴 일상', '업무를 잇고 이전과 같은 자리에 결과물을 놓는 행동'))}
+          ${block('kai-narration', cards(n.kaiNarration, '카르의 서술 거리 · B에서 A로', '독자와의 접근성 변화 · 심상은 작가용 참고'))}
           ${block('creative-references', cards(n.creativeReferences, '창작 참고와 보류한 모티프', '아포토시스·식물·꽃무릇·고요한 동세 · 확정 설정과 분리'))}
           ${block('narrative-craft', cards(n.narrativeCraft, '작법과 서사 운영 원칙', '앞서 논의한 서술 거리와 3부작 구조를 연결한 검토 기록'))}
           ${timeline(n)}
-          ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카이 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
+          ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카르 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
           
           ${block('causality', causalLoop(n.loop))}`
 
