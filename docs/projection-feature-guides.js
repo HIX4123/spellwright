@@ -1186,16 +1186,6 @@ function medialAxisSegmentsByFace(guide, transform) {
   });
 }
 
-function medialAxisMarkup(guide, transform) {
-  const segments = medialAxisSegmentsByFace(guide, transform).flat();
-  if (!segments.length) return '';
-  const path = segments.map(([start, end]) => (
-    `M ${svgNumber(start[0])} ${svgNumber(start[1])} L ${svgNumber(end[0])} ${svgNumber(end[1])}`
-  )).join(' ');
-  return `<path class="projection-guide-medial-axis" d="${path}" />`;
-}
-
-
 function medialTimingData(guide, transform) {
   const byFace = medialAxisSegmentsByFace(guide, transform);
   const origins = guide.dualGraph.faces.map(face => transform.point(dualFacePoint(face)));

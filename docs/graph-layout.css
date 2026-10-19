@@ -208,15 +208,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.compact-parent {
-  position: absolute;
-  right: 8px;
-  bottom: 5px;
-  color: var(--muted);
-  font-size: 7px;
-  font-style: normal;
-  opacity: .76;
-}
 
 .stat-panel-frame {
   position: absolute;

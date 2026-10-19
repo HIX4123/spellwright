@@ -16,7 +16,7 @@ import {
 } from './projection-core.js?v=minimal-symmetry-rotation-20261002-2';
 import { analyzeProjectionStructure } from './projection-geometry-analysis.js?v=ponytail-20260928-1';
 import { renderProjectionFeatureTags } from './projection-features.js?v=ponytail-20260928-1';
-import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=global-easing-20260930-1';
+import { mountProjectionFeatureGuides, updateProjectionFeatureGuides } from './projection-feature-guides.js?v=audit-20261019-1';
 
 const SELECTOR_ID = 'projectionSelectorPrototype';
 const TAU = Math.PI * 2;
@@ -312,44 +312,6 @@ export function minimalRotationClassOrder(classes, viewsByClass, geometry, symme
   const order = [0, ...reversed.reverse()];
   return order.map(index => classes[index]);
 }
-
-export function projectionSerialLayout(classes, viewsByClass, geometry, symmetryRotations) {
-  const orderedClasses = minimalRotationClassOrder(
-    classes,
-    viewsByClass,
-    geometry,
-    symmetryRotations
-  );
-  if (!orderedClasses.length) {
-    return { orderedClasses, serialsByClass: new Map(), totalRotationRadians: 0 };
-  }
-
-  const frames = orderedClasses.map(item => {
-    const view = viewsByClass.get(item.id);
-    return viewFrame(view.viewDirection, view.rollDegrees);
-  });
-  const edgeAngles = frames.map((frame, index) =>
-    nearestSymmetryEquivalentFrame(
-      frame,
-      frames[(index + 1) % frames.length],
-      symmetryRotations
-    ).angle
-  );
-  const totalRotationRadians = edgeAngles.reduce((sum, angle) => sum + angle, 0);
-  const serialsByClass = new Map();
-  let cumulative = 0;
-
-  orderedClasses.forEach((item, index) => {
-    const serial = totalRotationRadians > 1e-12
-      ? Math.min(999, Math.round(cumulative / totalRotationRadians * 1000))
-      : 0;
-    serialsByClass.set(item.id, serial);
-    cumulative += edgeAngles[index];
-  });
-
-  return { orderedClasses, serialsByClass, totalRotationRadians };
-}
-
 
 const GLOBAL_PROJECTION_SERIAL_CACHE = new Map();
 
