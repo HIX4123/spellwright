@@ -21,8 +21,7 @@ import {
   filteredProjectionTargets,
   formatProjectionSerial,
   globalProjectionSerialLayout,
-  minimalRotationClassOrder,
-  projectionSerialLayout
+  minimalRotationClassOrder
 } from '../docs/projection-selector.js';
 import { analyzeProjectionStructure } from '../docs/projection-geometry-analysis.js';
 

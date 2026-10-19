@@ -45,7 +45,6 @@ body { font-size: 17px; }
 .compact-node-kicker { font-size: 9px; }
 .compact-node > strong { font-size: 13px; }
 .compact-node > small { font-size: 9px; }
-.compact-parent { font-size: 8px; }
 .compact-node.stat-panel-title > strong { font-size: 13px; }
 .compact-node.stat-panel-row > strong { font-size: 12px; }
 .isolated-label { font-size: 9px; }
@@ -72,8 +71,7 @@ body { font-size: 17px; }
 .projection-hashtag-block span { font-size: 9px; }
 
 /* These badges can be injected after stylesheets at runtime, so force the typography lift. */
-.projection-projection-badge,
-.projection-axis-badge { font-size: 9px !important; }
+.projection-projection-badge { font-size: 9px !important; }
 
 @media (max-width: 900px) {
   .nav-btn { font-size: 13px; }

@@ -1,3 +1,4 @@
+import { escapeHtml } from './html.js';
 import {
   geometryForSolid,
   projectVertices,
@@ -13,19 +14,9 @@ import {
   formatProjectionSerial,
   globalProjectionSerialLayout,
   selectProjectionTarget
-} from './projection-selector.js?v=global-projection-axis-20261003-2';
+} from './projection-selector.js?v=audit-20261019-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
-
-function escapeHtml(value) {
-  return String(value ?? '').replace(/[&<>"']/g, character => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  })[character]);
-}
 
 function vertexHullCount(structure) {
   const nodes = structure.nodes.filter(node => node.vertexMultiplicity > 0);

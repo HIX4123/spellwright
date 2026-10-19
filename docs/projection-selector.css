@@ -167,31 +167,8 @@
   mask-image: radial-gradient(circle at center, #000 10%, transparent 72%);
 }
 
-.projection-visual {
-  position: absolute;
-  inset: 22px 28px 38px;
-  display: grid;
-  place-items: center;
-  transform-style: preserve-3d;
-}
 
-.projection-selector-image {
-  grid-area: 1 / 1;
-  display: block;
-  width: min(100%, 560px);
-  max-height: 270px;
-  object-fit: contain;
-  pointer-events: none;
-  backface-visibility: hidden;
-  mix-blend-mode: multiply;
-  transform-origin: 50% 78%;
-  will-change: opacity, transform;
-}
 
-.projection-selector-image-next {
-  opacity: 0;
-  transform: translate3d(42px, 0, 0) rotate(10deg) rotateY(-52deg) scale(.965);
-}
 
 .projection-stage-shadow {
   position: absolute;
@@ -369,8 +346,6 @@
     min-height: 250px;
     border-radius: 14px;
   }
-  .projection-visual { inset: 18px 12px 34px; }
-  .projection-selector-image { max-height: 205px; }
   .projection-selector-footer {
     grid-template-columns: 1fr;
     gap: 12px;
