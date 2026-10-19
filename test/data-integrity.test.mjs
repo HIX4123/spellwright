@@ -21,9 +21,6 @@ test('linked stats are defined only in the canonical character data', () => {
 
 test('canonical narrative plot and question groups are complete', () => {
   const n = project.narrative;
-  for (let index = 0; index < n.plot.length; index++) {
-    assert.ok(n.timeline.some(event => event.source === 'plot' && event.index === index), String(index));
-  }
   const indices = n.questionGroups.flatMap(group => group.indices);
   assert.deepEqual(indices.sort((a,b)=>a-b), n.unresolved.map((_,i)=>i));
 });

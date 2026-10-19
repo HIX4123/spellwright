@@ -1,0 +1,27 @@
+{
+  "id": "event-prologue",
+  "title": "프롤로그 · 소꿉친구",
+  "category": "사건",
+  "summary": "프롤로그",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-0",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "프롤로그 · 소꿉친구",
+          "description": "과거로 온 엘린은 어린 카르와 소꿉친구로 지낸다. 치명적인 사고 직전, 자신을 붙드는 카르에게 회로를 전한다. 카르는 트라우마로 기억이 불완전해 사고의 충격으로 마법이 깨어났다고 여긴다.",
+          "status": "현재 플롯"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "kar",
+    "elin",
+    "single-timeline",
+    "loss-jinx",
+    "chronology"
+  ]
+}

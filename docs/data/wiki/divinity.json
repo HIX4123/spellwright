@@ -1,0 +1,26 @@
+{
+  "id": "divinity",
+  "title": "신위",
+  "category": "개념·규칙",
+  "summary": "권능의 보유와 동시간대 유일성.",
+  "aliases": [
+    "동시간대 신위 유일성"
+  ],
+  "sections": [
+    {
+      "id": "principles-5",
+      "title": "동시간대 유일성",
+      "items": [
+        {
+          "title": "동시간대 신위 유일성",
+          "description": "각 신수·환수의 신위는 동일 세계시간에 하나만 존재할 수 있다. 신위를 흡수한 존재도 같은 제약을 상속한다. 동일 인물의 다른 시점이 존재하는 것과 신위의 동시간대 중복은 구별한다."
+        }
+      ]
+    }
+  ],
+  "related": [
+    "six-beasts",
+    "constraints",
+    "ascension"
+  ]
+}

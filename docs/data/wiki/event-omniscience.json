@@ -1,0 +1,25 @@
+{
+  "id": "event-omniscience",
+  "title": "시간 신위 · 정체와 운명",
+  "category": "사건",
+  "summary": "2부 · 초미래",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-4",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "시간 신위 · 정체와 운명",
+          "description": "카르는 엘린의 정체, 회로의 출처, 자신의 비귀환과 그녀의 운명을 확신한다. 시간 신위는 감정의 소실이나 초연을 뜻하지 않으며, 미래를 안다고 해서 현재의 경험이 생략되지 않는다. 미래를 바꾸고 싶은 희망과 실제 선택의 정합성은 육환신수의 상호 제약과 단일 시간선 안에서 다룬다.",
+          "status": "현재 플롯"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "causal-loop",
+    "constraints",
+    "chronology"
+  ]
+}

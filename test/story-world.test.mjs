@@ -1,177 +1,88 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { isNarrativeData, renderStoryWorld } from '../docs/story-world.js';
+import { isNarrativeData, isWikiIndex, isWikiDocument, renderStoryWorld, storyLocation, linkText } from '../docs/story-world.js';
 
-const { narrative } = JSON.parse(await readFile(new URL('../docs/data/project.json', import.meta.url), 'utf8'));
+const read = async path => JSON.parse(await readFile(new URL('../docs/data/' + path, import.meta.url), 'utf8'));
+const { narrative } = await read('project.json');
+const index = await read('wiki/index.json');
+const documents = await Promise.all(index.documents.map(d => read('wiki/' + d.id + '.json')));
+const byId = new Map(documents.map(d => [d.id, d]));
+const page = id => renderStoryWorld(narrative, index, { tab: 'wiki', article: id }, byId.get(id));
 
-test('actual worldbuilding renders two act questions and accessible concept and causal diagrams without an editor', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  const html = renderStoryWorld(narrative);
-  assert.equal((html.match(/role="img"/g) || []).length, 6);
-  for (const act of narrative.acts) assert.ok(html.includes(act.question));
-  for (const pair of narrative.pairs) {
-    assert.ok(html.includes(pair.divine));
-    assert.ok(html.includes(pair.mythical));
+test('every catalog entry has one valid, independently rendered document and all links resolve', () => {
+  assert.ok(isNarrativeData(narrative));
+  assert.ok(isWikiIndex(index));
+  for (const doc of documents) {
+    assert.ok(isWikiDocument(doc, index), doc.id);
+    assert.equal(doc.title, index.documents.find(d => d.id === doc.id).title);
+    const html = page(doc.id);
+    assert.doesNotMatch(html, /<textarea|contenteditable/);
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+    assert.equal(ids.length, new Set(ids).size, doc.id + ' duplicate anchor');
+    for (const [, href] of html.matchAll(/href="(#story[^" ]*)"/g)) {
+      const route = storyLocation(href, index);
+      if (route.article) {
+        assert.ok(byId.has(route.article), doc.id + ': ' + href);
+        if (route.target) assert.ok(byId.get(route.article).sections.some(s => s.id === route.target), href);
+      }
+    }
+    for (const section of doc.sections) for (const item of section.items || []) {
+      // All item titles and status qualifiers remain readable, including linked words.
+      const text = html.replace(/<[^>]*>/g, '').replaceAll('&#039;', "'").replaceAll('&quot;', '"').replaceAll('&amp;', '&');
+      assert.ok(text.includes((item.title || item.divine)), doc.id + ': ' + item.title);
+      if (item.status) assert.ok(text.includes(item.status), item.status);
+    }
   }
-  assert.match(html, /모식도/);
-  assert.doesNotMatch(html, /<textarea|contenteditable/);
-  for (const key of ['plot', 'loop', 'harvest', 'eras', 'characters', 'origins', 'cast', 'conflict', 'sacrifice', 'circuitOptions', 'meeting', 'bossPlan', 'restoration', 'bossRules', 'chronosKnowledge', 'foreshadowing']) {
-    for (const item of narrative[key]) assert.ok(html.includes(item.title));
-    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
-  }
-  assert.match(html, /단일 역사 · 인과 연결/);
 });
 
-test('old text drafts remain readable and imported structured content is validated and escaped', () => {
-  const old = { story: '<script>안전</script>\n두 번째 줄', worldbuilding: '세계관' };
-  assert.ok(isNarrativeData(undefined));
-  assert.ok(isNarrativeData(old));
-  assert.match(renderStoryWorld(old), /&lt;script&gt;안전&lt;\/script&gt;\n두 번째 줄/);
-  assert.match(renderStoryWorld(), /아직 정리된/);
-  assert.equal(isNarrativeData({ ...old, pairs: [{ ...narrative.pairs[0], diagram: 'unknown' }] }), false);
-  assert.equal(isNarrativeData({ ...old, acts: [null] }), false);
-  assert.equal(isNarrativeData({ ...old, unresolved: [42] }), false);
-  const html = renderStoryWorld({ ...narrative, pairs: [{ ...narrative.pairs[0], mythical: '<img src=x>' }] });
+test('index groups and searches titles and old names without rendering every article body', () => {
+  const html = renderStoryWorld(narrative, index);
+  for (const doc of index.documents) assert.ok(html.includes('#story/wiki/' + doc.id));
+  assert.match(html, /id="wikiSearch"/);
+  assert.match(html, /카이/);
+  assert.doesNotMatch(html, /id="kaipsychology-0"/);
+  assert.match(page('kar'), /id="kaipsychology-0"/);
+  assert.doesNotMatch(page('kar'), /id="eloiappearance-0"/);
+  assert.match(page('kar'), /href="#story\/wiki\/elin"/);
+  assert.match(page('eloi'), /자주빛 금속광/);
+  assert.match(page('eloi-civilization'), /인위적으로 완벽/);
+  assert.match(page('ieumsae'), /이음새/);
+});
+
+test('legacy bookmarks, diagram destinations and section URLs map to canonical articles', () => {
+  assert.deepEqual(storyLocation('#story/cast/kai-design', index), {tab:'wiki', article:'kar', target:''});
+  assert.equal(storyLocation('#story/cast/cast-4', index).article, 'elin');
+  assert.equal(storyLocation('#story/world/harvest', index).article, 'eloi-civilization');
+  assert.equal(storyLocation('#story/plot/event-prologue', index).article, 'event-prologue');
+  assert.equal(storyLocation('#story/plot', index).article, 'chronology');
+  assert.equal(storyLocation('#story/wiki/kar/kaipsychology-0', index).target, 'kaipsychology-0');
+  assert.match(page('chronology'), /story-flow-svg/);
+  for (const node of byId.get('chronology').flow.nodes) assert.ok(page('chronology').includes('href="'+node.href+'"'));
+  for (const id of ['causal-loop','restoration','event-meeting','six-beasts']) assert.match(page(id), /role="img"/);
+  assert.match(page('six-beasts'), /모식도/);
+  assert.match(renderStoryWorld(narrative, index, {tab:'wiki',article:'unknown'}), /문서를 찾을 수/);
+});
+
+test('text links are longest-first, do not link to self, and never interpret user HTML', () => {
+  const html = linkText('엘로이 문명과 엘로이족. 카르 <img src=x> & "엘린"', index, 'kar');
+  assert.match(html, /href="#story\/wiki\/eloi-civilization">엘로이 문명<\/a>/);
+  assert.match(html, /href="#story\/wiki\/eloi">엘로이족<\/a>/);
+  assert.doesNotMatch(html, /href="#story\/wiki\/kar"|<img/);
   assert.match(html, /&lt;img src=x&gt;/);
-  assert.doesNotMatch(html, /<img src=x>/);
+  assert.match(html, /&amp;/);
+  assert.equal(linkText('실제로 아카이브', index), '실제로 아카이브');
+  assert.equal(isWikiIndex({...index, documents:[...index.documents,index.documents[0]]}),false);
+  assert.equal(isWikiDocument({...byId.get('kar'), related:['missing']},index),false);
+  assert.equal(isWikiDocument({...byId.get('kar'), sections:[{id:'bad',title:'bad',items:[null]}]},index),false);
+  assert.equal(isWikiDocument({...byId.get('chronology'),flow:{nodes:[],edges:[{}]}},index),false);
 });
 
-test('story navigation preserves content and links every timeline destination to a unique target', async () => {
-  const { storyLocation } = await import('../docs/story-world.js');
-  const { dashboardViewFromHash } = await import('../docs/dashboard-routing.js');
-  assert.equal(dashboardViewFromHash('#story/plot/event-prologue'), 'story');
-  assert.deepEqual(storyLocation('#story/plot/event-prologue'), { tab: 'plot', target: 'event-prologue' });
-  assert.equal(storyLocation('#story/unknown').tab, 'overview');
-  const html = renderStoryWorld(narrative, 'plot');
-  assert.equal((html.match(/class="story-panel"/g) || []).length, 4);
-  assert.equal((html.match(/class="story-panel"[^>]+ hidden/g) || []).length, 3);
-  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
-  assert.equal(new Set(ids).size, ids.length);
-  for (const [, id] of html.matchAll(/href="#story\/[^/" ]+\/([^" ]+)"/g)) assert.ok(ids.includes(id), id);
-  assert.equal((html.match(/class="story-event"/g) || []).length, narrative.timeline.length);
-  const questions = narrative.questionGroups.flatMap(g => g.indices).sort((a,b) => a-b);
-  assert.deepEqual(questions, narrative.unresolved.map((_,i) => i));
-  assert.equal(isNarrativeData({ ...narrative, timeline: [null] }), false);
-  assert.equal(isNarrativeData({ ...narrative, questionGroups: [{ title: 'bad', indices: [-1] }] }), false);
-});
-
-
-test('canonical plot records supply third-act timeline events and world chronology is visible', () => {
-  const html = renderStoryWorld(narrative, 'plot');
-  for (const index of [8, 9, 10]) assert.ok(html.includes(narrative.plot[index].description));
-  for (const entry of narrative.worldChronology) assert.ok(html.includes(entry.title));
-  assert.equal(narrative.origins.length, 1, 'duplicated harvest notes are represented only once');
-  assert.equal('worldbuilding' in narrative, false, 'world rules live in structured principles');
-});
-
-
-test('legacy story question URLs resolve to consolidated Open Questions', async () => {
-  const { dashboardViewFromHash } = await import('../docs/dashboard-routing.js');
-  assert.equal(dashboardViewFromHash('#story/questions/questions'), 'questions');
-});
-
-
-test('first act timeline may reference canon actOneArc data and validates its fields', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  const event = narrative.timeline.find(entry => entry.source === 'actOneArc');
-  assert.ok(event, 'the first-act arc is referenced by the timeline');
-  assert.equal(narrative.actOneArc[event.index].title.length > 0, true);
-  assert.equal(isNarrativeData({ ...narrative, actOneArc: [{ title: 'bad' }] }), false);
-  assert.equal(isNarrativeData({
-    ...narrative, timeline: narrative.timeline.map(entry => (
-      entry.source === 'actOneArc' ? { ...entry, source: 'unknown' } : entry
-    ))
-  }), false);
-});
-
-test('Eloi late-life visual rules and Kar four-stage design render as text-only canon proposals', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  assert.equal(narrative.kaiDesignStages.length, 4);
-  for (const [index, item] of narrative.kaiDesignStages.entries()) {
-    assert.ok(item.title.startsWith(String(index + 1) + '단계'));
-    assert.ok(item.status.length > 0);
-  }
-  const world = renderStoryWorld(narrative, 'world');
-  const cast = renderStoryWorld(narrative, 'cast');
-  assert.match(world, /엘로이족 · 외형과 노년 색채/);
-  assert.match(world, /머리카락 끝/);
-  assert.match(world, /자주빛 금속광/);
-  assert.match(cast, /카르 · 외형 변화 4단계/);
-  assert.match(cast, /고속 회전/);
-  assert.match(cast, /등 뒤/);
-  assert.match(cast, /엘린/);
-  assert.match(cast, /케이프·망토/);
-  assert.doesNotMatch(cast, /<img\b/);
-  for (const key of ['eloiAppearance', 'kaiDesignStages', 'kaiDesignNotes']) {
-    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false);
-  }
-});
-
-test('six beast forms render as non-binding visual motifs without changing the divine concepts', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  assert.equal(narrative.beastForms.length, 6);
-  const world = renderStoryWorld(narrative, 'world');
-  assert.match(world, /육환신수 · 본질 형상의 생물 모티브/);
-  for (const name of ['메가네우라', '물곰', '담요문어', '대왕고래', '메갈로케로스', '큰정원사새']) {
-    assert.ok(world.includes(name), name);
-  }
-  assert.match(world, /인간 출신/);
-  assert.equal(isNarrativeData({ ...narrative, beastForms: [null] }), false);
-  assert.equal(isNarrativeData({ ...narrative, beastForms: [{ title: '불완전한 기록' }] }), false);
-  assert.doesNotMatch(world, /<img\b/);
-});
-
-
-test('Kar psychology, voluntary joining, aftermath, and narration rules appear in the existing story tabs', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  for (const key of ['kaiPsychology', 'kaiJoining', 'kaiAftermath', 'kaiNarration']) {
-    assert.ok(narrative[key].length >= 3, key);
-    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false, key);
-  }
-  const cast = renderStoryWorld(narrative, 'cast');
-  const plot = renderStoryWorld(narrative, 'plot');
-  assert.match(cast, /카르 · 일상과 상실에 대한 작가용 심리/);
-  assert.match(cast, /엘린의 죽음/);
-  assert.match(plot, /카르 · 경계에서 자발적 합류까지/);
-  assert.match(plot, /카르 · 라키르와 니벨이 남긴 일상/);
-  assert.match(plot, /카르의 서술 거리 · B에서 A로/);
-  assert.match(plot, /마법사의 일상에서 시작한 호기심/);
-  assert.ok(narrative.timeline.some(e => e.id === 'aftermath' && e.source === 'actOneArc'));
-  assert.deepEqual(narrative.questionGroups.flatMap(g => g.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
-});
-
-
-test('character motifs are discoverable from cast cards and speculative references are clearly separated', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  assert.equal(narrative.characterMotifs.length, narrative.cast.length);
-  for (const key of ['characterMotifs','groupFounding','creativeReferences','narrativeCraft']) {
-    assert.ok(narrative[key].length > 0, key);
-    assert.equal(isNarrativeData({ ...narrative, [key]: [null] }), false, key);
-  }
-  const cast = renderStoryWorld(narrative, 'cast');
-  const plot = renderStoryWorld(narrative, 'plot');
-  for (let i=0;i<narrative.cast.length;i++) {
-    assert.match(cast, new RegExp('id="motif-'+i+'"'));
-    assert.match(cast, new RegExp('href="#story/cast/motif-'+i+'"'));
-  }
-  for (const motif of ['유마거사','프로메테우스','오펜하이머','리어왕','스테인드글라스']) assert.ok(cast.includes(motif), motif);
-  for (const ref of ['아포토시스','레이스플랜트','꽃무릇','고속으로 돌아']) assert.ok(plot.includes(ref), ref);
-  assert.match(plot, /작법과 서사 운영 원칙/);
-  assert.match(cast, /프레미아 → 라키르 → 니벨 → 카르/);
-  const ids=[...cast.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
-  assert.equal(new Set(ids).size, ids.length);
-});
-
-test('provisional Kar, confirmed Ieumsae and Eloi visual direction are displayed', () => {
-  assert.equal(isNarrativeData(narrative), true);
-  const cast = renderStoryWorld(narrative, 'cast');
-  const world = renderStoryWorld(narrative, 'world');
-  assert.match(cast, /이음새/);
-  assert.match(cast, /카르/);
-  assert.match(cast, /애칭/);
-  assert.match(world, /인위적으로 완벽/);
-  assert.match(world, /눈부심/);
-  assert.equal(narrative.characterMotifs.length, narrative.cast.length);
-  assert.deepEqual(narrative.questionGroups.flatMap(group => group.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
+test('old text narrative imports remain valid and escaped, questions remain complete', () => {
+  assert.ok(isNarrativeData(undefined));
+  assert.ok(isNarrativeData({story:'old', worldbuilding:'old'}));
+  assert.equal(isNarrativeData({story:'old',acts:[null]}),false);
+  assert.equal(isNarrativeData({...narrative,unresolved:[42]}),false);
+  assert.match(renderStoryWorld({story:'<script>bad</script>'},index), /&lt;script&gt;bad&lt;\/script&gt;/);
+  assert.deepEqual(narrative.questionGroups.flatMap(g=>g.indices).sort((a,b)=>a-b),narrative.unresolved.map((_,i)=>i));
 });

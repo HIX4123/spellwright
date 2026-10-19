@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { storyFlow } from './story-flow.js?v=ieumsae-kar-20261019-1';
+import { storyFlow } from './story-flow.js?v=wiki-20261019-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;
@@ -28,7 +28,7 @@ export function isNarrativeData(n) {
     for (const node of graph.nodes) {
       if (!node || !['id', 'title', 'era', 'lane', 'href'].every(k => typeof node[k] === 'string')
         || !/^[a-z0-9-]+$/.test(node.id) || !allowedLanes.slice(0, 3).includes(node.lane)
-        || !/^#story\/(?:plot|world|cast|questions)\/[a-z0-9-]+$/.test(node.href)
+        || !/^#story\/(?:wiki|plot|world|cast|questions)\/[a-z0-9-]+$/.test(node.href)
         || !Number.isFinite(node.x) || !Number.isFinite(node.y) || ids.has(node.id)) return false;
       ids.add(node.id);
     }
@@ -111,129 +111,110 @@ function conflictDiagram(items) {
     ${cards(items, '충돌의 이유')}`;
 }
 
-const tabs = [['overview', '전체 개요'], ['world', '세계관'], ['cast', '등장인물'], ['plot', '사건과 플롯']];
-const destinations = {
-  principles: ['world', '세계의 규칙'], eras: ['world', '세 시대'], harvest: ['world', '배양판의 구조'],
-  chronos: ['world', '크로노스 · 인식과 진실'], constraints: ['world', '육환신수의 상호 제약'],
-  'beast-war': ['world', '패러독스 실험과 신수전쟁'], conflict: ['cast', '세 친구의 갈등'],
-  circuits: ['cast', '프레미아의 회로'], 'loss-jinx': ['cast', '상실의 징크스'],
-  'elin-last-words': ['cast', '엘린의 유언 조건'], memories: ['cast', '기억과 마력회로'],
-  'character-motifs': ['cast', '인물별 원전·디자인 모티프'], 'group-founding': ['cast', '창단 순서와 독립 동기'],
-  'creative-references': ['plot', '탐색·보류한 창작 참고'], 'narrative-craft': ['plot', '서사·작법 원칙'],
-  'kai-design': ['cast', '카르의 외형 4단계'], 'kai-psychology': ['cast', '카르의 심리와 일상'],
-  'kai-joining': ['plot', '카르의 합류 경위'], 'kai-aftermath': ['plot', '집단 붕괴 뒤의 카르'],
-  'kai-narration': ['plot', '카르와 독자의 서술 거리'], 'eloi-appearance': ['world', '엘로이족 외형과 수명'],
-  causality: ['plot', '엘린의 인과 고리'], 'third-act-plan': ['plot', '3부 설계'],
-  'time-map': ['plot', '세계시간 · 교차 사건도'], questions: ['questions', '열어둔 질문']
-};
-
-export function storyLocation(hash = '') {
-  const [, tab, target] = hash.split('/');
-  return { tab: tabs.some(([id]) => id === tab) ? tab : 'overview', target: target || '' };
+// Wiki content is owned by individual JSON documents, not by the page renderer.
+const idPattern = /^[a-z0-9-]+$/;
+export function isWikiIndex(index) {
+  return Boolean(index && Array.isArray(index.documents) && index.legacy
+    && index.documents.every(d => d && idPattern.test(d.id)
+      && ['title','category','summary'].every(k => typeof d[k] === 'string')
+      && Array.isArray(d.aliases) && d.aliases.every(a => typeof a === 'string' && a.length > 0))
+    && new Set(index.documents.map(d => d.id)).size === index.documents.length
+    && Object.values(index.legacy).every(id => id === 'cast' || index.documents.some(d => d.id === id)));
 }
 
-function relatedLinks(ids, n) {
-  return `<div class="story-related" aria-label="관련 사항">${ids.map(id => {
-    const castIndex = /^cast-(\d+)$/.exec(id)?.[1];
-    const [tab, label] = castIndex !== undefined ? ['cast', n.cast?.[castIndex]?.title || '등장인물']
-      : id.startsWith('event-') ? ['plot', '프롤로그로 연결'] : destinations[id] || ['questions', '미정 사항'];
-    return `<a href="${tab === 'questions' ? '#questions' : '#story/' + tab + '/' + escapeHtml(id)}">${escapeHtml(label)} <span aria-hidden="true">↗</span></a>`;
-  }).join('')}</div>`;
+export function isWikiDocument(doc, index) {
+  const has = id => index.documents.some(d => d.id === id);
+  return Boolean(doc && has(doc.id) && ['title','category','summary'].every(k => typeof doc[k] === 'string')
+    && Array.isArray(doc.related) && doc.related.every(has)
+    && Array.isArray(doc.sections) && doc.sections.every(s => s && idPattern.test(s.id)
+      && typeof s.title === 'string'
+      && (s.kind === undefined || ['pairs','causal','restoration','conflict'].includes(s.kind))
+      && (Array.isArray(s.links) ? s.links.every(has) : Array.isArray(s.items) && s.items.every(item => item
+        && typeof item.description === 'string'
+        && (s.kind === 'pairs' ? ['time','space','existence'].includes(item.diagram)
+          && typeof item.divine === 'string' && typeof item.mythical === 'string' : typeof item.title === 'string')
+        && (item.status === undefined || typeof item.status === 'string'))))
+    && new Set(doc.sections.map(s => s.id)).size === doc.sections.length
+    && (!doc.flow || isNarrativeData({ story: '', storyFlow: doc.flow })
+      && doc.flow.nodes.every(node => has(node.href.split('/').at(-1)))));
 }
 
-function timeline(n) {
-  if (!n.timeline?.length) return steps(n.plot, '스토리 진행');
-  const detailRenderers = {
-    experimentLineage: () => steps(n.experimentLineage, '이원화 실험의 계보', '토마·테라의 우발적 사례에서 강경파·온건파 분화와 완성체까지'),
-    circuitLoss: () => steps(n.circuitLoss, '마력회로 소실의 5단계', '사영도의 상실 범위를 역순으로 따라 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'),
-    bossPlan: () => steps(n.bossPlan, '구제 계획과 자기 적용'),
-    restoration: () => restorationCycle(n.restoration),
-    bossRules: () => cards(n.bossRules, '복원 마법의 규칙과 한계'),
-    foreshadowing: () => cards(n.foreshadowing, '1부에서 2부로 이어지는 복선'),
-    sacrifice: () => steps(n.sacrifice?.slice(1), '위기와 희생의 전개'),
-    meeting: () => steps(n.meeting, '삼파전 직전 · 대화에서 전투로'),
-    actOneEpisodes: () => cards(n.actOneEpisodes, '1부 초반 · 에피소드 구상'),
-    kaiJoining: () => steps(n.kaiJoining, '카르 · 첫 만남부터 자발적 합류까지'),
-    kaiAftermath: () => cards(n.kaiAftermath, '집단 붕괴 이후 카르의 일상'),
-    fourthAnswer: () => cards(n.fourthAnswer, '삼파전의 제4의 답 · 비마법사 동료'),
-    chronosKnowledge: () => cards(n.chronosKnowledge, '시간 신위 · 인식과 진실'),
-    beastConstraintNetwork: () => cards(n.beastConstraintNetwork, '육환신수의 다자간 상호 제약'),
-    beastEschatology: () => cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징'),
-    paradoxExperiment: () => steps(n.paradoxExperiment, '데미우르고스의 자기반증 실험'),
-    beastWar: () => steps(n.beastWar, '패러독스 실험에서 신수전쟁까지'),
-    thirdActPlan: () => cards(n.thirdActPlan, '3부 · 카르 토벌과 우르'),
-    lossJinx: () => cards(n.lossJinx, '상실의 징크스', '테라의 회로 소실과 구별되는 삶의 조소'),
-    elinLastWords: () => cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건'),
-    worldChronology: () => steps(n.worldChronology, '세계 연대기'),
-    demiurgeChronology: () => steps(n.demiurgeChronology, '우르 → 데미우르고스 · 개인 시간')
-  };
-  return `${section('사건 상세 · 작품 순서', '다이어그램의 노드를 클릭하면 해당 사건을 열람할 수 있어요. 모든 기록은 작품에서 읽는 순서대로 배치되어 있습니다.')}
-    <ol class="story-timeline story-event-list">${n.timeline.map((event, i) => {
-      const item = event.source ? n[event.source]?.[event.index] : event;
-      if (!item) return '';
-      return `<li id="event-${escapeHtml(event.id)}" class="story-event" tabindex="-1">
-        <span class="story-dot" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
-        <details class="story-event-expander">
-          <summary><span class="world-kicker">${escapeHtml(event.era)}</span>
-          <strong>${escapeHtml(item.title)}</strong><span class="story-event-hint">자세히 보기</span></summary>
-          <div class="story-event-body"><p>${escapeHtml(item.description)}</p>
-            ${event.note ? `<p class="story-open">미정 · ${escapeHtml(event.note)}</p>` : ''}
-            ${relatedLinks(event.links || [], n)}
-            ${event.details?.length ? `<details class="story-details"><summary>사건의 세부 설정 펼치기</summary>${event.details.map(key => detailRenderers[key]?.() || '').join('')}</details>` : ''}
-          </div>
-        </details>
-      </li>`;
-    }).join('')}</ol>`;
+export function storyLocation(hash = '', index) {
+  const [, tab = 'overview', value = '', target = ''] = hash.split('/');
+  if (tab === 'wiki') return { tab: 'wiki', article: value, target };
+  const legacy = index?.legacy[value];
+  if (legacy) return legacy === 'cast' ? { tab: 'cast', article: '', target: '' }
+    : { tab: 'wiki', article: legacy, target: '' };
+  if (tab === 'plot' && !value) return { tab: 'wiki', article: 'chronology', target: '' };
+  return { tab: ['overview','world','cast','guides'].includes(tab) ? tab : 'overview', article: '', target: '' };
 }
 
-export function renderStoryWorld(n = {}, activeTab = 'overview') {
-  const textCard = (text, empty) => `<article class="card"><p class="narrative-text${text ? '' : ' muted'}">${escapeHtml(text || empty)}</p></article>`;
-  const block = (id, content) => `<div id="${id}" class="story-block" tabindex="-1">${content}</div>`;
-  const panels = {
-    overview: `${section('상실에서 시작해, 미래를 아는 자의 선택으로')}
-      ${textCard(n.story, '아직 정리된 스토리 내용이 없어요.')}
-      ${n.acts?.length ? `<div class="world-act-grid">${n.acts.map(act => `<article class="card world-act"><span class="world-kicker">${escapeHtml(act.title)}</span><h3>${escapeHtml(act.question)}</h3><p class="muted">${escapeHtml(act.knowledge)}</p></article>`).join('')}</div>` : ''}
-      <div class="story-overview-path"><a href="#story/plot/event-prologue">소꿉친구의 상실</a><a href="#story/plot/event-sacrifice">동료의 희생과 삼파전</a><a href="#story/plot/event-omniscience">시간 신위와 운명의 인식</a><a href="#story/plot/event-collapse">엘로이 종말과 신격화</a><a href="#story/plot/event-third-act">과거 시대의 3부 · 카르 토벌</a></div>
-      <p class="muted">사건과 플롯 탭의 교차 다이어그램에서는 세계 연대기, 카르·우르·히로인의 개인 시간을 한눈에 비교할 수 있어요. 아래 상세 기록만 플레이어가 경험하는 순서대로 정렬되어 있습니다.</p>`,
-    world: `${block('principles', `${section('세계의 규칙')}${n.principles?.length ? `<div class="world-principle-grid">${n.principles.map(p => `<article class="card world-principle"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p></article>`).join('')}</div>` : textCard(n.worldbuilding, '아직 정리된 세계관 내용이 없어요.')}`)}
-      ${block('eras', cards(n.eras, '세 시대의 배치와 생활', '작품 순서와 세계 연대기는 일치하지 않아요.'))}
-      ${n.pairs?.length ? `${section('삼신수 ↔ 삼환수', '개념적 대칭 · 실제 제약은 육자 전체의 다자간 네트워크')}<div class="world-pair-grid">${n.pairs.map(pair => `<article class="card world-pair"><div class="world-pair-heading"><h3>${escapeHtml(pair.divine)}</h3><span aria-hidden="true">↔</span><h3>${escapeHtml(pair.mythical)}</h3></div>${pairDiagram(pair)}<p class="world-pair-description">${escapeHtml(pair.description)}</p></article>`).join('')}</div><p class="muted world-figure-note">도형은 상징적 대응을 나타내는 모식도예요. 서로만을 제약하는 일대일 맞계약을 뜻하지 않아요.</p>` : ''}
-      ${n.beastForms?.length ? block('beast-forms', `${cards(n.beastForms, '육환신수 · 본질 형상의 생물 모티브', '생물의 형태와 생태에서 출발한 디자인 기준 · 권능의 원리와 구분')}<p class="muted world-figure-note">여섯 생물은 신위의 본질 형상을 위한 시각적 원형이지, 권능의 생물학적 원인이나 모든 현현 형태를 규정하지 않아요. 우르처럼 인간 출신인 신위 보유자도 인간형 등 다른 모습으로 나타날 수 있으며, 정확한 진체 구조·크기·색채·변형 정도는 추후 결정합니다.</p>`) : ''}
-      ${block('constraints', `${cards(n.beastConstraintNetwork, '육환신수의 상호 제약', '세계의 무결성을 보존하는 다자간 제약망')}${cards(n.beastEschatology, '섭리 거역 · 여섯 종말의 상징', '일부는 아직 상징안·검토 단계예요.')}`)}
-      ${block('beast-war', `${steps(n.paradoxExperiment, '데미우르고스의 패러독스 실험', '미래를 일부러 틀리게 만들려는 자기반증에서 시작')}${steps(n.beastWar, '신수전쟁과 전후 질서', '상호 제약을 깨려는 시도 → 전쟁 → 이상낙원 제안')}`)}
-      ${block('chronos', cards(n.chronosKnowledge, '크로노스 · 인식과 진실', '토마의 오해, 데미우르고스의 정체, 시간 신위의 인식 범위를 구분해요.'))}
-      ${block('harvest', `${steps(n.harvest, '엘로이 문명: 이상낙원과 배양판', '약 200만 년의 실제 성공 문명과 숨은 통합 신위 계획')}${cards(n.eloiEcology, '엘로이족 · 생애와 사회', '수명 · 회로 계승 · 공동체 가족 · 감정과 인구')}${block('eloi-appearance', cards(n.eloiAppearance, '엘로이족 · 외형과 노년 색채', '공통 형질 · 머리끝 · 홍채 · 금속광'))}${steps(n.circuitAscension, '회로의 분화에서 신격화까지', '인간의 고정 계통 ↔ 순수 회로의 합일 · 그릇의 교정')}`)}
-      ${cards(n.origins, '기원과 권능 · 추가 검토안', '중복된 낙원 설정은 수확 연대기에서만 관리합니다.')}
-      ${block('world-chronology', steps(n.worldChronology, '세계 연대기', '작품의 읽는 순서와 구별되는 사건의 실제 발생 순서'))}`,
-    cast: `${section('등장인물과 스탯', '확정된 이름과 임시 이름은 각 인물의 상태에 구분 · 개별 미정 사항은 본문에 표시')}
-      <div class="world-act-grid">${(n.cast || []).map((item,i) => `<article id="cast-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p>${n.characterMotifs?.[i] ? `<p class="muted"><a href="#story/cast/motif-${i}">원전·모티프·인물상 자세히 보기 ↗</a></p>` : ''}</article>`).join('')}</div>
-      ${block('character-motifs', `${section('인물별 모티프와 차용 범위', '원전에서 무엇을 차용하고 무엇을 배제했는지 · 실재 설정과 보류안을 구분')}${n.characterMotifs?.length ? `<div class="world-act-grid">${n.characterMotifs.map((item,i)=>`
-        <article id="motif-${i}" tabindex="-1" class="card world-principle"><span class="world-kicker">${escapeHtml(item.status)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p></article>`).join('')}</div>` : ''}`)}
-      ${block('group-founding', steps(n.groupFounding, '모임의 결성과 관계 형성', '프레미아 → 라키르 → 니벨 → 카르 · 독립 동기와 가입 순서'))}
-      ${block('kai-psychology', cards(n.kaiPsychology, '카르 · 일상과 상실에 대한 작가용 심리', '사교적인 평상시와 상실 후의 관성 · 실제 서술에서는 내면 설명을 점차 줄임'))}
-      ${block('kai-design', `${steps(n.kaiDesignStages, '카르 · 외형 변화 4단계', '소년 → 청소년 → 성장한 청소년과 6익 → 회로 합일 이후 성년체')}${cards(n.kaiDesignNotes, '최종 형태 · 디자인 원칙', '회로 수렴 · 서브 컬러 · 회전 훈륜 · 케이프와 망토')}`)}
-      ${block('conflict', conflictDiagram(n.conflict))}
-      ${block('fourth-answer', cards(n.fourthAnswer, '제4의 답 · 비마법사 히로인 후보', '세 사람의 삼파전과 다른 해법 · 구체적인 답은 아직 미정'))}
-      ${block('circuits', cards(n.circuitOptions, '프레미아의 연결성과 마법 제거 계획'))}
-      ${block('dualization', steps(n.experimentLineage, '이원화 실험의 계보', '최초의 우발적 성공 → 부작용 발견 → 연구진 분화'))}
-      ${block('circuit-loss', steps(n.circuitLoss, '테라의 회로 소실 · 병리적 역순', '실제 회로 강탈·편극으로 가능 → 관계 → 운동 → 위치 → 경계가 무너진다'))}
-      ${block('loss-jinx', cards(n.lossJinx, '마법사들에게 전해진 상실의 징크스', '테라의 질환과는 별개인 삶의 조소 · 카르는 이를 서사적으로 핵심화한다'))}
-      ${block('elin-last-words', cards(n.elinLastWords, '엘린의 유언 · 문구 설계 조건', '정확한 문구보다 사고 장면과 대화의 자연스러운 연결을 먼저 정한다'))}
-      ${block('memories', cards(n.characters, '두 사람의 기억과 마력회로'))}`,
-    plot: `${storyFlow(n)}
-          ${block('act-one-arc', steps(n.actOneArc, '1부 · 도입부 구상', '카르 합류 → 독립 에피소드 → 새 동료 → 위기'))}
-          ${block('kai-joining', steps(n.kaiJoining, '카르 · 경계에서 자발적 합류까지', '프레미아의 영입 포기 → 사적인 만남 → 카르가 역으로 가입 제안'))}
-          ${block('kai-aftermath', cards(n.kaiAftermath, '카르 · 라키르와 니벨이 남긴 일상', '업무를 잇고 이전과 같은 자리에 결과물을 놓는 행동'))}
-          ${block('kai-narration', cards(n.kaiNarration, '카르의 서술 거리 · B에서 A로', '독자와의 접근성 변화 · 심상은 작가용 참고'))}
-          ${block('creative-references', cards(n.creativeReferences, '창작 참고와 보류한 모티프', '아포토시스·식물·꽃무릇·고요한 동세 · 확정 설정과 분리'))}
-          ${block('narrative-craft', cards(n.narrativeCraft, '작법과 서사 운영 원칙', '앞서 논의한 서술 거리와 3부작 구조를 연결한 검토 기록'))}
-          ${timeline(n)}
-          ${block('third-act-plan', cards(n.thirdActPlan, '3부 · 카르 토벌과 우르', '작품상 후속편이면서 세계시간상 전일담'))}
-          
-          ${block('causality', causalLoop(n.loop))}`
+const wikiHref = id => '#story/wiki/' + id;
+export function linkText(value, index, currentId = '') {
+  // Match plain text before escaping so imported text cannot inject markup or URLs.
+  const terms = new Map();
+  for (const doc of index.documents) {
+    for (const term of [doc.title, ...doc.aliases]) if (term.length > 1 && !terms.has(term)) terms.set(term, doc.id);
+  }
+  const pattern = [...terms.keys()].sort((a,b) => b.length-a.length)
+    .map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  if (!pattern) return escapeHtml(value);
+  let result = '', start = 0;
+  for (const match of String(value).matchAll(new RegExp('(?<![\\p{L}\\p{N}_])(?:' + pattern + ')', 'gu'))) {
+    result += escapeHtml(String(value).slice(start, match.index));
+    const id = terms.get(match[0]), label = escapeHtml(match[0]);
+    result += id === currentId ? label : `<a class="wiki-term" href="${wikiHref(id)}">${label}</a>`;
+    start = match.index + match[0].length;
+  }
+  return result + escapeHtml(String(value).slice(start));
+}
 
-  };
-  return `${section('Story & World', '상실 · 세계와의 거래 · 하나의 역사')}
-    <nav class="story-nav" aria-label="스토리와 세계관 분류">${tabs.map(([id,label]) => `<a href="#story/${id}"${id === activeTab ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>
-    ${tabs.map(([id,label]) => `<section class="story-panel" aria-label="${label}"${id !== activeTab ? ' hidden' : ''}>${panels[id]}</section>`).join('')}`;
+function articleLinks(ids, index, list = false) {
+  const links = ids.map(id => {
+    const doc = index.documents.find(d => d.id === id);
+    return `<a href="${wikiHref(id)}">${escapeHtml(doc.title)}</a>`;
+  });
+  return list ? `<ol class="wiki-event-index">${links.map(a => `<li>${a}</li>`).join('')}</ol>`
+    : `<div class="story-related">${links.join('')}</div>`;
+}
+
+export function renderStoryWorld(n = {}, index = { documents: [], legacy: {} }, route = { tab: 'overview' }, doc) {
+  const nav = `<nav class="story-nav" aria-label="위키 탐색">
+    <a href="#story"${route.tab === 'overview' ? ' aria-current="page"' : ''}>전체 문서</a>
+    <a href="#story/cast"${route.tab === 'cast' ? ' aria-current="page"' : ''}>인물</a>
+    <a href="#story/world"${route.tab === 'world' ? ' aria-current="page"' : ''}>세계관</a>
+    <a href="#story/plot"${route.article === 'chronology' ? ' aria-current="page"' : ''}>연대표·사건</a>
+    <a href="#story/guides"${route.tab === 'guides' ? ' aria-current="page"' : ''}>서사·작법</a>
+    <a href="#questions">미정 사항</a></nav>`;
+  const header = section('Story & World', '표제어별 문서 · 본문 속 용어를 눌러 관련 설정으로 이동');
+  if (route.tab === 'wiki') {
+    if (!doc) return `${header}${nav}<div class="card"><h2>문서를 찾을 수 없어요</h2><a href="#story">전체 문서로 돌아가기</a></div>`;
+    const rich = text => linkText(text, index, doc.id);
+    const content = doc.sections.map(s => {
+      let body;
+      if (s.links) body = articleLinks(s.links, index, true);
+      else if (s.kind === 'pairs') body = `<div class="world-pair-grid">${s.items.map(pair => `<article class="card"><h3>${rich(pair.divine)} ↔ ${rich(pair.mythical)}</h3>${pairDiagram(pair)}<p>${rich(pair.description)}</p></article>`).join('')}</div><p class="muted">도형은 개념적 대칭을 나타내는 모식도이며 일대일 맞계약을 뜻하지 않아요.</p>`;
+      else if (s.kind === 'causal') body = causalLoop(s.items);
+      else if (s.kind === 'restoration') body = restorationCycle(s.items);
+      else if (s.kind === 'conflict') body = conflictDiagram(s.items);
+      else body = s.items.map(item => `<div class="wiki-entry">${item.status ? `<p class="wiki-status">${escapeHtml(item.status)}</p>` : ''}<h3>${escapeHtml(item.title)}</h3><p>${rich(item.description)}</p></div>`).join('');
+      return `<section id="${s.id}" class="wiki-section" tabindex="-1"><h2>${escapeHtml(s.title)}</h2>${body}</section>`;
+    }).join('');
+    const toc = `<nav class="wiki-toc" aria-label="문서 목차"><strong>목차</strong><ol>${doc.sections.map(s => `<li><a href="${wikiHref(doc.id)}/${s.id}">${escapeHtml(s.title)}</a></li>`).join('')}</ol></nav>`;
+    const flow = doc.flow ? storyFlow({ storyFlow: doc.flow }) : '';
+    return `${header}${nav}<article class="wiki-article">
+      <header class="wiki-heading"><p class="muted"><a href="#story">전체 문서</a> / ${escapeHtml(doc.category)}</p>
+      <h2 id="wiki-title" tabindex="-1">${escapeHtml(doc.title)}</h2><p>${rich(doc.summary)}</p></header>
+      ${toc}${flow}${content}
+      ${doc.related.length ? `<footer class="wiki-section"><h2>관련 문서</h2>${articleLinks(doc.related, index)}</footer>` : ''}</article>`;
+  }
+  const allowed = route.tab === 'cast' ? ['인물'] : route.tab === 'world' ? ['종족·문명','조직','개념·규칙','신수·환수'] : route.tab === 'guides' ? ['서사·작법'] : null;
+  const visible = index.documents.filter(d => !allowed || allowed.includes(d.category));
+  const categories = [...new Set(visible.map(d => d.category))];
+  const intro = route.tab === 'overview' ? `<details class="card wiki-intro"><summary>작품 전체 개요</summary><p>${linkText(n.story || '아직 정리된 스토리 내용이 없어요.', index)}</p>
+    <div class="world-act-grid">${(n.acts || []).map(a => `<div><h3>${escapeHtml(a.title)}</h3><p>${escapeHtml(a.question)}</p><p class="muted">${escapeHtml(a.knowledge)}</p></div>`).join('')}</div></details>` : '';
+  return `${header}${nav}${intro}<label class="wiki-search">문서 찾기<input id="wikiSearch" type="search" placeholder="표제어·이전 이름·주제 검색" autocomplete="off"></label>
+    <p id="wikiSearchCount" class="muted" role="status">${visible.length}개 문서</p>
+    <div class="wiki-index">${categories.map(category => `<section class="wiki-category"><h2>${escapeHtml(category)}</h2><div class="wiki-document-list">${visible.filter(d => d.category === category).map(d => `<a class="wiki-document" href="${wikiHref(d.id)}" data-search="${escapeHtml([d.title,d.summary,...d.aliases].join(' ').toLowerCase())}"><strong>${escapeHtml(d.title)}</strong><span>${escapeHtml(d.summary)}</span></a>`).join('')}</div></section>`).join('')}</div>
+    <p id="wikiNoResults" hidden>일치하는 문서가 없어요. 다른 이름이나 주제로 찾아보세요.</p>`;
 }

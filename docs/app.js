@@ -1,6 +1,6 @@
 import { escapeHtml, section } from './html.js';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
-import { isNarrativeData, renderStoryWorld, storyLocation } from './story-world.js?v=ieumsae-kar-20261019-1';
+import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=global-projection-axis-20261003-2';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=projection-min-displacement-pack-20261005-1';
@@ -185,18 +185,61 @@ function renderOverview() {
   `;
 }
 
-function renderStory() {
-  const { tab, target } = storyLocation(location.hash);
-  view.innerHTML = renderStoryWorld(data.narrative, tab);
-  if (target) {
-    const element = document.getElementById(target);
-    if (element && !element.closest('[hidden]')) {
-      // Deep links from the shared graph reveal the requested event description.
-      const expander = element.querySelector('details.story-event-expander');
-      if (expander) expander.open = true;
-      element.scrollIntoView({ block: 'start' });
-      element.focus({ preventScroll: true });
+let wikiIndex;
+const wikiDocuments = new Map();
+let storyRequest = 0;
+async function fetchWikiFile(name) {
+  const response = await fetch('./data/wiki/' + name + '.json', { cache: 'no-store' });
+  if (!response.ok) throw new Error('Wiki document unavailable');
+  return response.json();
+}
+
+async function renderStory() {
+  const request = ++storyRequest;
+  const hash = location.hash;
+  view.innerHTML = '<p role="status">문서를 불러오고 있어요…</p>';
+  try {
+    if (!wikiIndex) {
+      const index = await fetchWikiFile('index');
+      if (!isWikiIndex(index)) throw new Error('Invalid wiki index');
+      wikiIndex = index;
     }
+    const route = storyLocation(hash, wikiIndex);
+    let article;
+    if (route.article && wikiIndex.documents.some(d => d.id === route.article)) {
+      article = wikiDocuments.get(route.article);
+      if (!article) {
+        article = await fetchWikiFile(route.article);
+        if (article.id !== route.article || !isWikiDocument(article, wikiIndex)) throw new Error('Invalid wiki document');
+        wikiDocuments.set(route.article, article);
+      }
+    }
+    if (request !== storyRequest || currentView !== 'story' || location.hash !== hash) return;
+    view.innerHTML = renderStoryWorld(data.narrative, wikiIndex, route, article);
+    const search = document.getElementById('wikiSearch');
+    if (search) search.addEventListener('input', () => {
+      const query = search.value.trim().toLowerCase();
+      let count = 0;
+      for (const card of view.querySelectorAll('.wiki-document')) {
+        card.hidden = !card.dataset.search.includes(query);
+        if (!card.hidden) count++;
+      }
+      for (const category of view.querySelectorAll('.wiki-category')) category.hidden = !category.querySelector('.wiki-document:not([hidden])');
+      document.getElementById('wikiSearchCount').textContent = count + '개 문서';
+      document.getElementById('wikiNoResults').hidden = count !== 0;
+    });
+    const target = route.target && document.getElementById(route.target);
+    if (target && view.contains(target)) {
+      target.scrollIntoView({ block: 'start' });
+      target.focus({ preventScroll: true });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      document.getElementById('wiki-title')?.focus({ preventScroll: true });
+    }
+  } catch {
+    if (request !== storyRequest || currentView !== 'story' || location.hash !== hash) return;
+    view.innerHTML = '<div class="card"><h2>문서를 불러오지 못했어요</h2><p>연결 상태를 확인한 뒤 다시 시도해 주세요.</p><button id="wikiRetry">다시 시도</button> <a href="#story">전체 문서</a></div>';
+    document.getElementById('wikiRetry').onclick = renderStory;
   }
 }
 

@@ -1,0 +1,37 @@
+{
+  "id": "event-third-act",
+  "title": "3부 · 과거 시대의 카르 토벌",
+  "category": "사건",
+  "summary": "3부 · 세계시간상 1부 이전",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-8",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "3부 · 과거 시대의 카르 토벌",
+          "description": "2부의 모든 상실 끝에 신위를 얻은 카르는 세계시간상 1부 이전의 시대에 나타난다. 새로운 주인공은 어떤 이유로 카르와 적대해 토벌에 나서며, 그 결과 카르의 마지막 자아와 통합 신위가 해리 단계까지 무너진다. 이것이 구원·해방으로 해석되는지는 행위자의 목적과 별개로 추후 정한다.",
+          "status": "현재 구상 · 주인공 동기 미정"
+        }
+      ]
+    },
+    {
+      "id": "open",
+      "title": "미정 사항",
+      "items": [
+        {
+          "title": "열어둔 질문",
+          "description": "3부 주인공의 정체와 카르를 토벌해야 하는 직접 계기는 미정.",
+          "status": "미정"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "third-protagonist",
+    "chronology",
+    "third-act",
+    "loss-jinx"
+  ]
+}

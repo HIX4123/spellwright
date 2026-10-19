@@ -1,0 +1,37 @@
+{
+  "id": "event-demiurge-inheritance",
+  "title": "우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과",
+  "category": "사건",
+  "summary": "세계시간 · 1부 이전",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-10",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과",
+          "description": "우르가 시간 신위를 얻으며 데미우르고스가 된 뒤, 자신을 납치한 존재가 미래의 자기 자신임을 알게 된다. 인과율을 깨려는 실험과 신수전쟁으로 나아가고, 훗날 계획을 완수하기 위해 인간 시절 우르를 다시 3부 시대로 옮겨 동일한 고리를 완성한다.",
+          "status": "현재 구상"
+        }
+      ]
+    },
+    {
+      "id": "open",
+      "title": "미정 사항",
+      "items": [
+        {
+          "title": "열어둔 질문",
+          "description": "신위 계승 메커니즘과 이름이 알려지는 시점은 미정. 본명 우르와 신위 획득 후 이름 데미우르고스는 확정.",
+          "status": "미정"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "ur",
+    "constraints",
+    "beast-war",
+    "chronology"
+  ]
+}

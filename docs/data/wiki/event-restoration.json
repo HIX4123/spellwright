@@ -1,0 +1,40 @@
+{
+  "id": "event-restoration",
+  "title": "중간 보스 · 토마와 테라",
+  "category": "사건",
+  "summary": "1부 · 현대",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "overview",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "중간 보스 · 토마와 테라",
+          "description": "이원화 실험의 최초 사례인 토마는 회로 편극으로 기억과 생존 기반을 잃어가는 테라를 살리기 위해 크로노스와 거래해 무한 복원술을 완성한다. 계획이 저지되자 자신에게 적용하고, 라키르가 기억 초기화를 간파한다."
+        }
+      ]
+    },
+    {
+      "id": "open",
+      "title": "미정 사항",
+      "items": [
+        {
+          "title": "열어둔 질문",
+          "description": "회로 편극의 세부 기전, 영혼의 정의, 세계 규모의 거래 대가와 라키르의 희생 수단은 미정.",
+          "status": "미정"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "toma",
+    "tera",
+    "rakir",
+    "chronos",
+    "dualization",
+    "circuit-loss",
+    "restoration",
+    "chronology"
+  ]
+}
