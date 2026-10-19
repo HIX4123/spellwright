@@ -85,7 +85,7 @@ test('first act timeline may reference canon actOneArc data and validates its fi
   }), false);
 });
 
-test('Eloi late-life visual rules and Kai four-stage design render as text-only canon proposals', () => {
+test('Eloi late-life visual rules and Kar four-stage design render as text-only canon proposals', () => {
   assert.equal(isNarrativeData(narrative), true);
   assert.equal(narrative.kaiDesignStages.length, 4);
   for (const [index, item] of narrative.kaiDesignStages.entries()) {
@@ -97,7 +97,7 @@ test('Eloi late-life visual rules and Kai four-stage design render as text-only 
   assert.match(world, /엘로이족 · 외형과 노년 색채/);
   assert.match(world, /머리카락 끝/);
   assert.match(world, /자주빛 금속광/);
-  assert.match(cast, /카이 · 외형 변화 4단계/);
+  assert.match(cast, /카르 · 외형 변화 4단계/);
   assert.match(cast, /고속 회전/);
   assert.match(cast, /등 뒤/);
   assert.match(cast, /엘린/);
@@ -123,7 +123,7 @@ test('six beast forms render as non-binding visual motifs without changing the d
 });
 
 
-test('Kai psychology, voluntary joining, aftermath, and narration rules appear in the existing story tabs', () => {
+test('Kar psychology, voluntary joining, aftermath, and narration rules appear in the existing story tabs', () => {
   assert.equal(isNarrativeData(narrative), true);
   for (const key of ['kaiPsychology', 'kaiJoining', 'kaiAftermath', 'kaiNarration']) {
     assert.ok(narrative[key].length >= 3, key);
@@ -131,11 +131,11 @@ test('Kai psychology, voluntary joining, aftermath, and narration rules appear i
   }
   const cast = renderStoryWorld(narrative, 'cast');
   const plot = renderStoryWorld(narrative, 'plot');
-  assert.match(cast, /카이 · 일상과 상실에 대한 작가용 심리/);
+  assert.match(cast, /카르 · 일상과 상실에 대한 작가용 심리/);
   assert.match(cast, /엘린의 죽음/);
-  assert.match(plot, /카이 · 경계에서 자발적 합류까지/);
-  assert.match(plot, /카이 · 라키르와 니벨이 남긴 일상/);
-  assert.match(plot, /카이의 서술 거리 · B에서 A로/);
+  assert.match(plot, /카르 · 경계에서 자발적 합류까지/);
+  assert.match(plot, /카르 · 라키르와 니벨이 남긴 일상/);
+  assert.match(plot, /카르의 서술 거리 · B에서 A로/);
   assert.match(plot, /마법사의 일상에서 시작한 호기심/);
   assert.ok(narrative.timeline.some(e => e.id === 'aftermath' && e.source === 'actOneArc'));
   assert.deepEqual(narrative.questionGroups.flatMap(g => g.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
@@ -158,7 +158,20 @@ test('character motifs are discoverable from cast cards and speculative referenc
   for (const motif of ['유마거사','프로메테우스','오펜하이머','리어왕','스테인드글라스']) assert.ok(cast.includes(motif), motif);
   for (const ref of ['아포토시스','레이스플랜트','꽃무릇','고속으로 돌아']) assert.ok(plot.includes(ref), ref);
   assert.match(plot, /작법과 서사 운영 원칙/);
-  assert.match(cast, /프레미아 → 라키르 → 니벨 → 카이/);
+  assert.match(cast, /프레미아 → 라키르 → 니벨 → 카르/);
   const ids=[...cast.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   assert.equal(new Set(ids).size, ids.length);
+});
+
+test('provisional Kar, confirmed Ieumsae and Eloi visual direction are displayed', () => {
+  assert.equal(isNarrativeData(narrative), true);
+  const cast = renderStoryWorld(narrative, 'cast');
+  const world = renderStoryWorld(narrative, 'world');
+  assert.match(cast, /이음새/);
+  assert.match(cast, /카르/);
+  assert.match(cast, /애칭/);
+  assert.match(world, /인위적으로 완벽/);
+  assert.match(world, /눈부심/);
+  assert.equal(narrative.characterMotifs.length, narrative.cast.length);
+  assert.deepEqual(narrative.questionGroups.flatMap(group => group.indices).sort((a,b)=>a-b), narrative.unresolved.map((_,i)=>i));
 });
