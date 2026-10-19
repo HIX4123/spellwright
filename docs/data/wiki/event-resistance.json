@@ -1,0 +1,24 @@
+{
+  "id": "event-resistance",
+  "title": "저항 · 대피와 시간 연결",
+  "category": "사건",
+  "summary": "2부 · 종말",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-6",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "저항 · 대피와 시간 연결",
+          "description": "다른 시공간으로 주민을 대피시키거나, 과거에서 손의 개입을 막을 방법을 찾는다. 과거와 미래를 이어 닫힌 시간선을 만들려는 안과 나머지 신수·환수와의 충돌도 구상 중이다.",
+          "status": "연결 미정"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "single-timeline",
+    "chronology"
+  ]
+}

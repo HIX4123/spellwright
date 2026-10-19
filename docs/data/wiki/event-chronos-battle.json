@@ -1,0 +1,28 @@
+{
+  "id": "event-chronos-battle",
+  "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
+  "category": "사건",
+  "summary": "2부 · 초미래",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-3",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
+          "description": "귀환 수단을 찾다가 시간의 신수 데미우르고스와 싸운다. 데미우르고스의 미래 인식에 대한 경고를 감수하고 그 신위를 흡수해 시간선의 과거·미래를 광범위하게 인식하게 된다. 데미우르고스의 흡수는 그의 개인사 마지막일 수 있지만, 그가 이미 다른 세계시간에 남긴 개입까지 지우지는 않는다.",
+          "status": "현재 플롯"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "chronos",
+    "single-timeline",
+    "ur",
+    "constraints",
+    "chronology",
+    "beast-war"
+  ]
+}

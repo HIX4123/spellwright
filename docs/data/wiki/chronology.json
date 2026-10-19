@@ -1,0 +1,386 @@
+{
+  "id": "chronology",
+  "title": "연대표와 사건도",
+  "category": "서사·작법",
+  "summary": "세계 연대기·인물의 개인 시간·작품 순서를 함께 탐색.",
+  "aliases": [
+    "세계 연대기",
+    "교차 시간선"
+  ],
+  "sections": [
+    {
+      "id": "reading-order",
+      "title": "작품 순서",
+      "links": [
+        "event-prologue",
+        "event-gathering",
+        "event-fieldwork",
+        "event-restoration",
+        "event-sacrifice",
+        "event-aftermath",
+        "event-meeting",
+        "event-hand",
+        "event-fourth-answer",
+        "event-reunion",
+        "event-chronos-battle",
+        "event-omniscience",
+        "event-collapse",
+        "event-resistance",
+        "event-departure",
+        "event-third-act",
+        "event-human-demiurge",
+        "event-kai-dissociation",
+        "event-demiurge-inheritance"
+      ]
+    },
+    {
+      "id": "worldchronology-0",
+      "title": "세계 연대기",
+      "items": [
+        {
+          "title": "3부 · 세계시간상 1부 이전",
+          "description": "신수 데미우르고스가 아직 신위를 얻지 않은 인간 자신을 이 시대에 옮겨놓은 뒤 떠난다. 이후 2부 이후의 카르가 시간 신위를 지닌 채 도착하고 3부 주인공의 토벌 서사가 진행된다.",
+          "status": "현재 구상"
+        },
+        {
+          "title": "우르의 시간 신위 획득",
+          "description": "카르의 신위가 토벌 뒤 분리될 때 우르가 시간 신위를 이어받는 안. 이후 자기 인과의 폐쇄성과 육환신수의 제약을 인식한다.",
+          "status": "유력 구상"
+        },
+        {
+          "title": "패러독스 실험과 신수전쟁",
+          "description": "신위에 오른 데미우르고스는 미래를 부정하는 실험을 반복하다 상호 제약을 발견하고, 이를 깨려는 시도가 육환신수 간 전쟁으로 확대된다. 이 시대의 말과 전쟁 흔적이 후대에 전승된다.",
+          "status": "현재 설정"
+        },
+        {
+          "title": "전후 이상낙원 계획",
+          "description": "전쟁 뒤 데미우르고스는 카르 신격화의 진의를 숨기고 이상낙원을 제안한다. 육환신수의 공동 참여로 엘로이 문명의 장기 배양 기반이 마련된다.",
+          "status": "현재 설정"
+        },
+        {
+          "title": "1부 · 현대",
+          "description": "데미우르고스의 절망에서 나온 격언은 출처가 희석되어 오래된 속담처럼 퍼져 있고, 엘린도 이를 희망적인 뜻으로 사용할 수 있다. 1부 말 데미우르고스의 손이 카르를 엘로이 시대 말미로 끌어간다.",
+          "status": "현재 설정"
+        },
+        {
+          "title": "엘로이 문명 · 약 200만 년",
+          "description": "육환신수의 이상낙원은 실제로 장기간 안정적으로 운영된다. 그동안 문명 전체가 데미우르고스가 숨긴 통합 신위 배양판의 역할도 동시에 수행한다.",
+          "status": "현재 설정"
+        },
+        {
+          "title": "2부 · 엘로이 시대 말미",
+          "description": "카르가 도착해 엘린과 재회하고 데미우르고스를 토벌·흡수해 시간 신위를 얻는다. 문명은 종말을 맞고 카르는 여러 신위와 문명의 마력원을 수렴해 신격화된 뒤 세계시간상 과거의 3부 시대로 향한다.",
+          "status": "현재 구상"
+        }
+      ]
+    }
+  ],
+  "related": [],
+  "flow": {
+    "nodes": [
+      {
+        "id": "kai-third",
+        "title": "3부 · 카르 출현",
+        "era": "과거로 역행",
+        "x": 175,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-third-act"
+      },
+      {
+        "id": "kai-dissoc",
+        "title": "토벌·해리",
+        "era": "신위 분리 · 구상",
+        "x": 400,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-kai-dissociation",
+        "note": "3부 주인공의 목적은 미정"
+      },
+      {
+        "id": "kai-childhood",
+        "title": "어린 카르",
+        "era": "회로 획득",
+        "x": 1010,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-prologue"
+      },
+      {
+        "id": "kai-hand",
+        "title": "블랙홀과 손",
+        "era": "미래로 전이",
+        "x": 1210,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-hand",
+        "note": "니벨과 공멸을 시도하나 카르만 전이 · 이후 비마법사 동료가 개입"
+      },
+      {
+        "id": "kai-reunion",
+        "title": "엘로이 재회",
+        "era": "2부",
+        "x": 1425,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-reunion"
+      },
+      {
+        "id": "kai-chronos",
+        "title": "시간 신위 획득",
+        "era": "데미우르고스 토벌",
+        "x": 1620,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-omniscience"
+      },
+      {
+        "id": "kai-collapse",
+        "title": "문명의 종말",
+        "era": "통합 신격화",
+        "x": 1790,
+        "y": 228,
+        "lane": "kai",
+        "href": "#story/wiki/event-collapse"
+      },
+      {
+        "id": "ur-arrive",
+        "title": "우르 유입",
+        "era": "본명 우르",
+        "x": 145,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/event-human-demiurge",
+        "note": "납치 전의 시대는 아직 미정"
+      },
+      {
+        "id": "ur-party",
+        "title": "3부 토벌대 동행",
+        "era": "가명 미정",
+        "x": 310,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/event-human-demiurge"
+      },
+      {
+        "id": "ur-inherit",
+        "title": "시간 신위 계승",
+        "era": "데미우르고스",
+        "x": 465,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/event-demiurge-inheritance"
+      },
+      {
+        "id": "ur-paradox",
+        "title": "미래 반증 실험",
+        "era": "호흡 → 좌절",
+        "x": 650,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/beast-war"
+      },
+      {
+        "id": "ur-war",
+        "title": "신수전쟁·낙원",
+        "era": "이후의 설계",
+        "x": 835,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/eloi-civilization"
+      },
+      {
+        "id": "ur-hand",
+        "title": "카르를 이동시킴",
+        "era": "1부 마지막",
+        "x": 1210,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/event-hand"
+      },
+      {
+        "id": "ur-end",
+        "title": "카르에게 흡수",
+        "era": "2부 · 종막",
+        "x": 1620,
+        "y": 444,
+        "lane": "ur",
+        "href": "#story/wiki/event-chronos-battle"
+      },
+      {
+        "id": "hero-childhood",
+        "title": "어린 카르와 만남",
+        "era": "미래에서 과거로",
+        "x": 1000,
+        "y": 648,
+        "lane": "heroine",
+        "href": "#story/wiki/event-prologue"
+      },
+      {
+        "id": "hero-circuit",
+        "title": "사고·회로 전달",
+        "era": "1부 프롤로그",
+        "x": 1210,
+        "y": 648,
+        "lane": "heroine",
+        "href": "#story/wiki/event-prologue"
+      },
+      {
+        "id": "hero-reunion",
+        "title": "2부의 재회",
+        "era": "아직 과거 경험 전",
+        "x": 1450,
+        "y": 648,
+        "lane": "heroine",
+        "href": "#story/wiki/event-reunion"
+      },
+      {
+        "id": "hero-depart",
+        "title": "엘린의 과거행",
+        "era": "카르가 보내는 과거행",
+        "x": 1790,
+        "y": 648,
+        "lane": "heroine",
+        "href": "#story/wiki/event-departure",
+        "note": "카르는 합일에서 엘린을 살리고자 선택 · 사고사는 알고 있음"
+      }
+    ],
+    "edges": [
+      {
+        "from": "kai-third",
+        "to": "kai-dissoc",
+        "lane": "kai"
+      },
+      {
+        "from": "kai-childhood",
+        "to": "kai-hand",
+        "lane": "kai"
+      },
+      {
+        "from": "kai-hand",
+        "to": "kai-reunion",
+        "lane": "kai"
+      },
+      {
+        "from": "kai-reunion",
+        "to": "kai-chronos",
+        "lane": "kai"
+      },
+      {
+        "from": "kai-chronos",
+        "to": "kai-collapse",
+        "lane": "kai"
+      },
+      {
+        "from": "kai-collapse",
+        "to": "kai-third",
+        "lane": "kai",
+        "kind": "jump",
+        "path": "M 1790 191 V 136 H 175 V 189",
+        "label": "카르 · 미래에서 3부 과거로",
+        "labelX": 990,
+        "labelY": 128
+      },
+      {
+        "from": "ur-arrive",
+        "to": "ur-party",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-party",
+        "to": "ur-inherit",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-inherit",
+        "to": "ur-paradox",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-paradox",
+        "to": "ur-war",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-war",
+        "to": "ur-hand",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-hand",
+        "to": "ur-end",
+        "lane": "ur"
+      },
+      {
+        "from": "ur-war",
+        "to": "ur-arrive",
+        "lane": "ur",
+        "kind": "uncertain",
+        "path": "M 810 516 H 145 V 483",
+        "label": "자기 과거 이송 · 발신 시점 미정",
+        "labelX": 468,
+        "labelY": 506
+      },
+      {
+        "from": "hero-reunion",
+        "to": "hero-depart",
+        "lane": "heroine"
+      },
+      {
+        "from": "hero-depart",
+        "to": "hero-childhood",
+        "lane": "heroine",
+        "kind": "jump",
+        "path": "M 1790 686 V 761 H 1000 V 685",
+        "label": "히로인 · 미래에서 어린 카르의 시대로",
+        "labelX": 1360,
+        "labelY": 785
+      },
+      {
+        "from": "hero-childhood",
+        "to": "hero-circuit",
+        "lane": "heroine"
+      },
+      {
+        "from": "kai-dissoc",
+        "to": "ur-inherit",
+        "lane": "join",
+        "kind": "join",
+        "path": "M 400 265 V 336 H 465 V 407",
+        "label": "시간 신위 분리",
+        "labelX": 545,
+        "labelY": 328
+      },
+      {
+        "from": "ur-hand",
+        "to": "kai-hand",
+        "lane": "join",
+        "kind": "join",
+        "path": "M 1210 407 V 267",
+        "label": "이송의 주체",
+        "labelX": 1310,
+        "labelY": 348
+      },
+      {
+        "from": "ur-end",
+        "to": "kai-chronos",
+        "lane": "join",
+        "kind": "join",
+        "path": "M 1620 407 V 267",
+        "label": "신위 계승",
+        "labelX": 1720,
+        "labelY": 354
+      },
+      {
+        "from": "hero-circuit",
+        "to": "kai-childhood",
+        "lane": "join",
+        "kind": "join",
+        "path": "M 1210 610 C 1405 530 1380 345 1093 267",
+        "label": "회로 전달",
+        "labelX": 1372,
+        "labelY": 383
+      }
+    ]
+  }
+}

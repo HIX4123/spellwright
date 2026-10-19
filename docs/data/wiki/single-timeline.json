@@ -1,0 +1,28 @@
+{
+  "id": "single-timeline",
+  "title": "단일 시간선",
+  "category": "개념·규칙",
+  "summary": "하나의 역사 안에서 성립하는 인과와 시간 이동.",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "principles-0",
+      "title": "역사와 마법",
+      "items": [
+        {
+          "title": "단일 시간선",
+          "description": "역사는 일관된 하나이며 대안 세계선으로 분기하지 않는다. 다만 한 시간 구간의 양 끝을 도려내 폐쇄 고리로 봉합하는 식의 격리된 인과구조는 가능하며, 이것도 별도 세계선이 아니라 하나의 역사 내부에 남은 구조다."
+        },
+        {
+          "title": "마법과 인과",
+          "description": "마법과 육환신수의 권능도 이 역사 밖의 예외가 아니라 단일 시간선의 인과 안에서 성립한다."
+        }
+      ]
+    }
+  ],
+  "related": [
+    "chronology",
+    "causal-loop",
+    "constraints"
+  ]
+}

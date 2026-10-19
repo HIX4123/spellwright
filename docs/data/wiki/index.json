@@ -1,0 +1,506 @@
+{
+  "documents": [
+    {
+      "id": "kar",
+      "title": "카르",
+      "category": "인물",
+      "summary": "카르 · 주인공",
+      "aliases": [
+        "카이"
+      ]
+    },
+    {
+      "id": "nibel",
+      "title": "니벨",
+      "category": "인물",
+      "summary": "니벨 · 마법 소멸 구상자",
+      "aliases": [
+        "베인"
+      ]
+    },
+    {
+      "id": "premia",
+      "title": "프레미아",
+      "category": "인물",
+      "summary": "프레미아 · 공동체의 연결과 삼파전의 조율자",
+      "aliases": [
+        "리오"
+      ]
+    },
+    {
+      "id": "rakir",
+      "title": "라키르",
+      "category": "인물",
+      "summary": "라키르 · 숙련된 야전형 동료",
+      "aliases": [
+        "아스터"
+      ]
+    },
+    {
+      "id": "elin",
+      "title": "엘린",
+      "category": "인물",
+      "summary": "엘린(임시) · 엘로이족 히로인과 소꿉친구",
+      "aliases": []
+    },
+    {
+      "id": "ur",
+      "title": "우르 / 데미우르고스",
+      "category": "인물",
+      "summary": "우르 / 데미우르고스 · 시간 신위 계승 전과 후",
+      "aliases": [
+        "우르",
+        "데미우르고스"
+      ]
+    },
+    {
+      "id": "toma",
+      "title": "토마",
+      "category": "인물",
+      "summary": "토마 · 중간 보스",
+      "aliases": []
+    },
+    {
+      "id": "tera",
+      "title": "테라",
+      "category": "인물",
+      "summary": "테라 · 보호 대상",
+      "aliases": []
+    },
+    {
+      "id": "third-protagonist",
+      "title": "3부 주인공",
+      "category": "인물",
+      "summary": "3부 주인공 · 카르 토벌대",
+      "aliases": []
+    },
+    {
+      "id": "nonmage",
+      "title": "비마법사 동료",
+      "category": "인물",
+      "summary": "비마법사 동료 · 1부의 제4축 / 히로인 후보",
+      "aliases": [
+        "비마법사 히로인"
+      ]
+    },
+    {
+      "id": "ieumsae",
+      "title": "이음새",
+      "category": "조직",
+      "summary": "프레미아가 발의한 비공식 마법사 공동체.",
+      "aliases": []
+    },
+    {
+      "id": "eloi",
+      "title": "엘로이족",
+      "category": "종족·문명",
+      "summary": "순수 회로와 기억을 계승하는 장수종.",
+      "aliases": [
+        "엘로이"
+      ]
+    },
+    {
+      "id": "eloi-civilization",
+      "title": "엘로이 문명",
+      "category": "종족·문명",
+      "summary": "약 200만 년의 이상낙원과 그 이면의 배양 계획.",
+      "aliases": [
+        "엘로이 낙원",
+        "배양판",
+        "이상낙원"
+      ]
+    },
+    {
+      "id": "modern",
+      "title": "현대의 마법사",
+      "category": "종족·문명",
+      "summary": "1부의 비밀 마법과 공동체의 일상.",
+      "aliases": []
+    },
+    {
+      "id": "single-timeline",
+      "title": "단일 시간선",
+      "category": "개념·규칙",
+      "summary": "하나의 역사 안에서 성립하는 인과와 시간 이동.",
+      "aliases": []
+    },
+    {
+      "id": "circuits",
+      "title": "마력회로",
+      "category": "개념·규칙",
+      "summary": "인간의 계통 분화와 엘로이의 순수 회로.",
+      "aliases": [
+        "순수 회로",
+        "마법회로"
+      ]
+    },
+    {
+      "id": "ascension",
+      "title": "회로 합일과 신격화",
+      "category": "개념·규칙",
+      "summary": "회로가 그릇을 재구성하고 신위를 수용하는 과정.",
+      "aliases": [
+        "회로 합일",
+        "신격화"
+      ]
+    },
+    {
+      "id": "divinity",
+      "title": "신위",
+      "category": "개념·규칙",
+      "summary": "권능의 보유와 동시간대 유일성.",
+      "aliases": [
+        "동시간대 신위 유일성"
+      ]
+    },
+    {
+      "id": "constraints",
+      "title": "육환신수의 상호 제약",
+      "category": "개념·규칙",
+      "summary": "개념에 내재한 제약망과 패러독스의 보정.",
+      "aliases": [
+        "상호 제약",
+        "제약망",
+        "섭리 거역"
+      ]
+    },
+    {
+      "id": "six-beasts",
+      "title": "육환신수",
+      "category": "신수·환수",
+      "summary": "삼신수와 삼환수의 개념적 대칭과 생물 모티프.",
+      "aliases": [
+        "삼신수",
+        "삼환수"
+      ]
+    },
+    {
+      "id": "chronos",
+      "title": "크로노스",
+      "category": "신수·환수",
+      "summary": "크로노스 · 시간 — 메가네우라",
+      "aliases": []
+    },
+    {
+      "id": "aion",
+      "title": "아이온",
+      "category": "신수·환수",
+      "summary": "아이온 · 영원 — 물곰",
+      "aliases": []
+    },
+    {
+      "id": "topos",
+      "title": "토포스",
+      "category": "신수·환수",
+      "summary": "토포스 · 공간 — 담요문어",
+      "aliases": []
+    },
+    {
+      "id": "zero",
+      "title": "제로",
+      "category": "신수·환수",
+      "summary": "제로 · 무간 — 대왕고래",
+      "aliases": []
+    },
+    {
+      "id": "ontos",
+      "title": "온토스",
+      "category": "신수·환수",
+      "summary": "온토스 · 존재 — 메갈로케로스",
+      "aliases": []
+    },
+    {
+      "id": "phantasma",
+      "title": "판타즈마",
+      "category": "신수·환수",
+      "summary": "판타즈마 · 환상 — 큰정원사새",
+      "aliases": []
+    },
+    {
+      "id": "beast-war",
+      "title": "신수전쟁",
+      "category": "사건",
+      "summary": "데미우르고스의 자기반증 실험과 전후 질서.",
+      "aliases": [
+        "패러독스 실험"
+      ]
+    },
+    {
+      "id": "dualization",
+      "title": "이원화 실험",
+      "category": "개념·규칙",
+      "summary": "토마·테라의 우발적 사례에서 강경파와 온건파까지.",
+      "aliases": []
+    },
+    {
+      "id": "circuit-loss",
+      "title": "마력회로 소실",
+      "category": "개념·규칙",
+      "summary": "테라에게 나타나는 병리적 소실의 다섯 단계.",
+      "aliases": [
+        "회로 소실"
+      ]
+    },
+    {
+      "id": "restoration",
+      "title": "복원 마법",
+      "category": "개념·규칙",
+      "summary": "몸·기억·마법진을 기준 상태로 되돌리는 술식.",
+      "aliases": [
+        "무한 복원술",
+        "복원술"
+      ]
+    },
+    {
+      "id": "loss-jinx",
+      "title": "상실의 징크스",
+      "category": "개념·규칙",
+      "summary": "회로 소실의 병리와 구별되는 삶의 징크스.",
+      "aliases": [
+        "상실의 다섯 계층"
+      ]
+    },
+    {
+      "id": "causal-loop",
+      "title": "엘린의 인과 고리",
+      "category": "개념·규칙",
+      "summary": "카르와 엘린이 서로 다른 순서로 경험하는 사건.",
+      "aliases": []
+    },
+    {
+      "id": "third-act",
+      "title": "3부",
+      "category": "서사·작법",
+      "summary": "세계시간상 1부 이전에 벌어지는 카르 토벌과 우르의 계승.",
+      "aliases": []
+    },
+    {
+      "id": "craft",
+      "title": "서사 운영 원칙",
+      "category": "서사·작법",
+      "summary": "인물의 독립성과 이야기의 작동을 위한 작가용 기준.",
+      "aliases": []
+    },
+    {
+      "id": "creative-references",
+      "title": "창작 참고와 보류안",
+      "category": "서사·작법",
+      "summary": "생물·식물·풍경·운동의 심상과 미채택 모티프.",
+      "aliases": []
+    },
+    {
+      "id": "chronology",
+      "title": "연대표와 사건도",
+      "category": "서사·작법",
+      "summary": "세계 연대기·인물의 개인 시간·작품 순서를 함께 탐색.",
+      "aliases": [
+        "세계 연대기",
+        "교차 시간선"
+      ]
+    },
+    {
+      "id": "event-prologue",
+      "title": "프롤로그 · 소꿉친구",
+      "category": "사건",
+      "summary": "프롤로그",
+      "aliases": []
+    },
+    {
+      "id": "event-gathering",
+      "title": "다른 마법사를 경계한 카르 · 자발적인 합류",
+      "category": "사건",
+      "summary": "1부 · 현대",
+      "aliases": []
+    },
+    {
+      "id": "event-fieldwork",
+      "title": "1부 초반 · 피카레스크식 사건과 새 동료",
+      "category": "사건",
+      "summary": "1부 · 초반",
+      "aliases": []
+    },
+    {
+      "id": "event-restoration",
+      "title": "중간 보스 · 토마와 테라",
+      "category": "사건",
+      "summary": "1부 · 현대",
+      "aliases": []
+    },
+    {
+      "id": "event-sacrifice",
+      "title": "라키르의 희생 · 갈라지는 세 친구",
+      "category": "사건",
+      "summary": "1부 · 현대",
+      "aliases": []
+    },
+    {
+      "id": "event-aftermath",
+      "title": "라키르의 희생·니벨의 이탈 이후 · 남은 일상",
+      "category": "사건",
+      "summary": "1부 · 후반",
+      "aliases": []
+    },
+    {
+      "id": "event-meeting",
+      "title": "대화의 자리 · 삼파전",
+      "category": "사건",
+      "summary": "1부 · 종장",
+      "aliases": []
+    },
+    {
+      "id": "event-hand",
+      "title": "1부 마지막 · 블랙홀과 손",
+      "category": "사건",
+      "summary": "1부 · 마지막",
+      "aliases": []
+    },
+    {
+      "id": "event-fourth-answer",
+      "title": "비마법사 동료의 개입 · 삼파전의 제4축",
+      "category": "사건",
+      "summary": "1부 · 종장 직후",
+      "aliases": []
+    },
+    {
+      "id": "event-reunion",
+      "title": "2부 도착 · 첫 만남",
+      "category": "사건",
+      "summary": "2부 · 초미래",
+      "aliases": []
+    },
+    {
+      "id": "event-chronos-battle",
+      "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
+      "category": "사건",
+      "summary": "2부 · 초미래",
+      "aliases": []
+    },
+    {
+      "id": "event-omniscience",
+      "title": "시간 신위 · 정체와 운명",
+      "category": "사건",
+      "summary": "2부 · 초미래",
+      "aliases": []
+    },
+    {
+      "id": "event-collapse",
+      "title": "배양판 · 200만 년의 이상낙원과 수확",
+      "category": "사건",
+      "summary": "2부 · 종말",
+      "aliases": []
+    },
+    {
+      "id": "event-resistance",
+      "title": "저항 · 대피와 시간 연결",
+      "category": "사건",
+      "summary": "2부 · 종말",
+      "aliases": []
+    },
+    {
+      "id": "event-departure",
+      "title": "히로인 · 대신 과거로",
+      "category": "사건",
+      "summary": "2부 · 과거행",
+      "aliases": []
+    },
+    {
+      "id": "event-third-act",
+      "title": "3부 · 과거 시대의 카르 토벌",
+      "category": "사건",
+      "summary": "3부 · 세계시간상 1부 이전",
+      "aliases": []
+    },
+    {
+      "id": "event-human-demiurge",
+      "title": "3부 · 인간 우르의 동행",
+      "category": "사건",
+      "summary": "3부 · 동행과 반전",
+      "aliases": []
+    },
+    {
+      "id": "event-kai-dissociation",
+      "title": "3부 · 마지막 자아의 파괴와 신위 분리",
+      "category": "사건",
+      "summary": "3부 · 종장",
+      "aliases": []
+    },
+    {
+      "id": "event-demiurge-inheritance",
+      "title": "우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과",
+      "category": "사건",
+      "summary": "세계시간 · 1부 이전",
+      "aliases": []
+    }
+  ],
+  "legacy": {
+    "cast-0": "kar",
+    "motif-0": "kar",
+    "cast-1": "nibel",
+    "motif-1": "nibel",
+    "cast-2": "premia",
+    "motif-2": "premia",
+    "cast-3": "rakir",
+    "motif-3": "rakir",
+    "cast-4": "elin",
+    "motif-4": "elin",
+    "cast-5": "ur",
+    "motif-5": "ur",
+    "cast-6": "toma",
+    "motif-6": "toma",
+    "cast-7": "tera",
+    "motif-7": "tera",
+    "cast-8": "third-protagonist",
+    "motif-8": "third-protagonist",
+    "cast-9": "nonmage",
+    "motif-9": "nonmage",
+    "event-prologue": "event-prologue",
+    "event-gathering": "event-gathering",
+    "event-fieldwork": "event-fieldwork",
+    "event-restoration": "event-restoration",
+    "event-sacrifice": "event-sacrifice",
+    "event-aftermath": "event-aftermath",
+    "event-meeting": "event-meeting",
+    "event-hand": "event-hand",
+    "event-fourth-answer": "event-fourth-answer",
+    "event-reunion": "event-reunion",
+    "event-chronos-battle": "event-chronos-battle",
+    "event-omniscience": "event-omniscience",
+    "event-collapse": "event-collapse",
+    "event-resistance": "event-resistance",
+    "event-departure": "event-departure",
+    "event-third-act": "event-third-act",
+    "event-human-demiurge": "event-human-demiurge",
+    "event-kai-dissociation": "event-kai-dissociation",
+    "event-demiurge-inheritance": "event-demiurge-inheritance",
+    "principles": "single-timeline",
+    "eras": "chronology",
+    "harvest": "eloi-civilization",
+    "chronos": "chronos",
+    "constraints": "constraints",
+    "beast-war": "beast-war",
+    "conflict": "event-meeting",
+    "circuits": "premia",
+    "loss-jinx": "loss-jinx",
+    "elin-last-words": "elin",
+    "memories": "causal-loop",
+    "character-motifs": "cast",
+    "group-founding": "ieumsae",
+    "creative-references": "creative-references",
+    "narrative-craft": "craft",
+    "kai-design": "kar",
+    "kai-psychology": "kar",
+    "kai-joining": "event-gathering",
+    "kai-aftermath": "event-aftermath",
+    "kai-narration": "kar",
+    "eloi-appearance": "eloi",
+    "causality": "causal-loop",
+    "third-act-plan": "third-act",
+    "time-map": "chronology",
+    "world-chronology": "chronology",
+    "beast-forms": "six-beasts",
+    "fourth-answer": "event-fourth-answer",
+    "dualization": "dualization",
+    "circuit-loss": "circuit-loss",
+    "act-one-arc": "event-fieldwork"
+  }
+}

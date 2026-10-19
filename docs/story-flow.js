@@ -15,7 +15,7 @@ const axisY = { kai: 228, ur: 444, heroine: 648 };
 const widthFor = node => node.lane === 'ur' ? 142 : 160;
 const text = value => escapeHtml(String(value ?? ''));
 const coord = value => Number.isFinite(value) ? value : 0;
-const safeLink = value => /^#story\/(?:plot|world|cast|questions)\/[a-z0-9-]+$/.test(value || '') ? value : '#story/plot';
+const safeLink = value => /^#story\/(?:wiki|plot|world|cast|questions)\/[a-z0-9-]+$/.test(value || '') ? value : '#story/plot';
 
 function routePath(edge, nodes) {
   if (edge.path) return edge.path;
@@ -43,9 +43,9 @@ export function storyFlow(n) {
   const edges = model.edges.filter(edge => (edge.path || (nodes.has(edge.from) && nodes.has(edge.to))));
   return `${section('교차 시간선 · 전체 사건도', '가로축은 세계시간, 색상별 경로는 각 인물의 경험 순서 · 노드를 누르면 해당 사건의 상세 기록으로 이동')}
     <div class="story-flow-order" aria-label="작품 공개 순서">
-      <strong>작품 순서</strong><a href="#story/plot/event-prologue">1부 · 현대</a><span aria-hidden="true">→</span>
-      <a href="#story/plot/event-reunion">2부 · 엘로이</a><span aria-hidden="true">→</span>
-      <a href="#story/plot/event-third-act">3부 · 과거</a>
+      <strong>작품 순서</strong><a href="#story/wiki/event-prologue">1부 · 현대</a><span aria-hidden="true">→</span>
+      <a href="#story/wiki/event-reunion">2부 · 엘로이</a><span aria-hidden="true">→</span>
+      <a href="#story/wiki/event-third-act">3부 · 과거</a>
       <span class="story-flow-order-tip">아래 가로축과 다름</span>
     </div>
     <div id="time-map" class="story-flow-map story-block" tabindex="-1">

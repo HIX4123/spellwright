@@ -1,0 +1,36 @@
+{
+  "id": "event-kai-dissociation",
+  "title": "3부 · 마지막 자아의 파괴와 신위 분리",
+  "category": "사건",
+  "summary": "3부 · 종장",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "overview",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "3부 · 마지막 자아의 파괴와 신위 분리",
+          "description": "카르의 신위는 모든 것을 잃은 뒤 남은 마지막 자아와 겹친다. 토벌 과정에서 해리 단계까지 자기 동일성을 실제로 부수고, 통합 신위가 다시 분리되는 방향을 구상한다."
+        }
+      ]
+    },
+    {
+      "id": "open",
+      "title": "미정 사항",
+      "items": [
+        {
+          "title": "열어둔 질문",
+          "description": "토벌 뒤 카르의 상태와 신위 분리의 구체적 메커니즘은 미정.",
+          "status": "미정"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "kar",
+    "third-protagonist",
+    "chronology",
+    "third-act"
+  ]
+}

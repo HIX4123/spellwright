@@ -1,0 +1,24 @@
+{
+  "id": "event-reunion",
+  "title": "2부 도착 · 첫 만남",
+  "category": "사건",
+  "summary": "2부 · 초미래",
+  "aliases": [],
+  "sections": [
+    {
+      "id": "plot-2",
+      "title": "사건 개요",
+      "items": [
+        {
+          "title": "2부 도착 · 첫 만남",
+          "description": "처음 만난 엘로이가 소꿉친구와 동일인물이다. 종족의 극단적인 유전적 통일성 때문에 닮았다고만 생각하며, 소꿉친구와 엘로이의 관계를 의심한다.",
+          "status": "현재 플롯"
+        }
+      ]
+    }
+  ],
+  "related": [
+    "elin",
+    "chronology"
+  ]
+}
