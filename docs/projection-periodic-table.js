@@ -14,7 +14,7 @@ import {
   formatProjectionSerial,
   globalProjectionSerialLayout,
   selectProjectionTarget
-} from './projection-selector.js?v=audit-20261019-1';
+} from './projection-selector.js?v=haeri-origin-20261020-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
