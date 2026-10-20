@@ -17,6 +17,14 @@ test('changed JSON schema cannot be loaded with a stale cached module', () => {
   assert.match(index, /styles\.css\?v=haeri-quadrants-20261020-1/);
   assert.match(app, /dashboard-routing\.js\?v=attributes-20261020-1/);
   assert.match(app, /attributes-view\.js\?v=haeri-quadrants-20261020-1/);
+  // A stale periodic-table module keeps importing the previous serial mapper even
+  // when the main entrypoint is refreshed. Guard the full nested cache chain.
+  assert.match(index, /app\.js\?v=haeri-periodic-20261020-2/);
+  assert.match(app, /projection-periodic-table\.js\?v=haeri-periodic-20261020-2/);
+  const periodic = read('projection-periodic-table.js');
+  assert.match(periodic, /projection-selector\.js\?v=haeri-origin-20261020-1/);
+  assert.match(app, /projection-selector\.js\?v=haeri-origin-20261020-1/);
+  assert.doesNotMatch(app, /projection-periodic-table\.js\?v=audit-20261019-1/);
   assert.equal(JSON.parse(read('data/wiki/kar.json')).sections.find(s => s.id === 'kaidesignstages-0').items.length, 4);
   assert.match(story, /kaiDesignStages/);
   assert.equal('worldbuilding' in project.narrative, false);

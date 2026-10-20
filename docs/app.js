@@ -4,7 +4,7 @@ import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=haeri-origin-20261020-1';
-import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=audit-20261019-1';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=haeri-periodic-20261020-2';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=attributes-20261020-1';
 
 let data;
