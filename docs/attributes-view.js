@@ -1,4 +1,5 @@
 import { escapeHtml, section } from './html.js';
+import { formatProjectionSerial, globalProjectionSerialLayout } from './projection-selector.js?v=haeri-origin-20261020-1';
 
 const ROOT = '#attributes';
 const WIKI = '#attributes/wiki/';
@@ -6,6 +7,7 @@ const LABELS = [
   ['symbol', '상징'],
   ['motifs', '모티프'],
   ['mechanics', '조작 영역'],
+  ['operators', '4대 연산'],
   ['examples', '공격·방어'],
   ['limits', '설계 쟁점']
 ];
@@ -83,7 +85,46 @@ function articleShell(title, subtitle, id, elements, body, labels) {
     </article>`;
 }
 
-function attributeArticle(element, elements) {
+function quadrantCell(item, serialsByKey) {
+  if (!item) return '<td>미배정</td>';
+  const role = item.role;
+  const serial = serialsByKey.get('tetrahedron:' + item.id);
+  const id = Number.isInteger(serial) ? formatProjectionSerial(serial) : 'ID 미정';
+  return `<td>
+    <strong>${safe(id)} · ${safe(role.name)}</strong>
+    <small>${safe(role.imageMotif)}</small>
+    <p>${safe(role.description)}</p>
+  </td>`;
+}
+
+function quadrantView(element, projectionReference) {
+  if (!element.quadrantFramework) return '';
+  const frame = element.quadrantFramework;
+  const solids = projectionReference?.projectionData?.solids;
+  const views = projectionReference?.viewData?.solids;
+  if (!Array.isArray(solids) || !Array.isArray(views)) {
+    return '<section id="operators" class="attribute-article-section" tabindex="-1"><h3>해리의 4대 연산</h3><p>사영도 데이터를 확인하려면 <a href="#projections">Projections</a>를 참조하세요.</p></section>';
+  }
+  const tetra = solids.find(solid => solid.id === 'tetrahedron');
+  if (!tetra) return '';
+  const serials = globalProjectionSerialLayout(solids, views).serialsByKey;
+  const byAxis = (domain, action) => tetra.classes.find(item =>
+    item.role?.axisDomain === domain && item.role?.axisAction === action);
+  return `<section id="operators" class="attribute-article-section" tabindex="-1">
+    <h3>${safe(frame.title)} <small>개시 연산 · 확정</small></h3>
+    <p>${safe(frame.premise)}</p>
+    <p class="muted">${safe(frame.model)} · ${safe(frame.domainAxis.meaning)} ${safe(frame.actionAxis.meaning)}</p>
+    <div class="attribute-quadrant-scroll"><table class="attribute-quadrant">
+      <thead><tr><th scope="col">내재성 / 배타성</th><th scope="col">성립 (+)</th><th scope="col">배제 (−)</th></tr></thead>
+      <tbody><tr><th scope="row">내재</th>${quadrantCell(byAxis('내재', '성립'), serials)}${quadrantCell(byAxis('내재', '배제'), serials)}</tr>
+      <tr><th scope="row">외재</th>${quadrantCell(byAxis('외재', '성립'), serials)}${quadrantCell(byAxis('외재', '배제'), serials)}</tr></tbody>
+    </table></div>
+    <p class="muted attribute-quadrant-note">전역 사영 번호는 정립을 #000으로 삼아 43개 전체에 동일한 순환 이동을 적용합니다. 연산별 상세 자료는 <a href="#projections">Projections</a>에서 확인하세요.</p>
+    <p class="muted attribute-quadrant-note">${safe(frame.followUp)}</p>
+  </section>`;
+}
+
+function attributeArticle(element, elements, projectionReference) {
   const rich = value => linkAttributeNames(value, elements, element.id);
   const body = `
     <section id="symbol" class="attribute-article-section" tabindex="-1">
@@ -102,6 +143,7 @@ function attributeArticle(element, elements) {
       <h3>게임 내 조작 영역 <small>정립</small></h3>
       <p>${rich(element.gameplay.identity)}</p>
     </section>
+    ${quadrantView(element, projectionReference)}
     <section id="examples" class="attribute-article-section" tabindex="-1">
       <h3>기본 공방 <small>구현 예시 · 검토</small></h3>
       <div class="attribute-action-pair">
@@ -115,7 +157,8 @@ function attributeArticle(element, elements) {
       <p class="attribute-see-also">공통 개시 규칙: <a href="${href('rules')}">개시 규칙</a>
         · 사영도별 기능: <a href="#projections">Projections</a></p>
     </section>`;
-  return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body, LABELS);
+  return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body,
+    element.quadrantFramework ? LABELS : LABELS.filter(([id]) => id !== 'operators'));
 }
 
 function rulesArticle(elements, rules) {
@@ -141,7 +184,7 @@ function rulesArticle(elements, rules) {
     [['choice', '자유 선택'], ['adjacency', '인접성'], ['unresolved', '남은 과제']]);
 }
 
-export function renderAttributeReference(project, hash = ROOT) {
+export function renderAttributeReference(project, hash = ROOT, projectionReference = null) {
   const elements = project?.elements;
   const rules = project?.attributeRules;
   if (!Array.isArray(elements) || !rules) return '<div class="card">속성 데이터를 불러올 수 없습니다.</div>';
@@ -149,6 +192,6 @@ export function renderAttributeReference(project, hash = ROOT) {
   if (route.kind !== 'article') return index(elements);
   if (route.id === 'rules') return rulesArticle(elements, rules);
   const element = elements.find(item => item.id === route.id);
-  return element ? attributeArticle(element, elements)
+  return element ? attributeArticle(element, elements, projectionReference)
     : `${section('5대속성')}<div class="card"><p>해당 표제어가 없습니다.</p><a href="${ROOT}">전체 표제어로 돌아가기</a></div>`;
 }
