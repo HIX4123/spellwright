@@ -3,6 +3,7 @@ export const DASHBOARD_VIEW_IDS = Object.freeze([
   'story',
   'systems',
   'character',
+  'attributes',
   'projections',
   'questions',
   'archive'
@@ -11,7 +12,6 @@ export const DASHBOARD_VIEW_IDS = Object.freeze([
 const DASHBOARD_VIEW_SET = new Set(DASHBOARD_VIEW_IDS);
 const LEGACY_VIEW_ALIASES = Object.freeze({
   combat: 'systems',
-  attributes: 'projections',
   mvp: 'overview',
   decisions: 'archive',
   graveyard: 'archive',
@@ -27,6 +27,7 @@ export function dashboardViewFromHash(hash = '') {
     const decoded = decodeURIComponent(raw);
     if (decoded === 'story/questions' || decoded.startsWith('story/questions/')) return 'questions';
     if (decoded.startsWith('story/')) return 'story';
+    if (decoded.startsWith('attributes/')) return 'attributes';
     return DASHBOARD_VIEW_SET.has(decoded) ? decoded : LEGACY_VIEW_ALIASES[decoded] || 'overview';
   } catch {
     return 'overview';
