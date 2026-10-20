@@ -46,7 +46,7 @@ function termNavigation(elements, currentId) {
 
 function index(elements) {
   return `${section('5대속성', '표제어 색인 · 필요한 개념을 선택하면 상세 문서로 이동')}
-    <p class="attribute-index-intro">각 속성은 세계를 조작하는 대상을 달리합니다. 상징과 능력을 비교한 뒤 표제어를 선택해 모티프·공방·미정 사항을 함께 확인하세요.</p>
+    <p class="attribute-index-intro"><strong>삶이란 상실의 연속이다.</strong> 속성명은 상실의 정신적 반응에서 착안한 상징이며 임상적 진단이나 우열을 뜻하지 않습니다. 각 속성의 조작 영역은 정립된 방향이고, 공격·방어 예시는 검토 중입니다.</p>
     <div class="attribute-index-labels" aria-hidden="true">
       <span>속성 · 정다면체</span><span>세계관 · 모토</span><span>주요 조작 영역</span>
     </div>
