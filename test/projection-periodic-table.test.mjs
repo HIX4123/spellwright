@@ -101,6 +101,19 @@ test('global serials are unique across all 43 periodic-table entries', () => {
     'dodecahedron:1', 'icosahedron:1'
   ].map(key => serialByClassKey.get(key)), [0, 1, 2, 3, 4]);
   assert.equal(serialByClassKey.get('dodecahedron:4'), 999);
+  assert.deepEqual(
+    Object.fromEntries(entries.filter(entry => entry.solidId === 'cube')
+      .map(entry => [entry.classId, [entry.serialNumber, entry.label]])),
+    {
+      1: [1, '지향'],
+      2: [385, '기피'],
+      3: [886, '도달'],
+      4: [766, '실위'],
+      5: [95, '추방'],
+      6: [623, '호명']
+    },
+    'periodic-table tile labels and global IDs match the Soeoe term reference'
+  );
 });
 
 test('subrow layout packs one H-P pair into one line with minimum displacement', () => {
