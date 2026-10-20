@@ -362,7 +362,13 @@ test('global projection serials assign all 43 views unique #000-#999 coordinates
   assert.equal(layout.serialsByKey.size, 43);
   assert.equal(new Set(serials).size, 43);
   assert.equal(Math.min(...serials), 0);
-  assert.equal(Math.max(...serials), 999);
+  assert.ok(Math.max(...serials) <= 999);
+  assert.equal(layout.originKey, 'tetrahedron:3');
+  assert.equal(layout.originSerial, 401, 'original phase origin for the untouched 43-class dataset');
+  assert.equal(layout.serialsByKey.get('tetrahedron:3'), 0, 'definition is #000');
+  assert.equal(layout.serialsByKey.get('tetrahedron:1'), 516, 'acceptance moves from #917');
+  assert.equal(layout.serialsByKey.get('tetrahedron:4'), 598, 'differentiation moves from #999');
+  assert.equal(layout.serialsByKey.get('tetrahedron:2'), 599, 'insulation moves from former #000');
   assert.equal(formatProjectionSerial(0), '#000');
   assert.equal(formatProjectionSerial(999), '#999');
 });
