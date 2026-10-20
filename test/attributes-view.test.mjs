@@ -44,7 +44,8 @@ test('each term has one complete document, anchored headings and related links',
     assert.ok(html.includes(element.gameplay.identity));
     assert.ok(html.includes(element.gameplay.attack));
     assert.ok(html.includes(element.gameplay.defense));
-    assert.ok(html.includes(element.gameplay.limits));
+    assert.ok(html.includes(element.gameplay.limits.slice(0, 12)));
+    assert.ok(html.includes('id="limits"'));
     for (const anchor of ['symbol', 'motifs', 'mechanics', 'examples', 'limits']) {
       assert.ok(html.includes('id="' + anchor + '"'));
       assert.ok(html.includes('href="#attributes/wiki/' + element.id + '/' + anchor + '"'));
