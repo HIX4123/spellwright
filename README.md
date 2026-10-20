@@ -46,7 +46,7 @@ Repository **Settings → Pages**에서 다음 값만 지정하면 됩니다.
 
 ## Design data ownership (2026-10-11)
 
-The dashboard now has seven sections: Overview, Story & World, Systems, Character, Projections, Open Questions, and Archive. Legacy hash links are mapped to their merged views.
+The dashboard now has eight sections: Overview, Story & World, Systems, Character, Attributes, Projections, Open Questions, and Archive. Legacy hash links are mapped to their merged views.
 
 - `docs/data/project.json` owns system relationships, story overview canon, MVP scope, decisions and open questions. Story detail records are owned once by topic documents in `docs/data/wiki/`.
 - `docs/data/stats.json` is the single source for character stat descriptions. System nodes with `statRef` use that source; the corresponding fields are read-only in the browser system editor.
@@ -81,3 +81,11 @@ The **Story & World** area is now a topic wiki. Character documents own their na
 - 연대표의 사건 설명은 각 사건 문서에서 관리합니다. `chronology.json`은 사건 링크와 세계 연대기·교차 시간선만 관리합니다.
 - 문서는 선택할 때 개별 로드하며, Story & World는 계속 읽기 전용입니다. 대시보드의 Project JSON 내보내기/가져오기는 시스템 초안과 개요를 대상으로 하며, 별도 위키 문서는 저장소에서 관리합니다.
 - 검증: `node --test test/*.test.mjs`. 문서·링크·목차·기존 주소·HTML 이스케이프를 실제 데이터로 검사합니다.
+
+## Five-attribute reference (2026-10-20)
+
+- **Attributes** (`#attributes`) restores a dedicated, read-only reference for 해리·소외·초조·고착·반추. The internal views `#attributes/motifs` and `#attributes/gameplay` separate confirmed worldbuilding symbolism from exploratory visual/math motifs and combat examples. **Projections** (`#projections`) retains the individual 43-class geometry table and simulation; it links back to Attributes instead of duplicating the five-attribute explanation.
+- `docs/data/project.json` owns `elements[*].motifIdeas`, `elements[*].gameplay` and `attributeRules` as the canonical attribute descriptions. The worldbuilding `motto` / `loss` / `meaning` fields remain the single source for the established symbols; the motif lists, attack/defense examples and unresolved constraints are explicitly marked as proposals.
+- Initiation freely selects one of five attributes without a separate attribute-selection cost, random queue or default cooldown. Adjacent/same-attribute projection choice on the subsequent initiation grants an ultimate-related benefit; precise values and casting costs are still undecided. The order is linear: 해리 → 소외 → 초조 → 고착 → 반추.
+- Gameplay identities: 해리 = innate state/direct strengthening; 소외 = spatial creation/erasure with imprinted spawn conditions; 초조 = existing motion/state-change; 고착 = inter-entity relationships/relative references; 반추 = recorded past magical action and selective replay/erasure. Concrete functions for 43 individual projections remain under review.
+- `docs/attributes-view.js` is the pure HTML view builder; `docs/dashboard-routing.js` preserves `#attributes` and resolves its nested panels. Add `test/attributes-view.test.mjs` to guard source, labels, routing, escaping and rendering.
