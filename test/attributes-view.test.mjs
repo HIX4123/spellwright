@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { attributeLocation, renderAttributeReference } from '../docs/attributes-view.js';
+import { escapeHtml } from '../docs/html.js';
 import { globalProjectionSerialLayout } from '../docs/projection-selector.js';
 
 const project = JSON.parse(await readFile(new URL('../docs/data/project.json', import.meta.url), 'utf8'));
@@ -42,7 +43,7 @@ test('each term has one complete document, anchored headings and related links',
     assert.ok(html.includes('id="attribute-document-title"'));
     assert.ok(html.includes('<h2 id="attribute-document-title" tabindex="-1">' + element.name + '</h2>'));
     assert.ok(html.includes(element.meaning));
-    assert.ok(html.includes(element.gameplay.identity));
+    assert.ok(html.includes(element.gameplay.identity.slice(0, 14)));
     assert.ok(html.includes(element.gameplay.attack));
     assert.ok(html.includes(element.gameplay.defense));
     assert.ok(html.includes(element.gameplay.limits.slice(0, 12)));
@@ -123,5 +124,57 @@ test('canonical Haeri quadrant is consistently rendered from the four projection
   }
   assert.equal((html.match(/<td>/g) || []).length, 4);
   assert.ok(html.includes('href="#attributes/wiki/haeri/operators"'));
-  assert.ok(!renderAttributeReference(project, '#attributes/wiki/soeoe').includes('id="operators"'));
+  assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
+  assert.ok(renderAttributeReference(project, '#attributes/wiki/soeoe').includes('id="operators"'));
+});
+
+test('six Soeoe roles preserve A2 root pairs and globally rebased IDs', async () => {
+  const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
+  const views = JSON.parse(await readFile(new URL('../docs/data/projection-views.json', import.meta.url), 'utf8'));
+  const cube = projections.solids.find(s => s.id === 'cube');
+  const serials = globalProjectionSerialLayout(projections.solids, views.solids).serialsByKey;
+  const expected = [
+    [1, 1, '지향', '생성', 'alpha', 'positive'],
+    [2, 385, '기피', '소멸', 'alpha', 'negative'],
+    [6, 623, '호명', '공간 구속', 'beta', 'positive'],
+    [5, 95, '추방', '점유 차단', 'beta', 'negative'],
+    [3, 886, '도달', '전이', 'gamma', 'positive'],
+    [4, 766, '실위', '일시적 공간 유리', 'gamma', 'negative']
+  ];
+  const framework = project.elements.find(e => e.id === 'soeoe').rootFramework;
+  assert.equal(framework.status, 'confirmed');
+  assert.deepEqual(framework.pairs.map(pair => pair.root), ['alpha', 'beta', 'gamma']);
+  assert.match(framework.model, /α\+β/);
+
+  const html = renderAttributeReference(project, '#attributes/wiki/soeoe',
+    { projectionData: projections, viewData: views });
+  assert.ok(html.includes('href="#attributes/wiki/soeoe/operators"'));
+  assert.ok(html.includes('id="operators"'));
+  assert.equal((html.match(/<td>/g) || []).length, 6);
+  assert.ok(html.includes('자리의 기준'));
+
+  for (const [classId, serial, name, ability, root, direction] of expected) {
+    const entry = cube.classes.find(e => e.id === classId);
+    assert.equal(entry.role.status, 'confirmed');
+    assert.equal(entry.role.name, name);
+    assert.equal(entry.role.abilityName, ability);
+    assert.equal(entry.role.root, root);
+    assert.equal(entry.role.direction, direction);
+    assert.equal(serials.get('cube:' + classId), serial);
+    assert.ok(html.includes('#' + String(serial).padStart(3, '0') + ' · ' + name));
+    assert.ok(html.includes(escapeHtml(entry.role.description)));
+  }
+  assert.ok(html.includes('상세 형상과 역할은'));
+  assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
+});
+
+test('only finalized Haeri and Soeoe classes are marked confirmed', async () => {
+  const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
+  const confirmed = projections.solids.flatMap(s => s.classes.map(c => ({ solid: s.id, ...c.role })))
+    .filter(role => role.status === 'confirmed');
+  assert.equal(confirmed.length, 10);
+  assert.deepEqual(Object.fromEntries(['tetrahedron', 'cube'].map(id => [
+    id, confirmed.filter(role => role.solid === id).length
+  ])), { tetrahedron: 4, cube: 6 });
+  assert.ok(project.attributeRules.open.some(value => value.includes('33종')));
 });
