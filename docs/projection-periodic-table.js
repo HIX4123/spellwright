@@ -14,7 +14,7 @@ import {
   formatProjectionSerial,
   globalProjectionSerialLayout,
   selectProjectionTarget
-} from './projection-selector.js?v=haeri-origin-20261020-1';
+} from './projection-selector.js?v=solid-origins-20261020-1';
 
 const VERTEX_HULL_TOLERANCE_FACTOR = 4e-5;
 
@@ -287,7 +287,7 @@ export function renderProjectionPeriodicTable(root, entries) {
       '<div class="projection-periodic-legend">' +
         '<span><strong>H</strong> Outer Convex Hull vertex count · primary</span>' +
         '<span><strong>P</strong> Convex Hull depth · secondary</span>' +
-        '<span><strong>#</strong> Global projection coordinate · 1D MDS</span>' +
+        '<span><strong>#</strong> Projection serial · solid-local MDS phase</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' +
           eulerCount + '</span>' +
       '</div>' +
@@ -299,7 +299,7 @@ export function renderProjectionPeriodicTable(root, entries) {
           rows +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 전역 ID다. 같은 H·P 행에서는 ID 순서를 보존하면서 타일 간 최소 간격을 강제하고, 원래 ID 위치에서의 총 제곱 이동량이 최소가 되도록 한 줄로 패킹한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 뒤 정다면체별 기준점(#000–#004)으로 모듈러 이동시킨 전역 ID다. 서로 중복되는 번호는 기준점을 고정한 채 순환 거리상 가장 가까운 빈 번호로 보정한다. 같은 H·P 행에서는 ID 순서를 보존하면서 타일 간 최소 간격을 강제하고, 원래 ID 위치에서의 총 제곱 이동량이 최소가 되도록 한 줄로 패킹한다. EC = Euler circuit, ET = Euler trail.</p>' +
     '</div>';
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {

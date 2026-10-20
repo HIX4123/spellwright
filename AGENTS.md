@@ -17,7 +17,8 @@
 
 ## Global projection serial invariants
 
-- Global `#000–#999` serials are a **single cyclic coordinate over all 43 projection classes**, not individual labels that can be swapped or locally renumbered. The stable geometric class key is `<solid-id>:<local-class-id>`.
-- The canonical zero origin is the simplest tetrahedral Haeri **정립** class `tetrahedron:3`. Preserve the existing symmetry-reduced angle-distance embedding and rebase the complete serial map by the same modular offset `(oldSerial - originSerial + 1000) % 1000`; never swap two display IDs as a substitute.
-- The origin's prior unshifted serial was #401 for the 2026-10-20 dataset. All displayed numbers, selectors and periodic-table positions must consume the same `globalProjectionSerialLayout` result. Internal class IDs and source image filenames must remain unchanged.
+- All 43 geometric classes use the stable key `<solid-id>:<local-class-id>`, the existing symmetry-reduced rotation-distance matrix and one shared 1D MDS embedding. Display `#000–#999` IDs are cyclic coordinates with **one independent phase origin per Platonic solid**; they are not literal per-class manual swaps.
+- The locked five anchor IDs are `tetrahedron:3` **#000** (해리·정립), `cube:1` **#001** (고착·중첩), `octahedron:1` **#002** (소외·정렬), `dodecahedron:1` **#003** (초조·결속), and `icosahedron:1` **#004** (반추·보존). They correspond to the previous global-phase IDs #000, #627, #145, #162 and #163.
+- For each solid use `(previousGlobalSerial - previousSolidAnchorSerial + newSolidAnchorSerial + 1000) % 1000`. Reserve the five anchors, then assign the closest free circular ID to non-anchor collisions (for the 2026-10-20 dataset, `dodecahedron:4` becomes #999). Preserve geometric class IDs, source views, asset filenames and source MDS distances.
+- The original unshifted tetrahedral origin was #401 for the 2026-10-20 dataset. All selector IDs, thumbnails, searches and periodic-table positions must consume the same `globalProjectionSerialLayout` result. Change front-end import cache versions when modifying serial logic.
 - All 4 Haeri quadrant roles in `docs/data/projections.json` are confirmed. Other 39 projection role labels are drafts. Complete initiation operators for the other attributes **before** defining development-stage engravings or karma costs.

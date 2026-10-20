@@ -3,8 +3,8 @@ import { attributeLocation, renderAttributeReference } from './attributes-view.j
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=haeri-origin-20261020-1';
-import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=haeri-periodic-20261020-2';
+import { mountProjectionSelector } from './projection-selector.js?v=solid-origins-20261020-1';
+import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=solid-origins-20261020-1';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=attributes-20261020-1';
 
 let data;
@@ -461,7 +461,7 @@ function renderAttributes() {
 }
 
 function renderProjections() {
-  view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
+  view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 속성별 기준축을 적용한 전역 사영 ID #000–#999')}
     <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 해리의 4개 연산은 확정했으며, 나머지 39개 사영도의 기존 역할명은 검토 중인 가설입니다.</p>
     <nav class="attribute-term-nav" aria-label="5대속성 정의 바로가기">${data.elements.map(element => `<a href="#attributes/wiki/${encodeURIComponent(element.id)}">${escapeHtml(element.name)}</a>`).join('')}</nav>
     <div id="projectionPeriodicTable"></div>
