@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { formatProjectionSerial, globalProjectionSerialLayout } from './projection-selector.js?v=haeri-origin-20261020-1';
+import { formatProjectionSerial, globalProjectionSerialLayout } from './projection-selector.js?v=solid-origins-20261020-1';
 
 const ROOT = '#attributes';
 const WIKI = '#attributes/wiki/';
@@ -119,8 +119,51 @@ function quadrantView(element, projectionReference) {
       <tbody><tr><th scope="row">내재</th>${quadrantCell(byAxis('내재', '성립'), serials)}${quadrantCell(byAxis('내재', '배제'), serials)}</tr>
       <tr><th scope="row">외재</th>${quadrantCell(byAxis('외재', '성립'), serials)}${quadrantCell(byAxis('외재', '배제'), serials)}</tr></tbody>
     </table></div>
-    <p class="muted attribute-quadrant-note">전역 사영 번호는 정립을 #000으로 삼아 43개 전체에 동일한 순환 이동을 적용합니다. 연산별 상세 자료는 <a href="#projections">Projections</a>에서 확인하세요.</p>
+    <p class="muted attribute-quadrant-note">전역 번호는 공유된 기하학적 좌표를 바탕으로 속성별 기준 사영을 원점 삼아 매깁니다. 연산별 상세 자료는 <a href="#projections">Projections</a>에서 확인하세요.</p>
     <p class="muted attribute-quadrant-note">${safe(frame.followUp)}</p>
+  </section>`;
+}
+
+
+function rootCell(item, serialsByKey) {
+  if (!item) return '<td>미배정</td>';
+  const role = item.role;
+  const serial = serialsByKey.get('cube:' + item.id);
+  return `<td>
+    <strong>${safe(Number.isInteger(serial) ? formatProjectionSerial(serial) : 'ID 미정')} · ${safe(role.name)}</strong>
+    <small>${safe(role.abilityName)} · ${safe(role.imageMotif)}</small>
+    <p>${safe(role.description)}</p>
+  </td>`;
+}
+
+function rootView(element, projectionReference) {
+  const frame = element.rootFramework;
+  if (!frame) return '';
+  const solids = projectionReference?.projectionData?.solids;
+  const views = projectionReference?.viewData?.solids;
+  if (!Array.isArray(solids) || !Array.isArray(views)) {
+    return '<section id="operators" class="attribute-article-section" tabindex="-1"><h3>소외의 6대 연산</h3><p>사영도 데이터를 확인하려면 <a href="#projections">Projections</a>를 참조하세요.</p></section>';
+  }
+  const cube = solids.find(solid => solid.id === 'cube');
+  if (!cube) return '';
+  const serials = globalProjectionSerialLayout(solids, views).serialsByKey;
+  const byRoot = (root, direction) => cube.classes.find(item =>
+    item.role?.root === root && item.role?.direction === direction);
+  return `<section id="operators" class="attribute-article-section" tabindex="-1">
+    <h3>${safe(frame.title)} <small>개시 연산 · 확정</small></h3>
+    <p>${safe(frame.premise)}</p>
+    <p class="muted">${safe(frame.model)}</p>
+    <div class="attribute-quadrant-scroll"><table class="attribute-quadrant attribute-root-table">
+      <thead><tr><th scope="col">자리의 기준</th><th scope="col">양의 근 (+)</th><th scope="col">대립 근 (−)</th></tr></thead>
+      <tbody>${frame.pairs.map(pair => `<tr>
+        <th scope="row">${safe(pair.label)}<small>${safe(pair.explanation)}</small></th>
+        ${rootCell(byRoot(pair.root, 'positive'), serials)}
+        ${rootCell(byRoot(pair.root, 'negative'), serials)}
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <p class="muted attribute-quadrant-note">${safe(frame.interpretation)}</p>
+    <p class="muted attribute-quadrant-note">${safe(frame.followUp)}
+      상세 형상과 역할은 <a href="#projections">Projections</a>에서 확인할 수 있습니다.</p>
   </section>`;
 }
 
@@ -136,7 +179,7 @@ function attributeArticle(element, elements, projectionReference) {
       <p>${rich(element.meaning)}</p>
     </section>
     <section id="motifs" class="attribute-article-section" tabindex="-1">
-      <h3>수학·시각 모티프 <small>검토</small></h3>
+      <h3>수학·시각 모티프 <small>${element.quadrantFramework || element.rootFramework ? '원리 확정 · 해석 참고' : '검토'}</small></h3>
       <ul class="attribute-compact-list">${element.motifIdeas.map(value => `<li>${rich(value)}</li>`).join('')}</ul>
     </section>
     <section id="mechanics" class="attribute-article-section" tabindex="-1">
@@ -144,6 +187,7 @@ function attributeArticle(element, elements, projectionReference) {
       <p>${rich(element.gameplay.identity)}</p>
     </section>
     ${quadrantView(element, projectionReference)}
+    ${rootView(element, projectionReference)}
     <section id="examples" class="attribute-article-section" tabindex="-1">
       <h3>기본 공방 <small>구현 예시 · 검토</small></h3>
       <div class="attribute-action-pair">
@@ -158,7 +202,8 @@ function attributeArticle(element, elements, projectionReference) {
         · 사영도별 기능: <a href="#projections">Projections</a></p>
     </section>`;
   return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body,
-    element.quadrantFramework ? LABELS : LABELS.filter(([id]) => id !== 'operators'));
+    element.rootFramework ? LABELS.map(([id, title]) => id === 'operators' ? [id, '6대 연산'] : [id, title])
+      : element.quadrantFramework ? LABELS : LABELS.filter(([id]) => id !== 'operators'));
 }
 
 function rulesArticle(elements, rules) {
