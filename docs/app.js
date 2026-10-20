@@ -1,9 +1,9 @@
 import { escapeHtml, section } from './html.js';
-import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=term-index-20261020-1';
+import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=haeri-quadrants-20261020-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
-import { mountProjectionSelector } from './projection-selector.js?v=audit-20261019-1';
+import { mountProjectionSelector } from './projection-selector.js?v=haeri-origin-20261020-1';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=audit-20261019-1';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=attributes-20261020-1';
 
@@ -12,6 +12,7 @@ let relationships;
 let statsDocument;
 let statsCatalog;
 let repositoryRevision;
+let projectionReference = null;
 let currentView = 'overview';
 let dirty = false;
 
@@ -75,16 +76,26 @@ function isRelationshipData(value) {
 }
 
 async function load() {
-  const [projectResponse, relationshipResponse, statsResponse] = await Promise.all([
+  const [projectResponse, relationshipResponse, statsResponse, projectionContext] = await Promise.all([
     fetch('./data/project.json', { cache: 'no-store' }),
     fetch('./data/relationships.json', { cache: 'no-store' }),
-    fetch('./data/stats.json', { cache: 'no-store' })
+    fetch('./data/stats.json', { cache: 'no-store' }),
+    Promise.all([
+      fetch('./data/projections.json', { cache: 'no-store' }),
+      fetch('./data/projection-views.json', { cache: 'no-store' })
+    ]).then(async ([projections, views]) =>
+      projections.ok && views.ok ? {
+        projectionData: await projections.json(),
+        viewData: await views.json()
+      } : null
+    ).catch(() => null)
   ]);
   if (!projectResponse.ok || !relationshipResponse.ok || !statsResponse.ok) {
     throw new Error('Failed to load dashboard data');
   }
   const [projectSource, statsSource] = await Promise.all([projectResponse.text(), statsResponse.text()]);
   const remote = JSON.parse(projectSource);
+  projectionReference = projectionContext;
   relationships = await relationshipResponse.json();
   statsDocument = JSON.parse(statsSource);
   statsCatalog = new Map((statsDocument.stats || []).map(item => [item.id, item]));
@@ -439,7 +450,7 @@ function bindSystemCards() {
 }
 
 function renderAttributes() {
-  view.innerHTML = renderAttributeReference(data, location.hash);
+  view.innerHTML = renderAttributeReference(data, location.hash, projectionReference);
   const targetId = attributeLocation(location.hash).target;
   if (!targetId) return;
   const target = view.querySelector(`[id="${targetId}"]`);
@@ -451,7 +462,7 @@ function renderAttributes() {
 
 function renderProjections() {
   view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
-    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 아래 사영도의 기존 역할명은 개별 연산이 확정되기 전의 가설입니다.</p>
+    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 해리의 4개 연산은 확정했으며, 나머지 39개 사영도의 기존 역할명은 검토 중인 가설입니다.</p>
     <nav class="attribute-term-nav" aria-label="5대속성 정의 바로가기">${data.elements.map(element => `<a href="#attributes/wiki/${encodeURIComponent(element.id)}">${escapeHtml(element.name)}</a>`).join('')}</nav>
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
