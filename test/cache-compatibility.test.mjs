@@ -14,9 +14,9 @@ test('changed JSON schema cannot be loaded with a stale cached module', () => {
   assert.match(app, /story-world\.js\?v=[\w-]+/);
   assert.doesNotMatch(index, /app\.js\?v=cache-schema-fix-20261011-3/);
   assert.doesNotMatch(app, /story-world\.js\?v=cache-schema-fix-20261011-3/);
-  assert.match(index, /styles\.css\?v=term-index-20261020-1/);
+  assert.match(index, /styles\.css\?v=haeri-quadrants-20261020-1/);
   assert.match(app, /dashboard-routing\.js\?v=attributes-20261020-1/);
-  assert.match(app, /attributes-view\.js\?v=term-index-20261020-1/);
+  assert.match(app, /attributes-view\.js\?v=haeri-quadrants-20261020-1/);
   assert.equal(JSON.parse(read('data/wiki/kar.json')).sections.find(s => s.id === 'kaidesignstages-0').items.length, 4);
   assert.match(story, /kaiDesignStages/);
   assert.equal('worldbuilding' in project.narrative, false);

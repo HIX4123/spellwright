@@ -87,7 +87,10 @@ test('global serials are unique across all 43 periodic-table entries', () => {
 
   assert.equal(new Set(serials).size, 43);
   assert.equal(Math.min(...serials), 0);
-  assert.equal(Math.max(...serials), 999);
+  assert.ok(Math.max(...serials) <= 999);
+  const haeri = entries.filter(entry => entry.solidId === 'tetrahedron');
+  assert.deepEqual(Object.fromEntries(haeri.map(entry => [entry.classId, entry.serialNumber])),
+    { 1: 516, 2: 599, 3: 0, 4: 598 });
 });
 
 test('subrow layout packs one H-P pair into one line with minimum displacement', () => {

@@ -313,7 +313,16 @@ export function minimalRotationClassOrder(classes, viewsByClass, geometry, symme
   return order.map(index => classes[index]);
 }
 
+// The global serial coordinate is cyclic: rotate the original distance-derived
+// one-dimensional placement so the simplest tetrahedral projection (정립) is #000.
+// Keep each original gap and all 43 relative positions; do not swap two labels.
+export const PROJECTION_SERIAL_ORIGIN_KEY = 'tetrahedron:3';
+export const PROJECTION_SERIAL_PERIOD = 1000;
 const GLOBAL_PROJECTION_SERIAL_CACHE = new Map();
+
+export function rotateProjectionSerial(serial, origin, period = PROJECTION_SERIAL_PERIOD) {
+  return ((serial - origin) % period + period) % period;
+}
 
 function globalProjectionKey(solidId, classId) {
   return solidId + ':' + classId;
@@ -476,9 +485,24 @@ export function globalProjectionSerialLayout(solids, viewSolids) {
     previous = serial;
   });
 
+  const originSerial = serialsByKey.get(PROJECTION_SERIAL_ORIGIN_KEY);
+  if (!Number.isInteger(originSerial)) {
+    throw new Error('Missing canonical projection origin ' + PROJECTION_SERIAL_ORIGIN_KEY);
+  }
+
+  // Shift every serial by the same phase offset, including values crossing #000.
+  // The source coordinates and pairwise angular distances remain unchanged.
+  const shiftedSerials = new Map([...serialsByKey].map(([key, serial]) => [
+    key,
+    rotateProjectionSerial(serial, originSerial)
+  ]));
   const result = {
-    serialsByKey,
-    orderedKeys: ordered.map(item => item.key),
+    serialsByKey: shiftedSerials,
+    orderedKeys: ordered.slice().sort((first, second) =>
+      shiftedSerials.get(first.key) - shiftedSerials.get(second.key)
+    ).map(item => item.key),
+    originKey: PROJECTION_SERIAL_ORIGIN_KEY,
+    originSerial,
     distances,
     nodes
   };

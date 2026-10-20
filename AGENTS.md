@@ -14,3 +14,10 @@
 - **Distinguish confirmed vs proposed vs unresolved at the claim/section level.** Never promote design examples, projection role hypotheses or symbolic analogies to confirmed rules just because they appear beside a confirmed term.
 - **Preserve discoverability.** Stable term IDs, concise index summaries, internal headings/deep links, related-article links and old URL compatibility are expected. Keep the index usable on narrow screens in light and dark themes.
 - **Maintenance gate.** When adding substantially more content, add or update a term document and its preview rather than lengthening an overview. Test routing, references, content escaping, source integrity and regression behavior; keep the full atlas/simulator out of the glossary.
+
+## Global projection serial invariants
+
+- Global `#000–#999` serials are a **single cyclic coordinate over all 43 projection classes**, not individual labels that can be swapped or locally renumbered. The stable geometric class key is `<solid-id>:<local-class-id>`.
+- The canonical zero origin is the simplest tetrahedral Haeri **정립** class `tetrahedron:3`. Preserve the existing symmetry-reduced angle-distance embedding and rebase the complete serial map by the same modular offset `(oldSerial - originSerial + 1000) % 1000`; never swap two display IDs as a substitute.
+- The origin's prior unshifted serial was #401 for the 2026-10-20 dataset. All displayed numbers, selectors and periodic-table positions must consume the same `globalProjectionSerialLayout` result. Internal class IDs and source image filenames must remain unchanged.
+- All 4 Haeri quadrant roles in `docs/data/projections.json` are confirmed. Other 39 projection role labels are drafts. Complete initiation operators for the other attributes **before** defining development-stage engravings or karma costs.

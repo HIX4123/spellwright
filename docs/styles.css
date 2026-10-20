@@ -750,3 +750,15 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
   .attribute-index-summary { grid-column: 1; margin-top: 6px; }
   .attribute-article-head h2 { font-size: 24px; }
 }
+/* The finalized Haeri operators belong to one term article, not four repeated cards. */
+.attribute-quadrant-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line-strong); border-radius: 10px; margin: 14px 0; }
+.attribute-quadrant { border-collapse: collapse; width: 100%; min-width: 530px; table-layout: fixed; background: var(--surface); }
+.attribute-quadrant th, .attribute-quadrant td { padding: 13px 14px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: left; vertical-align: top; }
+.attribute-quadrant tr:last-child th, .attribute-quadrant tr:last-child td { border-bottom: 0; }
+.attribute-quadrant th:last-child, .attribute-quadrant td:last-child { border-right: 0; }
+.attribute-quadrant thead th { background: var(--surface-2); color: var(--muted); font-size: 12px; font-weight: 650; }
+.attribute-quadrant tbody th { width: 19%; color: var(--text); font-size: 13px; font-weight: 650; }
+.attribute-quadrant td strong { display: block; color: var(--text); font-size: 14px; }
+.attribute-quadrant td small { display: block; color: var(--muted); font-size: 11px; margin: 4px 0 8px; }
+.attribute-quadrant td p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.65; }
+.attribute-quadrant-note { font-size: 12px; }
