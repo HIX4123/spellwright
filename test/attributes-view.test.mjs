@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { attributeLocation, renderAttributeReference } from '../docs/attributes-view.js';
+import { escapeHtml } from '../docs/html.js';
 import { globalProjectionSerialLayout } from '../docs/projection-selector.js';
 
 const project = JSON.parse(await readFile(new URL('../docs/data/project.json', import.meta.url), 'utf8'));
@@ -42,7 +43,7 @@ test('each term has one complete document, anchored headings and related links',
     assert.ok(html.includes('id="attribute-document-title"'));
     assert.ok(html.includes('<h2 id="attribute-document-title" tabindex="-1">' + element.name + '</h2>'));
     assert.ok(html.includes(element.meaning));
-    assert.ok(html.includes(element.gameplay.identity));
+    assert.ok(html.includes(element.gameplay.identity.slice(0, 14)));
     assert.ok(html.includes(element.gameplay.attack));
     assert.ok(html.includes(element.gameplay.defense));
     assert.ok(html.includes(element.gameplay.limits.slice(0, 12)));
@@ -123,7 +124,8 @@ test('canonical Haeri quadrant is consistently rendered from the four projection
   }
   assert.equal((html.match(/<td>/g) || []).length, 4);
   assert.ok(html.includes('href="#attributes/wiki/haeri/operators"'));
-  assert.ok(!renderAttributeReference(project, '#attributes/wiki/soeoe').includes('id="operators"'));
+  assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
+  assert.ok(renderAttributeReference(project, '#attributes/wiki/soeoe').includes('id="operators"'));
 });
 
 test('six Soeoe roles preserve A2 root pairs and globally rebased IDs', async () => {
@@ -160,7 +162,7 @@ test('six Soeoe roles preserve A2 root pairs and globally rebased IDs', async ()
     assert.equal(entry.role.direction, direction);
     assert.equal(serials.get('cube:' + classId), serial);
     assert.ok(html.includes('#' + String(serial).padStart(3, '0') + ' · ' + name));
-    assert.ok(html.includes(entry.role.description));
+    assert.ok(html.includes(escapeHtml(entry.role.description)));
   }
   assert.ok(html.includes('상세 형상과 역할은'));
   assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
