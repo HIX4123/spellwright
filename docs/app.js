@@ -451,7 +451,8 @@ function renderAttributes() {
 
 function renderProjections() {
   view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
-    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>에서 확인할 수 있어요. 아래 사영도의 기존 역할명은 개별 연산이 확정되기 전의 가설입니다.</p>
+    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 아래 사영도의 기존 역할명은 개별 연산이 확정되기 전의 가설입니다.</p>
+    <nav class="attribute-term-nav" aria-label="5대속성 정의 바로가기">${data.elements.map(element => `<a href="#attributes/wiki/${encodeURIComponent(element.id)}">${escapeHtml(element.name)}</a>`).join('')}</nav>
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
     <div id="projectionSimulation"></div>
