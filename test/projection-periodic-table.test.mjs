@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import {
   buildProjectionPeriodicEntries,
+  buildProjectionPeriodicRows,
+  PERIODIC_GROUPING_MODES,
+  renderProjectionPeriodicTable,
   layoutProjectionSubrow
 } from '../docs/projection-periodic-table.js';
 
@@ -160,4 +163,52 @@ test('projection thumbnails are derived from the current representative view', (
     baselineEntry.thumbnailSvg,
     'changing the current representative view must immediately change the table thumbnail'
   );
+});
+
+test('H, P and attribute grouping produce 6/4/5 rows without losing any class', () => {
+  const entries = buildProjectionPeriodicEntries(projections, views);
+  assert.deepEqual(PERIODIC_GROUPING_MODES.map(mode => mode.id), ['hull', 'period', 'attribute']);
+  for (const [mode, labels] of [
+    ['hull', ['H3', 'H4', 'H6', 'H8', 'H10', 'H12']],
+    ['period', ['P1', 'P2', 'P3', 'P4']],
+    ['attribute', ['정사면체', '정육면체', '정팔면체', '정십이면체', '정이십면체']]
+  ]) {
+    const rows = buildProjectionPeriodicRows(entries, mode);
+    assert.deepEqual(rows.map(row => row.label), labels, mode);
+    assert.equal(rows.reduce((n, row) => n + row.entries.length, 0), 43, mode);
+    assert.deepEqual(
+      rows.flatMap(row => row.entries.map(entry => entry.key)).sort(),
+      entries.map(entry => entry.key).sort(), mode
+    );
+    for (const row of rows) {
+      const positions = row.entries.map(entry => entry.packedSerial);
+      assert.ok(positions.every(p => p >= -1e-8 && p <= 999 + 1e-8), mode + ' ' + row.key);
+      for (let i = 1; i < positions.length; i += 1) {
+        assert.ok(row.entries[i].serialNumber > row.entries[i - 1].serialNumber, mode + ' serial order');
+        assert.ok(positions[i] - positions[i - 1] >= row.minimumGap - 1e-8,
+          mode + ' separation in ' + row.key);
+      }
+      for (const entry of row.entries) {
+        const expectedKey = mode === 'hull' ? 'H' + entry.hullVertices
+          : mode === 'period' ? 'P' + entry.period : entry.solidId;
+        assert.equal(row.key, expectedKey, mode + ' row membership');
+      }
+    }
+  }
+});
+
+test('grouping toggle exposes accessible buttons and re-renders all 43 projections', () => {
+  const entries = buildProjectionPeriodicEntries(projections, views);
+  for (const [mode, count] of [['hull', 6], ['period', 4], ['attribute', 5]]) {
+    const root = { innerHTML: '', querySelectorAll: () => [] };
+    renderProjectionPeriodicTable(root, entries, mode);
+    assert.equal((root.innerHTML.match(/class="projection-periodic-item/g) || []).length, 43);
+    assert.equal((root.innerHTML.match(/data-periodic-row=/g) || []).length, count);
+    assert.equal((root.innerHTML.match(/data-periodic-group=/g) || []).length, 3);
+    assert.equal((root.innerHTML.match(/aria-pressed="true"/g) || []).length, 1);
+    assert.ok(root.innerHTML.includes('data-periodic-group="' + mode + '" aria-pressed="true"'));
+    assert.ok(root.innerHTML.includes('data-serial="999"'));
+  }
+  assert.throws(() => buildProjectionPeriodicRows(entries, 'unknown'), /Unknown projection grouping mode/);
+  renderProjectionPeriodicTable({ innerHTML: '', querySelectorAll: () => [] }, entries, 'hull');
 });

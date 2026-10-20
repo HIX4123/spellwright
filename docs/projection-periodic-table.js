@@ -119,6 +119,42 @@ export function buildProjectionPeriodicEntries(projectionData, viewData, element
 }
 
 const PERIODIC_MIN_SERIAL_GAP = 54;
+export const PERIODIC_GROUPING_MODES = Object.freeze([
+  { id: 'hull', label: 'H', heading: '최외곽 정점 수' },
+  { id: 'period', label: 'P', heading: 'Convex Hull 층수' },
+  { id: 'attribute', label: '속성', heading: '5대속성' }
+]);
+export const DEFAULT_PERIODIC_GROUPING = 'hull';
+let activePeriodicGrouping = DEFAULT_PERIODIC_GROUPING;
+
+// Only the row grouping and visual packing change when the mode changes.
+// Geometry, source-class IDs and the global serial map remain untouched.
+export function buildProjectionPeriodicRows(entries, mode = DEFAULT_PERIODIC_GROUPING) {
+  if (!PERIODIC_GROUPING_MODES.some(option => option.id === mode)) {
+    throw new Error('Unknown projection grouping mode: ' + mode);
+  }
+  const rows = new Map();
+  for (const entry of entries) {
+    const value = mode === 'hull' ? entry.hullVertices
+      : mode === 'period' ? entry.period : entry.solidId;
+    const key = mode === 'hull' ? 'H' + value
+      : mode === 'period' ? 'P' + value : String(value);
+    if (!rows.has(key)) {
+      rows.set(key, {
+        key,
+        label: mode === 'hull' ? 'H' + value
+          : mode === 'period' ? 'P' + value : entry.attribute,
+        order: mode === 'attribute' ? entry.solidOrder : Number(value),
+        entries: []
+      });
+    }
+    rows.get(key).entries.push(entry);
+  }
+  return [...rows.values()]
+    .sort((a, b) => a.order - b.order || a.key.localeCompare(b.key))
+    .map(row => ({ ...row, ...layoutProjectionSubrow(row.entries) }));
+}
+
 
 function isotonicRegression(values) {
   const blocks = [];
@@ -186,7 +222,7 @@ export function layoutProjectionSubrow(entries, minimumGap = PERIODIC_MIN_SERIAL
   };
 }
 
-function periodicItem(entry) {
+function periodicItem(entry, mode) {
   const eulerClass = entry.eulerTrail ? ' is-euler' : '';
   const circuitClass = entry.eulerCircuit ? ' is-circuit' : '';
   const eulerBadge = entry.eulerTrail
@@ -199,6 +235,9 @@ function periodicItem(entry) {
     'Outer hull ' + entry.hullVertices + ' · C' + entry.rotationalOrder
   ].join(' · ');
   const position = (entry.packedSerial / 999 * 100).toFixed(4) + '%';
+  const secondary = mode === 'period' ? 'H' + entry.hullVertices
+    : mode === 'hull' ? 'P' + entry.period
+      : 'H' + entry.hullVertices + ' · P' + entry.period;
 
   return '<button class="projection-periodic-item' + eulerClass + circuitClass +
     '" type="button" data-solid="' + escapeHtml(entry.solidId) +
@@ -214,6 +253,7 @@ function periodicItem(entry) {
     ) + '">' +
       '<div class="projection-periodic-thumb">' +
         entry.thumbnailSvg +
+        '<span class="projection-periodic-metric">' + escapeHtml(secondary) + '</span>' +
         eulerBadge +
       '</div>' +
     '</button>';
@@ -238,69 +278,88 @@ function phaseAxisMarkup() {
   '</div>';
 }
 
-export function renderProjectionPeriodicTable(root, entries) {
-  const sorted = entries.slice().sort((first, second) =>
-    first.hullVertices - second.hullVertices
-    || first.period - second.period
-    || first.serialNumber - second.serialNumber
-    || first.solidOrder - second.solidOrder
-    || first.classOrder - second.classOrder
-  );
-  const hullGroups = [...new Set(sorted.map(entry => entry.hullVertices))]
-    .sort((first, second) => first - second);
+export function renderProjectionPeriodicTable(root, entries, mode = activePeriodicGrouping) {
+  const grouping = PERIODIC_GROUPING_MODES.find(option => option.id === mode)
+    || PERIODIC_GROUPING_MODES[0];
+  activePeriodicGrouping = grouping.id;
+  const rows = buildProjectionPeriodicRows(entries, grouping.id);
+  const eulerCount = entries.filter(entry => entry.eulerTrail).length;
+  const modeExplanations = {
+    hull: 'H(최외곽 Convex Hull 정점 수)가 같은 사영도를 한 행에 모은다. P(층수)는 사영도에 보조 표시한다.',
+    period: 'P(Convex Hull 층수)가 같은 사영도를 한 행에 모은다. H(최외곽 정점 수)는 사영도에 보조 표시한다.',
+    attribute: '각 속성의 정다면체 사영도를 한 행으로 모은다. H와 P는 사영도에 보조 표시한다.'
+  };
 
-  const rows = hullGroups.map(hullVertices => {
-    const hullEntries = sorted.filter(entry => entry.hullVertices === hullVertices);
-    const periods = [...new Set(hullEntries.map(entry => entry.period))]
-      .sort((first, second) => first - second);
+  const controls = PERIODIC_GROUPING_MODES.map(option =>
+    '<button type="button" class="projection-periodic-grouping-button' +
+    (option.id === grouping.id ? ' is-active' : '') +
+    '" data-periodic-group="' + option.id +
+    '" aria-pressed="' + String(option.id === grouping.id) +
+    '" title="' + escapeHtml(option.heading) + '">' +
+      escapeHtml(option.label) +
+    '</button>'
+  ).join('');
 
-    const hullLabel =
-      '<div class="projection-periodic-axis projection-periodic-hull" ' +
-        'style="--projection-hull-span:' + periods.length + '">' +
-        '<span>HULL</span><strong>H' + hullVertices + '</strong>' +
-        '<small>' + hullVertices + ' vertices</small>' +
-      '</div>';
-
-    const subrows = periods.map(period => {
-      const subrowEntries = hullEntries.filter(entry => entry.period === period);
-      const layout = layoutProjectionSubrow(subrowEntries);
-      const periodLabel =
-        '<div class="projection-periodic-axis projection-periodic-period">' +
-          '<span>PERIOD</span><strong>P' + period + '</strong>' +
-          '<small>' + period + ' hull layer' + (period === 1 ? '' : 's') + '</small>' +
-        '</div>';
-      const track =
+  const rowMarkup = rows.map(row => {
+    const axisText = grouping.id === 'hull' ? row.label + ' · 외곽 정점'
+      : grouping.id === 'period' ? row.label + ' · 층수'
+        : row.label + ' · 속성';
+    return '<div class="projection-periodic-axis projection-periodic-group" ' +
+        'data-periodic-row="' + escapeHtml(row.key) + '"' +
+        ' title="' + escapeHtml(axisText) + '">' +
+          '<strong>' + escapeHtml(row.label) + '</strong>' +
+          '<small>' + row.entries.length + '종</small>' +
+        '</div>' +
         '<div class="projection-periodic-track">' +
           '<div class="projection-periodic-phase-field">' +
-            layout.entries.map(periodicItem).join('') +
+            row.entries.map(entry => periodicItem(entry, grouping.id)).join('') +
           '</div>' +
         '</div>';
-      return periodLabel + track;
-    }).join('');
-
-    return hullLabel + subrows;
   }).join('');
 
-  const eulerCount = sorted.filter(entry => entry.eulerTrail).length;
   root.innerHTML =
     '<div class="card projection-periodic-card">' +
+      '<div class="projection-periodic-toolbar">' +
+        '<span class="projection-periodic-toolbar-label">행 분류</span>' +
+        '<div class="projection-periodic-grouping" role="group" aria-label="주기율표 행 분류">' +
+          controls +
+        '</div>' +
+        '<span class="projection-periodic-row-summary" aria-live="polite">' +
+          escapeHtml(grouping.heading) + ' · ' + rows.length + '행 / ' + entries.length + '종' +
+        '</span>' +
+      '</div>' +
       '<div class="projection-periodic-legend">' +
-        '<span><strong>H</strong> Outer Convex Hull vertex count · primary</span>' +
-        '<span><strong>P</strong> Convex Hull depth · secondary</span>' +
+        '<span><strong>H</strong> Outer Convex Hull vertex count</span>' +
+        '<span><strong>P</strong> Convex Hull depth</span>' +
         '<span><strong>#</strong> Projection serial · solid-local MDS phase</span>' +
         '<span class="projection-periodic-euler-legend"><i></i> Euler trail/circuit · ' +
           eulerCount + '</span>' +
       '</div>' +
       '<div class="projection-periodic-scroll">' +
         '<div class="projection-periodic-grid">' +
-          '<div class="projection-periodic-header projection-periodic-header-hull">H</div>' +
-          '<div class="projection-periodic-header projection-periodic-header-period">P</div>' +
+          '<div class="projection-periodic-header projection-periodic-header-group">' +
+            escapeHtml(grouping.label) +
+          '</div>' +
           phaseAxisMarkup() +
-          rows +
+          rowMarkup +
         '</div>' +
       '</div>' +
-      '<p class="projection-periodic-note">세로축은 H(최외곽 Convex Hull 정점 수)를 1순위로 묶고, 각 H 내부를 P(Convex Hull 층수)로 다시 나눈다. #000–#999는 43개 사영도의 대칭 보정 최소 회전거리 행렬을 1차원 MDS로 압축한 뒤 정다면체별 기준점(#000–#004)으로 모듈러 이동시킨 전역 ID다. 서로 중복되는 번호는 기준점을 고정한 채 순환 거리상 가장 가까운 빈 번호로 보정한다. 같은 H·P 행에서는 ID 순서를 보존하면서 타일 간 최소 간격을 강제하고, 원래 ID 위치에서의 총 제곱 이동량이 최소가 되도록 한 줄로 패킹한다. EC = Euler circuit, ET = Euler trail.</p>' +
+      '<p class="projection-periodic-note">' +
+        escapeHtml(modeExplanations[grouping.id]) +
+        ' 가로축 #000–#999는 대칭 보정 회전거리의 1차원 MDS 좌표에 정다면체별 독립 모듈러 기준점(#000–#004)을 적용한 일련번호다. ' +
+        '각 행에서는 번호 순서를 보존하며 최소 간격을 확보하되, 원래 위치로부터 제곱 이동량을 최소화한다. ' +
+        '숫자 간격을 서로 다른 정다면체의 실제 회전각 차이로 해석하지는 않는다. EC = Euler circuit, ET = Euler trail.' +
+      '</p>' +
     '</div>';
+
+  root.querySelectorAll('.projection-periodic-grouping-button[data-periodic-group]').forEach(button => {
+    button.addEventListener('click', () => {
+      const nextMode = button.dataset.periodicGroup;
+      if (nextMode === activePeriodicGrouping) return;
+      renderProjectionPeriodicTable(root, entries, nextMode);
+      root.querySelector('[data-periodic-group="' + nextMode + '"]')?.focus();
+    });
+  });
 
   root.querySelectorAll('.projection-periodic-item[data-solid][data-class-id]').forEach(item => {
     item.addEventListener('click', async () => {
