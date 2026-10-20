@@ -364,11 +364,23 @@ test('global projection serials assign all 43 views unique #000-#999 coordinates
   assert.equal(Math.min(...serials), 0);
   assert.ok(Math.max(...serials) <= 999);
   assert.equal(layout.originKey, 'tetrahedron:3');
-  assert.equal(layout.originSerial, 401, 'original phase origin for the untouched 43-class dataset');
-  assert.equal(layout.serialsByKey.get('tetrahedron:3'), 0, 'definition is #000');
-  assert.equal(layout.serialsByKey.get('tetrahedron:1'), 516, 'acceptance moves from #917');
-  assert.equal(layout.serialsByKey.get('tetrahedron:4'), 598, 'differentiation moves from #999');
-  assert.equal(layout.serialsByKey.get('tetrahedron:2'), 599, 'insulation moves from former #000');
+  assert.equal(layout.originSerial, 401, 'unshifted MDS origin is unchanged');
+  assert.deepEqual(layout.anchors.map(({ key, serial, originalSerial }) =>
+    [key, serial, originalSerial]), [
+    ['tetrahedron:3', 0, 401],
+    ['cube:1', 1, 28],
+    ['octahedron:1', 2, 546],
+    ['dodecahedron:1', 3, 563],
+    ['icosahedron:1', 4, 564]
+  ]);
+  for (const { key, serial } of layout.anchors) {
+    assert.equal(layout.serialsByKey.get(key), serial, key + ' remains anchored');
+  }
+  assert.equal(layout.serialsByKey.get('dodecahedron:4'), 999,
+    'nearest free circular ID resolves the old #160 -> #001 collision');
+  assert.equal(layout.serialsByKey.get('tetrahedron:1'), 516);
+  assert.equal(layout.serialsByKey.get('tetrahedron:4'), 598);
+  assert.equal(layout.serialsByKey.get('tetrahedron:2'), 599);
   assert.equal(formatProjectionSerial(0), '#000');
   assert.equal(formatProjectionSerial(999), '#999');
 });

@@ -313,11 +313,18 @@ export function minimalRotationClassOrder(classes, viewsByClass, geometry, symme
   return order.map(index => classes[index]);
 }
 
-// The global serial coordinate is cyclic: rotate the original distance-derived
-// one-dimensional placement so the simplest tetrahedral projection (정립) is #000.
-// Keep each original gap and all 43 relative positions; do not swap two labels.
+// Every solid has a stable cyclic origin, while retaining the same
+// symmetry-reduced 1D MDS coordinates. Anchor IDs occupy #000 through #004;
+// the remaining IDs are collision-resolved on the cyclic #000-#999 range.
 export const PROJECTION_SERIAL_ORIGIN_KEY = 'tetrahedron:3';
 export const PROJECTION_SERIAL_PERIOD = 1000;
+export const PROJECTION_SERIAL_ANCHORS = Object.freeze([
+  { solidId: 'tetrahedron', classId: 3, serial: 0 }, // 해리 · 정립, former #000
+  { solidId: 'cube', classId: 1, serial: 1 }, // 고착 · 중첩, former #627
+  { solidId: 'octahedron', classId: 1, serial: 2 }, // 소외 · 정렬, former #145
+  { solidId: 'dodecahedron', classId: 1, serial: 3 }, // 초조 · 결속, former #162
+  { solidId: 'icosahedron', classId: 1, serial: 4 } // 반추 · 보존, former #163
+]);
 const GLOBAL_PROJECTION_SERIAL_CACHE = new Map();
 
 export function rotateProjectionSerial(serial, origin, period = PROJECTION_SERIAL_PERIOD) {
@@ -485,24 +492,68 @@ export function globalProjectionSerialLayout(solids, viewSolids) {
     previous = serial;
   });
 
-  const originSerial = serialsByKey.get(PROJECTION_SERIAL_ORIGIN_KEY);
-  if (!Number.isInteger(originSerial)) {
-    throw new Error('Missing canonical projection origin ' + PROJECTION_SERIAL_ORIGIN_KEY);
+  const anchorsBySolid = new Map(PROJECTION_SERIAL_ANCHORS.map(anchor => {
+    const key = globalProjectionKey(anchor.solidId, anchor.classId);
+    const originalSerial = serialsByKey.get(key);
+    if (!Number.isInteger(originalSerial)) {
+      throw new Error('Missing serial anchor ' + key);
+    }
+    return [anchor.solidId, { ...anchor, key, originalSerial }];
+  }));
+  const originSerial = anchorsBySolid.get('tetrahedron').originalSerial;
+
+  // Apply a separate modular phase offset within each solid. This preserves
+  // its 1D MDS circular distances without changing geometric class IDs.
+  const desiredSerials = new Map([...serialsByKey].map(([key, serial]) => {
+    const solidId = key.split(':')[0];
+    const anchor = anchorsBySolid.get(solidId);
+    if (!anchor) throw new Error('Missing serial anchor for solid ' + solidId);
+    return [key, rotateProjectionSerial(
+      rotateProjectionSerial(serial, anchor.originalSerial) + anchor.serial,
+      0
+    )];
+  }));
+
+  // Lock all five origin IDs first so collision resolution cannot move them.
+  const shiftedSerials = new Map();
+  const occupied = new Set();
+  for (const anchor of anchorsBySolid.values()) {
+    shiftedSerials.set(anchor.key, anchor.serial);
+    occupied.add(anchor.serial);
   }
 
-  // Shift every serial by the same phase offset, including values crossing #000.
-  // The source coordinates and pairwise angular distances remain unchanged.
-  const shiftedSerials = new Map([...serialsByKey].map(([key, serial]) => [
-    key,
-    rotateProjectionSerial(serial, originSerial)
-  ]));
+  const nonAnchors = [...desiredSerials].filter(([key]) => !shiftedSerials.has(key))
+    .sort((first, second) => first[1] - second[1] || first[0].localeCompare(second[0]));
+  for (const [key, desired] of nonAnchors) {
+    let assigned = desired;
+    if (occupied.has(assigned)) {
+      // Check neighboring slots on the cycle, including the #999/#000 seam.
+      for (let distance = 1; distance < PROJECTION_SERIAL_PERIOD; distance += 1) {
+        const backward = rotateProjectionSerial(desired - distance, 0);
+        const forward = rotateProjectionSerial(desired + distance, 0);
+        if (!occupied.has(backward)) {
+          assigned = backward;
+          break;
+        }
+        if (!occupied.has(forward)) {
+          assigned = forward;
+          break;
+        }
+      }
+    }
+    if (occupied.has(assigned)) throw new Error('No free global projection serial for ' + key);
+    shiftedSerials.set(key, assigned);
+    occupied.add(assigned);
+  }
+
   const result = {
     serialsByKey: shiftedSerials,
-    orderedKeys: ordered.slice().sort((first, second) =>
-      shiftedSerials.get(first.key) - shiftedSerials.get(second.key)
-    ).map(item => item.key),
+    orderedKeys: [...shiftedSerials].sort((first, second) =>
+      first[1] - second[1]
+    ).map(([key]) => key),
     originKey: PROJECTION_SERIAL_ORIGIN_KEY,
     originSerial,
+    anchors: [...anchorsBySolid.values()],
     distances,
     nodes
   };

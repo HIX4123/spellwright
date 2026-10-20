@@ -91,6 +91,13 @@ test('global serials are unique across all 43 periodic-table entries', () => {
   const haeri = entries.filter(entry => entry.solidId === 'tetrahedron');
   assert.deepEqual(Object.fromEntries(haeri.map(entry => [entry.classId, entry.serialNumber])),
     { 1: 516, 2: 599, 3: 0, 4: 598 });
+  const serialByClassKey = new Map(entries.map(entry =>
+    [entry.solidId + ':' + entry.classId, entry.serialNumber]));
+  assert.deepEqual([
+    'tetrahedron:3', 'cube:1', 'octahedron:1',
+    'dodecahedron:1', 'icosahedron:1'
+  ].map(key => serialByClassKey.get(key)), [0, 1, 2, 3, 4]);
+  assert.equal(serialByClassKey.get('dodecahedron:4'), 999);
 });
 
 test('subrow layout packs one H-P pair into one line with minimum displacement', () => {
