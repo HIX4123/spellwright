@@ -6,6 +6,66 @@
   box-sizing: border-box;
 }
 
+.projection-periodic-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.projection-periodic-toolbar-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.projection-periodic-grouping {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-2);
+}
+
+.projection-periodic-grouping-button {
+  min-width: 38px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.projection-periodic-grouping-button:hover {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text);
+}
+
+.projection-periodic-grouping-button.is-active {
+  background: var(--surface-3);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.projection-periodic-grouping-button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.projection-periodic-row-summary {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
 .projection-periodic-legend {
   display: flex;
   flex-wrap: wrap;
@@ -47,10 +107,7 @@
   width: 100%;
   min-width: 0;
   display: grid;
-  grid-template-columns:
-    clamp(44px, 5vw, 64px)
-    clamp(48px, 5.5vw, 70px)
-    minmax(0, 1fr);
+  grid-template-columns: clamp(56px, 8vw, 90px) minmax(0, 1fr);
   gap: clamp(2px, .45vw, 6px);
   align-items: stretch;
 }
@@ -75,8 +132,7 @@
   letter-spacing: .12em;
 }
 
-.projection-periodic-header-hull { grid-column: 1; }
-.projection-periodic-header-period { grid-column: 2; }
+.projection-periodic-header-group { grid-column: 1; }
 
 .projection-periodic-axis {
   min-width: 0;
@@ -105,25 +161,19 @@
   line-height: 1.2;
 }
 
-.projection-periodic-hull {
+.projection-periodic-group {
   grid-column: 1;
-  grid-row: span var(--projection-hull-span);
   min-height: clamp(58px, 6vw, 76px);
   background: color-mix(in srgb, var(--surface-2) 82%, var(--surface));
 }
 
-.projection-periodic-period {
-  grid-column: 2;
-  min-height: clamp(58px, 6vw, 76px);
-  background: color-mix(in srgb, var(--surface-2) 68%, var(--surface));
-}
-
-.projection-periodic-period strong {
-  font-size: clamp(10px, 1vw, 13px);
+.projection-periodic-group strong {
+  font-size: clamp(10px, 1.15vw, 14px);
+  overflow-wrap: anywhere;
 }
 
 .projection-periodic-phase-axis {
-  grid-column: 3;
+  grid-column: 2;
   min-width: 0;
   position: relative;
   min-height: 48px;
@@ -179,7 +229,7 @@
 }
 
 .projection-periodic-track {
-  grid-column: 3;
+  grid-column: 2;
   min-width: 0;
   position: relative;
   min-height: clamp(42px, 5.8vw, 64px);
@@ -251,6 +301,22 @@
   overflow: hidden;
   border-radius: inherit;
   background: var(--projection-attribute-material);
+}
+
+.projection-periodic-metric {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  z-index: 1;
+  border-radius: 3px;
+  padding: 0 2px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  font-size: clamp(6px, .6vw, 8px);
+  font-weight: 750;
+  line-height: 1.3;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .projection-periodic-live-svg {
@@ -330,8 +396,22 @@
   }
 
   .projection-periodic-grid {
-    grid-template-columns: 38px 42px minmax(0, 1fr);
+    grid-template-columns: 50px minmax(0, 1fr);
     gap: 2px;
+  }
+
+  .projection-periodic-toolbar {
+    gap: 5px 8px;
+    margin-bottom: 8px;
+  }
+
+  .projection-periodic-grouping-button {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .projection-periodic-row-summary {
+    font-size: 9px;
   }
 
   .projection-periodic-axis {
@@ -352,7 +432,8 @@
     padding: 2px;
   }
 
-  .projection-periodic-euler-badge {
+  .projection-periodic-euler-badge,
+  .projection-periodic-metric {
     display: none;
   }
 
