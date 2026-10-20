@@ -1,4 +1,5 @@
 import { escapeHtml, section } from './html.js';
+import { renderAttributeReference } from './attributes-view.js?v=attributes-20261020-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
@@ -20,18 +21,18 @@ const dialog = $('#editorDialog');
 
 const navItems = [
   ['overview','Overview'], ['story','Story & World'], ['systems','Systems'],
-  ['character','Character'], ['projections','Projections'], ['questions','Open Questions'], ['archive','Archive']
+  ['character','Character'], ['attributes','Attributes'], ['projections','Projections'], ['questions','Open Questions'], ['archive','Archive']
 ];
 
 const THEORY_CARDS = [
-  ['속성과 조작 영역', '속성은 원소 재료가 아니라 현실을 조작할 수 있는 영역을 정한다.', '해리 = 경계·동일성 · 소외 = 위치·거리 · 초조 = 운동·변화량 · 고착 = 관계·참조 · 반추 = 가능성·결과'],
+  ['속성과 조작 영역', '속성은 고정된 원소가 아니라 세계의 서로 다른 대상을 조작하는 방법을 정의한다.', '해리 = 개체 상태·강화 · 소외 = 생성·소멸 · 초조 = 운동·상태변화 · 고착 = 관계·상대 좌표 · 반추 = 마법 작용의 이력'],
   ['사영도 = 연산자', '사영도는 완성 주문이 아니라 해당 속성의 영역에 적용되는 기본 실행 동사다.', '예: 초조의 정렬·방출·전달·전환·분배·등방화. 43개 전체 매핑은 역할 가설 단계다.'],
   ['개시 → 전개 → 완결', '개시는 속성과 출발 연산을, 전개는 대상·형태·변환·조건·제약·보강을, 완결은 시전 형식을 정한다.', '강도·범위·마나·조건 같은 수치적 조정은 사영도보다 전개 각인의 책임으로 둔다.'],
   ['타입 있는 마법 문법', '각인은 입력과 출력 타입을 가진 함수처럼 취급한다. 문법적으로 연결되지 않는 조합은 구성 단계에서 거부한다.', '무한한 주문을 개별 구현하지 않고 유한한 문법이 큰 조합 공간을 만든다.'],
   ['효과 그래프', '유효한 서클은 Entity, Field, Relation, Boundary, SpatialState, Motion, PossibilityState 같은 공통 객체의 그래프로 변환한다.', '유도 화염구도 별도 스킬 코드가 아니라 열·운동·추적 관계·충돌 조건이 결합된 그래프로 실행한다.'],
-  ['구조적 상성', '속성표의 고정 배율보다 같은 상태를 건드리는 연산끼리의 충돌과 우회가 상성을 만든다.', '고착의 관계는 해리로 끊고, 초조 투사체는 차단·회피·반전·고정·결과 선택 등 서로 다른 방식으로 대응할 수 있다.'],
+  ['구조적 상성', '속성표의 고정 배율보다 동일한 위협에 서로 다른 연산으로 대응하는 구조를 지향한다.', '투사체는 해리로 방어하고, 소외로 소멸시키고, 초조로 감속하고, 고착으로 관계를 구속할 수 있다. 반추는 남은 마법적 작용의 이력을 다룬다.'],
   ['마법 이름', '현상적 이름과 내부 구조를 분리한다. 구조명 → 마법군 → 변형명 → 플레이어 개인명을 겹쳐 사용할 수 있다.', '겉으로 같은 화염구라도 초조 집속식과 소외 전이식은 내부 구조와 카운터가 다를 수 있다.'],
-  ['화염구 예시', '초조 계통에서 가장 단순한 고전적 화염구를 조립한 예시.', '초조·집속 → 구형 구속 → 열화 → 전방 지향 → 충돌 시 해제 → 즉발 = 화염구 계열']
+  ['화염구 예시', '같은 현상도 출발 속성에 따라 다른 구현이 가능하다.', '소외는 지정 공간에 화염을 생성하고 초기 운동 상태를 각인으로 지정한다. 초조는 이미 존재하는 물질의 운동·연소 과정을 조작한다.']
 ];
 
 const DRAFT_KEY = 'spellwright-project-draft';
@@ -53,7 +54,13 @@ function isProjectData(value) {
       && (system.statRef === undefined || typeof system.statRef === 'string'))
     && value.elements.every(element => ['name', 'solid', 'motto', 'loss', 'meaning']
       .every(key => typeof element?.[key] === 'string')
-      && Number.isInteger(element.projectionClasses)));
+      && Number.isInteger(element.projectionClasses)
+      && Array.isArray(element.motifIdeas)
+      && element.motifIdeas.every(motif => typeof motif === 'string')
+      && ['identity', 'attack', 'defense', 'limits'].every(key => typeof element.gameplay?.[key] === 'string'))
+    && Array.isArray(value.attributeRules?.sequence)
+    && ['initiation', 'adjacency', 'interpretation'].every(key => typeof value.attributeRules?.[key] === 'string')
+    && Array.isArray(value.attributeRules?.open));
 }
 
 function isRelationshipData(value) {
@@ -152,6 +159,7 @@ function render() {
     story:renderStory,
     systems:renderSystems,
     character:renderCharacter,
+    attributes:renderAttributes,
     projections:renderProjections,
     questions:renderQuestions,
     archive:renderArchive
@@ -427,28 +435,20 @@ function bindSystemCards() {
   });
 }
 
-function renderProjections() {
-  const attributeSystem = data.systems.find(system => system.id === 'five-elements');
-  const background = attributeSystem.details
-    .split('\n\n')
-    .map(paragraph => `<p>${escapeHtml(paragraph)}</p>`)
-    .join('');
+function renderAttributes() {
+  view.innerHTML = renderAttributeReference(data, location.hash);
+}
 
-  view.innerHTML = `${section('Five attributes','상실 → 정신의 반응 → 정다면체 → 사영도')}
-    <div class="card attribute-background">
-      <p class="core-statement">삶이란 상실의 연속이다.</p>
-      ${background}
-    </div>
-    ${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
+function renderProjections() {
+  view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 전역 사영 ID #000–#999')}
+    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>에서 확인할 수 있어요. 아래 사영도의 기존 역할명은 개별 연산이 확정되기 전의 가설입니다.</p>
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
     <div id="projectionSimulation"></div>
     <p class="muted">사영 연산자와 관련된 마법 규칙은 <a href="#systems">Systems</a>에서 관리해요.</p>`;
-
   mountProjectionPeriodicTable(data.elements);
   mountProjectionSelector();
 }
-
 
 let characterDataPromise;
 async function renderCharacter() {
@@ -663,7 +663,7 @@ $('#importInput').onchange = async e => {
 
 window.addEventListener('hashchange', () => {
   const nextView = dashboardViewFromHash(location.hash);
-  if (nextView === currentView && nextView !== 'story') return;
+  if (nextView === currentView && nextView !== 'story' && nextView !== 'attributes') return;
   currentView = nextView;
   renderNav();
   if (data) render();
