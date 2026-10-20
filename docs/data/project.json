@@ -4,7 +4,7 @@
     "version": "v0.2",
     "phase": "Core System Design",
     "updatedAt": "2026-10-20",
-    "schemaVersion": 7,
+    "schemaVersion": 8,
     "coreStatement": "마법은 주어지는 능력이 아니라 작성되는 구조다.",
     "mvpQuestion": "서클을 직접 조립하는 행위가 실제 전투 게임으로 재미있는가?"
   },
