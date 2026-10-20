@@ -5,7 +5,7 @@ import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDo
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=audit-20261019-1';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=audit-20261019-1';
-import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=cache-schema-fix-20261011-3';
+import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=attributes-20261020-1';
 
 let data;
 let relationships;
