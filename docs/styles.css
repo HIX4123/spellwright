@@ -660,3 +660,110 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
   .wiki-toc { padding: 14px; }
   .wiki-section { margin: 26px 0; }
 }
+
+/* Attributes reference: native, read-only comparison of symbolic and gameplay identities. */
+.attribute-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 26px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.attribute-subnav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--secondary);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.attribute-subnav a:hover { background: var(--surface-2); color: var(--text); }
+.attribute-subnav a[aria-current="page"] {
+  border-color: var(--primary);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+.attribute-spectrum {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: 12px 0 8px;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.attribute-spectrum li {
+  min-width: 0;
+  position: relative;
+  padding: 12px 8px 14px;
+  text-align: center;
+}
+.attribute-spectrum li + li { border-left: 1px solid var(--line); }
+.attribute-spectrum strong { display: block; font-size: 14px; }
+.attribute-spectrum span { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.attribute-spectrum-caption { font-size: 11px; line-height: 1.75; margin: 0; }
+.attribute-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.attribute-reference-card { min-width: 0; }
+.attribute-card-heading { display: flex; align-items: start; gap: 10px; margin-bottom: 12px; }
+.attribute-card-heading h3 { font-size: 16px; margin: 0 0 4px; }
+.attribute-card-heading p { font-size: 11px; margin: 0; }
+.attribute-ordinal {
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+.attribute-reference-card > p,
+.attribute-rule-grid p,
+.attribute-intro p,
+.attribute-usage p {
+  margin: 0 0 10px;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.attribute-reference-card .attribute-motto { color: var(--text); font-weight: 600; }
+.attribute-reference-note { font-size: 12px; margin-top: 16px; line-height: 1.75; }
+.attribute-reference-note a,
+.attribute-reference-grid a,
+.attribute-rule-grid a { color: var(--primary); }
+.attribute-rule-grid article h3 { font-size: 14px; margin: 12px 0 8px; }
+.attribute-card-divider { border-top: 1px solid var(--line); margin: 14px 0; }
+.attribute-motif-list { padding-left: 20px; margin: 11px 0 0; }
+.attribute-motif-list li { color: var(--secondary); font-size: 12px; line-height: 1.8; padding-left: 2px; margin-bottom: 5px; }
+.attribute-usage { display: grid; gap: 10px; margin: 12px 0; }
+.attribute-usage > div { padding: 11px 12px; border-radius: 10px; background: var(--surface-2); }
+.attribute-usage strong { display: block; margin-bottom: 5px; font-size: 12px; }
+.attribute-usage p { margin-bottom: 0; }
+.attribute-limits { border-top: 1px solid var(--line); padding-top: 11px; }
+.attribute-limits summary { color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600; }
+.attribute-limits p { margin: 10px 0 0; color: var(--secondary); font-size: 12px; line-height: 1.75; }
+@media (max-width: 900px) {
+  .attribute-reference-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .attribute-spectrum strong { font-size: 12px; }
+  .attribute-spectrum span { font-size: 10px; }
+  .attribute-spectrum li { padding: 11px 3px; }
+  .attribute-subnav { flex-wrap: nowrap; overflow-x: auto; }
+  .attribute-subnav a { min-height: 44px; white-space: nowrap; flex: 0 0 auto; }
+}

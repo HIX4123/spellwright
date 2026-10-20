@@ -24,10 +24,13 @@ test('unknown or malformed dashboard hashes safely fall back to overview', () =>
 
 
 test('legacy navigation targets resolve to the consolidated sections', () => {
-  const expected = { combat:'systems', attributes:'projections', mvp:'overview',
+  const expected = { combat:'systems', mvp:'overview',
     decisions:'archive', graveyard:'archive', stats:'character', classes:'character' };
   for (const [oldView, newView] of Object.entries(expected)) {
     assert.equal(dashboardViewFromHash('#' + oldView), newView);
   }
-  assert.equal(DASHBOARD_VIEW_IDS.length, 7);
+  assert.equal(DASHBOARD_VIEW_IDS.length, 8);
+  assert.equal(dashboardViewFromHash('#attributes'), 'attributes');
+  assert.equal(dashboardViewFromHash('#attributes/motifs'), 'attributes');
+  assert.equal(dashboardViewFromHash('#attributes/gameplay'), 'attributes');
 });
