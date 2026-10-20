@@ -1,111 +1,154 @@
 import { escapeHtml, section } from './html.js';
 
-const ATTRIBUTE_SECTIONS = Object.freeze([
-  ['overview', '속성 개요', '#attributes'],
-  ['motifs', '모티프 · 상징', '#attributes/motifs'],
-  ['gameplay', '게임적 역할', '#attributes/gameplay']
-]);
+const ROOT = '#attributes';
+const WIKI = '#attributes/wiki/';
+const LABELS = [
+  ['symbol', '상징'],
+  ['motifs', '모티프'],
+  ['mechanics', '조작 영역'],
+  ['examples', '공격·방어'],
+  ['limits', '설계 쟁점']
+];
 
-export function attributeSectionFromHash(hash = '') {
-  const value = String(hash).replace(/^#/, '');
-  if (value === 'attributes/motifs') return 'motifs';
-  if (value === 'attributes/gameplay') return 'gameplay';
-  return 'overview';
+const safe = value => escapeHtml(String(value ?? ''));
+const href = id => WIKI + encodeURIComponent(id);
+
+export function attributeLocation(hash = '') {
+  try {
+    const path = decodeURIComponent(String(hash).replace(/^#/, ''));
+    const match = /^attributes\/wiki\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?$/.exec(path);
+    return match ? { kind: 'article', id: match[1], target: match[2] || null }
+      : { kind: 'index', id: null, target: null };
+  } catch {
+    return { kind: 'index', id: null, target: null };
+  }
 }
 
-function attributeNav(active) {
-  return `<nav class="attribute-subnav" aria-label="5대속성 상세 보기">${ATTRIBUTE_SECTIONS
-    .map(([id, label, href]) => `<a href="${href}"${id === active ? ' aria-current="page"' : ''}>${escapeHtml(label)}</a>`)
-    .join('')}</nav>`;
+function linkAttributeNames(value, elements, currentId) {
+  const names = elements.map(item => item.name).sort((a, b) => b.length - a.length);
+  const pattern = new RegExp('(' + names.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'g');
+  return String(value).split(pattern).map(fragment => {
+    const element = elements.find(item => item.name === fragment);
+    return element && element.id !== currentId
+      ? '<a href="' + href(element.id) + '">' + safe(fragment) + '</a>'
+      : safe(fragment);
+  }).join('');
 }
 
-function safe(value) {
-  return escapeHtml(String(value ?? ''));
+function termNavigation(elements, currentId) {
+  const links = elements.map(item =>
+    '<a href="' + href(item.id) + '"' + (item.id === currentId ? ' aria-current="page"' : '') +
+    '>' + safe(item.name) + '</a>').join('');
+  return '<nav class="attribute-term-nav" aria-label="관련 속성 표제어">' + links +
+    '<a href="' + href('rules') + '"' + (currentId === 'rules' ? ' aria-current="page"' : '') +
+    '>개시 규칙</a></nav>';
 }
 
-function elementHeading(element, index) {
-  return `<div class="attribute-card-heading">
-    <span class="attribute-ordinal" aria-hidden="true">${index + 1}</span>
-    <div><h3>${safe(element.name)}</h3><p class="muted">${safe(element.solid)} · ${element.projectionClasses}개 사영 클래스</p></div>
-  </div>`;
-}
-
-function spectrum(elements) {
-  return `<ol class="attribute-spectrum" aria-label="해리부터 반추까지의 속성 순서">${elements.map(element =>
-    `<li><strong>${safe(element.name)}</strong><span>${safe(element.motto)}</span></li>`
-  ).join('')}</ol>
-  <p class="muted attribute-spectrum-caption">단순·직접적인 개체 작용에서 관계와 마법적 작용 이력의 복합 조작으로 이어지는 설계상의 경향입니다. 속성의 강약 순위가 아닙니다.</p>`;
-}
-
-function overview(elements, rules) {
-  return `
-    ${section('개시의 속성 선택', '확정된 기본 규칙')}
-    <div class="grid cols-2 attribute-rule-grid">
-      <article class="card"><span class="status confirmed">확정</span><h3>자유로운 선택</h3><p>${safe(rules.initiation)}</p></article>
-      <article class="card"><span class="status confirmed">확정</span><h3>선형 인접 보상</h3><p>${safe(rules.adjacency)}</p><p class="muted">궁극기 보상의 구체 수치·형식은 아직 정해지지 않았습니다.</p></article>
+function index(elements) {
+  return `${section('5대속성', '표제어 색인 · 필요한 개념을 선택하면 상세 문서로 이동')}
+    <p class="attribute-index-intro"><strong>삶이란 상실의 연속이다.</strong> 속성명은 상실의 정신적 반응에서 착안한 상징이며 임상적 진단이나 우열을 뜻하지 않습니다. 각 속성의 조작 영역은 정립된 방향이고, 공격·방어 예시는 검토 중입니다.</p>
+    <div class="attribute-index-labels" aria-hidden="true">
+      <span>속성 · 정다면체</span><span>세계관 · 모토</span><span>주요 조작 영역</span>
     </div>
-    ${section('속성별 조작 영역', '5속성의 상징과 기능을 함께 비교')}
-    <div class="attribute-reference-grid">${elements.map((element, i) =>
-      `<article class="card attribute-reference-card">
-        ${elementHeading(element, i)}
-        <p class="attribute-motto">모토 · ${safe(element.motto)} / 상실 · ${safe(element.loss)}</p>
-        <p>${safe(element.gameplay.identity)}</p>
-      </article>`
-    ).join('')}</div>
-    <p class="muted attribute-reference-note">세계관 모티프와 상실의 의미는 <a href="#attributes/motifs">모티프 · 상징</a>에서, 공격·방어 예시 및 한계는 <a href="#attributes/gameplay">게임적 역할</a>에서 볼 수 있습니다.</p>`;
+    <ul class="attribute-index-list">${elements.map(element => `
+      <li><a class="attribute-index-entry" href="${href(element.id)}">
+        <span class="attribute-index-title"><strong>${safe(element.name)}</strong>
+          <small>${safe(element.solid)} · 사영도 ${element.projectionClasses}종</small></span>
+        <span class="attribute-index-motto">${safe(element.motto)} <small>상실 · ${safe(element.loss)}</small></span>
+        <span class="attribute-index-summary">${safe(element.summary)}<span aria-hidden="true" class="attribute-index-arrow">↗</span></span>
+      </a></li>`).join('')}</ul>
+    ${section('공통 규칙', '속성 자체의 선택과 연속 개시 효과')}
+    <a class="attribute-rule-entry" href="${href('rules')}"><strong>개시 규칙</strong>
+      <span>자유 선택 · 별도 선택 비용 없음 · 동일/인접 속성 궁극기 메리트</span><span aria-hidden="true">↗</span></a>
+    <p class="muted attribute-index-footer">개별 사영도의 역할 배정은 <a href="#projections">Projections</a>, 시스템 간 의존 관계는 <a href="#systems">Systems</a>에서 확인할 수 있습니다.</p>`;
 }
 
-function motifs(elements, rules) {
-  return `
-    ${section('상징의 출발점', '확정된 세계관 해석 · 탐색 중인 수학·시각 모티프')}
-    <div class="card attribute-intro">
-      <p><strong>삶이란 상실의 연속이다.</strong> 각각의 속성은 인간이 잃는 것과 상실 이후의 정신적 반응을 정다면체에 대응시킵니다.</p>
-      <p class="muted">명칭은 심리학·정신의학에서 차용한 표현이지만 게임 내 진단명이나 우열의 척도가 아닙니다. 아래 모티프는 확정 세계관과 구분되는 시각적·수학적 구상 후보입니다.</p>
-    </div>
-    <div class="attribute-reference-grid">${elements.map((element, i) =>
-      `<article class="card attribute-reference-card">
-        ${elementHeading(element, i)}
-        <span class="status confirmed">세계관 상징 · 확정</span>
-        <p class="attribute-motto">${safe(element.motto)} · 잃어버린 ${safe(element.loss)}</p>
-        <p>${safe(element.meaning)}</p>
-        <div class="attribute-card-divider"></div>
-        <span class="status review">모티프 아이디어 · 검토</span>
-        <ul class="attribute-motif-list">${element.motifIdeas.map(motif => `<li>${safe(motif)}</li>`).join('')}</ul>
-      </article>`
-    ).join('')}</div>
-    <p class="muted attribute-reference-note">${safe(rules.interpretation)}</p>`;
+function toc(id, labels) {
+  return '<nav class="attribute-article-toc" aria-label="이 문서의 목차">' +
+    labels.map(([anchor, title]) => `<a href="${href(id)}/${anchor}">${safe(title)}</a>`).join('') +
+    '</nav>';
 }
 
-function gameplay(elements, rules) {
-  return `
-    ${section('속성별 공격과 방어', '조작 영역은 정립 · 전투 예시와 한계는 검토 중')}
-    <div class="attribute-reference-grid">${elements.map((element, i) =>
-      `<article class="card attribute-reference-card">
-        ${elementHeading(element, i)}
-        <span class="status confirmed">조작 영역 · 정립</span>
-        <p>${safe(element.gameplay.identity)}</p>
-        <div class="attribute-usage">
-          <div><strong>공격 · 예시</strong><p>${safe(element.gameplay.attack)}</p></div>
-          <div><strong>방어 · 예시</strong><p>${safe(element.gameplay.defense)}</p></div>
-        </div>
-        <details class="attribute-limits"><summary>규칙 경계 · 미정 사항</summary><p>${safe(element.gameplay.limits)}</p></details>
-      </article>`
-    ).join('')}</div>
-    ${section('다음 설계 과제', '사영도 연산과 비용은 아직 개별 배정 전')}
-    <div class="card"><ul class="attribute-motif-list">${rules.open.map(item => `<li>${safe(item)}</li>`).join('')}</ul>
-    <p class="muted">세부 사영도 43종의 기하학적 구조와 기존 역할 가설은 <a href="#projections">Projections</a>에서 볼 수 있습니다.</p></div>`;
+function articleShell(title, subtitle, id, elements, body, labels) {
+  return `${section('5대속성', '속성별 단일 원본 문서 · 다른 표제어는 링크로 이동')}
+    <div class="attribute-breadcrumb"><a href="${ROOT}">전체 표제어</a> <span aria-hidden="true">/</span> ${safe(title)}</div>
+    ${termNavigation(elements, id)}
+    <article class="attribute-article" aria-labelledby="attribute-document-title">
+      <header class="attribute-article-head">
+        <h2 id="attribute-document-title" tabindex="-1">${safe(title)}</h2>
+        <p class="muted">${safe(subtitle)}</p>
+      </header>
+      ${toc(id, labels)}
+      ${body}
+    </article>`;
 }
 
-export function renderAttributeReference(project, hash = '#attributes') {
+function attributeArticle(element, elements) {
+  const rich = value => linkAttributeNames(value, elements, element.id);
+  const body = `
+    <section id="symbol" class="attribute-article-section" tabindex="-1">
+      <h3>세계관의 상징 <small>확정</small></h3>
+      <dl class="attribute-facts">
+        <div><dt>근본 모토</dt><dd>${safe(element.motto)}</dd></div>
+        <div><dt>상실</dt><dd>${safe(element.loss)}</dd></div>
+      </dl>
+      <p>${rich(element.meaning)}</p>
+    </section>
+    <section id="motifs" class="attribute-article-section" tabindex="-1">
+      <h3>수학·시각 모티프 <small>검토</small></h3>
+      <ul class="attribute-compact-list">${element.motifIdeas.map(value => `<li>${rich(value)}</li>`).join('')}</ul>
+    </section>
+    <section id="mechanics" class="attribute-article-section" tabindex="-1">
+      <h3>게임 내 조작 영역 <small>정립</small></h3>
+      <p>${rich(element.gameplay.identity)}</p>
+    </section>
+    <section id="examples" class="attribute-article-section" tabindex="-1">
+      <h3>기본 공방 <small>구현 예시 · 검토</small></h3>
+      <div class="attribute-action-pair">
+        <div><strong>공격</strong><p>${rich(element.gameplay.attack)}</p></div>
+        <div><strong>방어</strong><p>${rich(element.gameplay.defense)}</p></div>
+      </div>
+    </section>
+    <section id="limits" class="attribute-article-section" tabindex="-1">
+      <h3>설계 경계와 미정 사항 <small>검토·미정</small></h3>
+      <p>${rich(element.gameplay.limits)}</p>
+      <p class="attribute-see-also">공통 개시 규칙: <a href="${href('rules')}">개시 규칙</a>
+        · 사영도별 기능: <a href="#projections">Projections</a></p>
+    </section>`;
+  return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body, LABELS);
+}
+
+function rulesArticle(elements, rules) {
+  const body = `
+    <section id="choice" class="attribute-article-section" tabindex="-1">
+      <h3>속성의 자유 선택 <small>확정</small></h3>
+      <p>${safe(rules.initiation)}</p>
+    </section>
+    <section id="adjacency" class="attribute-article-section" tabindex="-1">
+      <h3>연속 개시의 인접성 <small>원칙 확정 · 수치 미정</small></h3>
+      <ol class="attribute-order">${rules.sequence.map(name => {
+        const element = elements.find(e => e.name === name);
+        return `<li>${element ? `<a href="${href(element.id)}">${safe(name)}</a>` : safe(name)}</li>`;
+      }).join('')}</ol>
+      <p>${safe(rules.adjacency)}</p>
+      <p class="muted">${safe(rules.interpretation)}</p>
+    </section>
+    <section id="unresolved" class="attribute-article-section" tabindex="-1">
+      <h3>남은 설계 과제 <small>미정</small></h3>
+      <ul class="attribute-compact-list">${rules.open.map(value => `<li>${safe(value)}</li>`).join('')}</ul>
+    </section>`;
+  return articleShell('개시 규칙', '5속성의 자유 선택과 선형 인접 보상', 'rules', elements, body,
+    [['choice', '자유 선택'], ['adjacency', '인접성'], ['unresolved', '남은 과제']]);
+}
+
+export function renderAttributeReference(project, hash = ROOT) {
   const elements = project?.elements;
   const rules = project?.attributeRules;
   if (!Array.isArray(elements) || !rules) return '<div class="card">속성 데이터를 불러올 수 없습니다.</div>';
-  const current = attributeSectionFromHash(hash);
-  const body = current === 'motifs' ? motifs(elements, rules)
-    : current === 'gameplay' ? gameplay(elements, rules)
-    : overview(elements, rules);
-  return `${section('Five attributes', '개시의 5속성 · 속성별 상징과 조작 영역')}
-    ${spectrum(elements)}
-    ${attributeNav(current)}
-    ${body}`;
+  const route = attributeLocation(hash);
+  if (route.kind !== 'article') return index(elements);
+  if (route.id === 'rules') return rulesArticle(elements, rules);
+  const element = elements.find(item => item.id === route.id);
+  return element ? attributeArticle(element, elements)
+    : `${section('5대속성')}<div class="card"><p>해당 표제어가 없습니다.</p><a href="${ROOT}">전체 표제어로 돌아가기</a></div>`;
 }
