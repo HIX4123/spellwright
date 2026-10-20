@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { renderAttributeReference } from './attributes-view.js?v=attributes-20261020-1';
+import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=term-index-20261020-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
@@ -25,7 +25,7 @@ const navItems = [
 ];
 
 const THEORY_CARDS = [
-  ['속성과 조작 영역', '속성은 고정된 원소가 아니라 세계의 서로 다른 대상을 조작하는 방법을 정의한다.', '해리 = 개체 상태·강화 · 소외 = 생성·소멸 · 초조 = 운동·상태변화 · 고착 = 관계·상대 좌표 · 반추 = 마법 작용의 이력'],
+  ['속성과 조작 영역', '다섯 속성은 개체 상태·물질·운동·관계·작용 이력처럼 서로 다른 대상을 다룬다.', '정의와 상징, 전투 역할의 단일 원본은 Attributes의 속성별 표제어 문서에서 확인한다.'],
   ['사영도 = 연산자', '사영도는 완성 주문이 아니라 해당 속성의 영역에 적용되는 기본 실행 동사다.', '예: 초조의 정렬·방출·전달·전환·분배·등방화. 43개 전체 매핑은 역할 가설 단계다.'],
   ['개시 → 전개 → 완결', '개시는 속성과 출발 연산을, 전개는 대상·형태·변환·조건·제약·보강을, 완결은 시전 형식을 정한다.', '강도·범위·마나·조건 같은 수치적 조정은 사영도보다 전개 각인의 책임으로 둔다.'],
   ['타입 있는 마법 문법', '각인은 입력과 출력 타입을 가진 함수처럼 취급한다. 문법적으로 연결되지 않는 조합은 구성 단계에서 거부한다.', '무한한 주문을 개별 구현하지 않고 유한한 문법이 큰 조합 공간을 만든다.'],
@@ -55,9 +55,12 @@ function isProjectData(value) {
     && value.elements.every(element => ['name', 'solid', 'motto', 'loss', 'meaning']
       .every(key => typeof element?.[key] === 'string')
       && Number.isInteger(element.projectionClasses)
+      && typeof element.id === 'string' && /^[a-z0-9-]+$/.test(element.id)
+      && typeof element.summary === 'string' && element.summary.length > 0
       && Array.isArray(element.motifIdeas)
       && element.motifIdeas.every(motif => typeof motif === 'string')
       && ['identity', 'attack', 'defense', 'limits'].every(key => typeof element.gameplay?.[key] === 'string'))
+    && new Set(value.elements.map(element => element.id)).size === value.elements.length
     && Array.isArray(value.attributeRules?.sequence)
     && ['initiation', 'adjacency', 'interpretation'].every(key => typeof value.attributeRules?.[key] === 'string')
     && Array.isArray(value.attributeRules?.open));
@@ -278,7 +281,7 @@ function renderSystems() {
     ${section('Magic theory', '전투와 마법 구현 원리')}
     <div class="theory-grid">${THEORY_CARDS.map(([title, body, note]) => `
       <article class="card theory-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p><p class="theory-note">${escapeHtml(note)}</p></article>`).join('')}</div>
-    <p class="muted">캐릭터 능력치와 직업안은 <a href="#character">Character</a>에서, 사영도는 <a href="#projections">Projections</a>에서 확인할 수 있어요.</p>`;
+    <p class="muted">능력치·직업안은 <a href="#character">Character</a>, 속성의 상징·조작 영역은 <a href="#attributes">Attributes</a>, 개별 사영도는 <a href="#projections">Projections</a>에서 관리해요.</p>`;
 
   const refresh = () => {
     const q = $('#search').value.trim().toLowerCase();
@@ -437,6 +440,13 @@ function bindSystemCards() {
 
 function renderAttributes() {
   view.innerHTML = renderAttributeReference(data, location.hash);
+  const targetId = attributeLocation(location.hash).target;
+  if (!targetId) return;
+  const target = view.querySelector(`[id="${targetId}"]`);
+  if (target) {
+    target.scrollIntoView({ block: 'start' });
+    target.focus({ preventScroll: true });
+  }
 }
 
 function renderProjections() {
@@ -667,7 +677,9 @@ window.addEventListener('hashchange', () => {
   currentView = nextView;
   renderNav();
   if (data) render();
-  if (nextView !== 'story' || !storyLocation(location.hash).target) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  const withinArticle = nextView === 'attributes' && attributeLocation(location.hash).target;
+  const withinStory = nextView === 'story' && storyLocation(location.hash).target;
+  if (!withinArticle && !withinStory) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 });
 
 window.addEventListener('beforeunload',e=>{
