@@ -320,9 +320,9 @@ export const PROJECTION_SERIAL_ORIGIN_KEY = 'tetrahedron:3';
 export const PROJECTION_SERIAL_PERIOD = 1000;
 export const PROJECTION_SERIAL_ANCHORS = Object.freeze([
   { solidId: 'tetrahedron', classId: 3, serial: 0 }, // 해리 · 정립, former #000
-  { solidId: 'cube', classId: 1, serial: 1 }, // 고착 · 중첩, former #627
-  { solidId: 'octahedron', classId: 1, serial: 2 }, // 소외 · 정렬, former #145
-  { solidId: 'dodecahedron', classId: 1, serial: 3 }, // 초조 · 결속, former #162
+  { solidId: 'cube', classId: 1, serial: 1 }, // 소외 · 지향, former #627
+  { solidId: 'octahedron', classId: 1, serial: 2 }, // 초조 · 추진, former #145
+  { solidId: 'dodecahedron', classId: 1, serial: 3 }, // 고착 · 결속, former #162
   { solidId: 'icosahedron', classId: 1, serial: 4 } // 반추 · 보존, former #163
 ]);
 const GLOBAL_PROJECTION_SERIAL_CACHE = new Map();
