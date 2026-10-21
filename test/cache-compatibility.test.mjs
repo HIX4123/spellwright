@@ -16,10 +16,10 @@ test('changed JSON schema cannot be loaded with a stale cached module', () => {
   assert.doesNotMatch(app, /story-world\.js\?v=cache-schema-fix-20261011-3/);
   assert.match(index, /styles\.css\?v=soeoe-roots-20261020-1/);
   assert.match(app, /dashboard-routing\.js\?v=attributes-20261020-1/);
-  assert.match(app, /attributes-view\.js\?v=soeoe-roots-20261020-1/);
+  assert.match(app, /attributes-view\.js\?v=chojo-roots-20261021-1/);
   // A stale periodic-table module keeps importing the previous serial mapper even
   // when the main entrypoint is refreshed. Guard the full nested cache chain.
-  assert.match(index, /app\.js\?v=soeoe-roots-20261020-1/);
+  assert.match(index, /app\.js\?v=chojo-roots-20261021-1/);
   assert.match(app, /projection-periodic-table\.js\?v=periodic-grouping-20261020-1/);
   assert.match(index, /projection-periodic-table\.css\?v=periodic-grouping-20261020-1/);
   const periodic = read('projection-periodic-table.js');

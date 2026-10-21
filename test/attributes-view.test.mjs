@@ -124,7 +124,7 @@ test('canonical Haeri quadrant is consistently rendered from the four projection
   }
   assert.equal((html.match(/<td>/g) || []).length, 4);
   assert.ok(html.includes('href="#attributes/wiki/haeri/operators"'));
-  assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
+  assert.ok(renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
   assert.ok(renderAttributeReference(project, '#attributes/wiki/soeoe').includes('id="operators"'));
 });
 
@@ -165,16 +165,16 @@ test('six Soeoe roles preserve A2 root pairs and globally rebased IDs', async ()
     assert.ok(html.includes(escapeHtml(entry.role.description)));
   }
   assert.ok(html.includes('상세 형상과 역할은'));
-  assert.ok(!renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
+  assert.ok(renderAttributeReference(project, '#attributes/wiki/chojo').includes('id="operators"'));
 });
 
-test('only finalized Haeri and Soeoe classes are marked confirmed', async () => {
+test('only finalized Haeri, Soeoe and Chojo classes are marked confirmed', async () => {
   const projections = JSON.parse(await readFile(new URL('../docs/data/projections.json', import.meta.url), 'utf8'));
   const confirmed = projections.solids.flatMap(s => s.classes.map(c => ({ solid: s.id, ...c.role })))
     .filter(role => role.status === 'confirmed');
-  assert.equal(confirmed.length, 10);
-  assert.deepEqual(Object.fromEntries(['tetrahedron', 'cube'].map(id => [
+  assert.equal(confirmed.length, 16);
+  assert.deepEqual(Object.fromEntries(['tetrahedron', 'cube', 'octahedron'].map(id => [
     id, confirmed.filter(role => role.solid === id).length
-  ])), { tetrahedron: 4, cube: 6 });
-  assert.ok(project.attributeRules.open.some(value => value.includes('33종')));
+  ])), { tetrahedron: 4, cube: 6, octahedron: 6 });
+  assert.ok(project.attributeRules.open.some(value => value.includes('27종')));
 });

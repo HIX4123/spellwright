@@ -125,10 +125,10 @@ function quadrantView(element, projectionReference) {
 }
 
 
-function rootCell(item, serialsByKey) {
+function rootCell(item, serialsByKey, solidId) {
   if (!item) return '<td>미배정</td>';
   const role = item.role;
-  const serial = serialsByKey.get('cube:' + item.id);
+  const serial = serialsByKey.get(solidId + ':' + item.id);
   return `<td>
     <strong>${safe(Number.isInteger(serial) ? formatProjectionSerial(serial) : 'ID 미정')} · ${safe(role.name)}</strong>
     <small>${safe(role.abilityName)} · ${safe(role.imageMotif)}</small>
@@ -142,23 +142,24 @@ function rootView(element, projectionReference) {
   const solids = projectionReference?.projectionData?.solids;
   const views = projectionReference?.viewData?.solids;
   if (!Array.isArray(solids) || !Array.isArray(views)) {
-    return '<section id="operators" class="attribute-article-section" tabindex="-1"><h3>소외의 6대 연산</h3><p>사영도 데이터를 확인하려면 <a href="#projections">Projections</a>를 참조하세요.</p></section>';
+    return '<section id="operators" class="attribute-article-section" tabindex="-1"><h3>${safe(element.name)}의 6대 연산</h3><p>사영도 데이터를 확인하려면 <a href="#projections">Projections</a>를 참조하세요.</p></section>';
   }
-  const cube = solids.find(solid => solid.id === 'cube');
-  if (!cube) return '';
+  const solidId = element.id === 'chojo' ? 'octahedron' : 'cube';
+  const solid = solids.find(item => item.id === solidId);
+  if (!solid) return '';
   const serials = globalProjectionSerialLayout(solids, views).serialsByKey;
-  const byRoot = (root, direction) => cube.classes.find(item =>
+  const byRoot = (root, direction) => solid.classes.find(item =>
     item.role?.root === root && item.role?.direction === direction);
   return `<section id="operators" class="attribute-article-section" tabindex="-1">
     <h3>${safe(frame.title)} <small>개시 연산 · 확정</small></h3>
     <p>${safe(frame.premise)}</p>
     <p class="muted">${safe(frame.model)}</p>
     <div class="attribute-quadrant-scroll"><table class="attribute-quadrant attribute-root-table">
-      <thead><tr><th scope="col">자리의 기준</th><th scope="col">양의 근 (+)</th><th scope="col">대립 근 (−)</th></tr></thead>
+      <thead><tr><th scope="col">${safe(element.id === 'chojo' ? '변화의 축' : '자리의 기준')}</th><th scope="col">양의 근 (+)</th><th scope="col">대립 근 (−)</th></tr></thead>
       <tbody>${frame.pairs.map(pair => `<tr>
         <th scope="row">${safe(pair.label)}<small>${safe(pair.explanation)}</small></th>
-        ${rootCell(byRoot(pair.root, 'positive'), serials)}
-        ${rootCell(byRoot(pair.root, 'negative'), serials)}
+        ${rootCell(byRoot(pair.root, 'positive'), serials, solidId)}
+        ${rootCell(byRoot(pair.root, 'negative'), serials, solidId)}
       </tr>`).join('')}</tbody>
     </table></div>
     <p class="muted attribute-quadrant-note">${safe(frame.interpretation)}</p>
