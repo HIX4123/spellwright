@@ -22,3 +22,10 @@
 - For each solid use `(previousGlobalSerial - previousSolidAnchorSerial + newSolidAnchorSerial + 1000) % 1000`. Reserve the five anchors, then assign the closest free circular ID to non-anchor collisions (for the 2026-10-20 dataset, `dodecahedron:4` becomes #999). Preserve geometric class IDs, source views, asset filenames and source MDS distances.
 - The original unshifted tetrahedral origin was #401 for the 2026-10-20 dataset. All selector IDs, thumbnails, searches and periodic-table positions must consume the same `globalProjectionSerialLayout` result. Change front-end import cache versions when modifying serial logic.
 - All 4 Haeri quadrant roles, 6 Soeoe A₂ roles, and 6 Chojo 3A₁ roles in `docs/data/projections.json` are confirmed. Other 27 projection role labels (고착·반추) are drafts. Chojo uses six roots, not its eight Weyl chambers; inverse roots correspond to independent operators, not zero-cost inversion engravings. Complete initiation operators for the other attributes **before** defining development-stage engravings or karma costs.
+
+## Magic reproduction catalog (2026-10-24)
+
+- Each external ability test is stored once in `docs/data/project.json.magicTrials`, and rendered as a short expandable case in Systems. A technique case never confirms an undecided projection power.
+- Keep adopted motion principles separate from the generic/specialized engraving syntax proposals. All 27 Gochak/Banchu projections remain provisional, even when working words like 편입 or 동조 are used.
+- Gochak graph edges are metaphysical references, not physical shortcuts between spaces. Topos's cutting/rejoining of spacetime is distinct from the magic graph.
+- Banchu's representation, sensory and mental expansion is pending; preserve the canonical magical action-history scope until explicitly redesigned.
