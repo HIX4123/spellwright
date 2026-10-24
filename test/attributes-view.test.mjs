@@ -44,8 +44,10 @@ test('each term has one complete document, anchored headings and related links',
     assert.ok(html.includes('<h2 id="attribute-document-title" tabindex="-1">' + element.name + '</h2>'));
     assert.ok(html.includes(element.meaning));
     assert.ok(html.includes(element.gameplay.identity.slice(0, 14)));
-    assert.ok(html.includes(element.gameplay.attack));
-    assert.ok(html.includes(element.gameplay.defense));
+    // Cross-linked attribute names appear as anchors; compare visible text, not HTML markup.
+    const visibleText = html.replace(/<[^>]+>/g, '');
+    assert.ok(visibleText.includes(element.gameplay.attack));
+    assert.ok(visibleText.includes(element.gameplay.defense));
     assert.ok(html.includes(element.gameplay.limits.slice(0, 12)));
     assert.ok(html.includes('id="limits"'));
     for (const anchor of ['symbol', 'motifs', 'mechanics', 'examples', 'limits']) {

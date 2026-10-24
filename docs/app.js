@@ -1,4 +1,5 @@
 import { escapeHtml, section } from './html.js';
+import { renderMagicTrials } from './magic-trials-view.js?v=magic-trials-20261024-1';
 import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=gochak-rmt-20261024-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
@@ -27,7 +28,7 @@ const navItems = [
 
 const THEORY_CARDS = [
   ['속성과 조작 영역', '다섯 속성은 개체 상태·물질·운동·관계·작용 이력처럼 서로 다른 대상을 다룬다.', '정의와 상징, 전투 역할의 단일 원본은 Attributes의 속성별 표제어 문서에서 확인한다.'],
-  ['사영도 = 연산자', '사영도는 완성 주문이 아니라 해당 속성의 영역에 적용되는 기본 실행 동사다.', '예: 초조의 정렬·방출·전달·전환·분배·등방화. 43개 전체 매핑은 역할 가설 단계다.'],
+  ['사영도 = 연산자', '사영도는 완성 주문이 아니라 해당 속성의 영역에 적용되는 기본 실행 동사다.', '해리·소외·초조의 개시 연산 16개는 확정, 고착·반추의 27개는 가설이다.'],
   ['개시 → 전개 → 완결', '개시는 속성과 출발 연산을, 전개는 대상·형태·변환·조건·제약·보강을, 완결은 시전 형식을 정한다.', '강도·범위·마나·조건 같은 수치적 조정은 사영도보다 전개 각인의 책임으로 둔다.'],
   ['타입 있는 마법 문법', '각인은 입력과 출력 타입을 가진 함수처럼 취급한다. 문법적으로 연결되지 않는 조합은 구성 단계에서 거부한다.', '무한한 주문을 개별 구현하지 않고 유한한 문법이 큰 조합 공간을 만든다.'],
   ['효과 그래프', '유효한 서클은 Entity, Field, Relation, Boundary, SpatialState, Motion, PossibilityState 같은 공통 객체의 그래프로 변환한다.', '유도 화염구도 별도 스킬 코드가 아니라 열·운동·추적 관계·충돌 조건이 결합된 그래프로 실행한다.'],
@@ -287,6 +288,8 @@ function renderSystems() {
     </div>
     <div class="map-note"><span>위 → 아래 = 관계 흐름</span><span>실선 = 상하위 · 점선 = 기능 의존 · 파선 = 단계 순서</span></div>
     <div id="systemMap"></div>
+    ${section('마법 재현 검증', '외부 작품 기술 9건 · 펼쳐서 연산과 미결 사항 확인')}
+    ${renderMagicTrials(data.magicTrials || [])}
     ${section('Combat design order', '전투의 핵심 판단 과정')}
     <div class="card"><p class="core-statement" style="font-size:15px">상황 파악 → 속성 선택 → 사영 선택 → 각인 구성 → 각인력 검사 → 카르마 확인 → 위험 판단 → 영창</p></div>
     ${section('Magic theory', '전투와 마법 구현 원리')}
@@ -462,7 +465,7 @@ function renderAttributes() {
 
 function renderProjections() {
   view.innerHTML = `${section('Projection periodic table','H = 최외곽 정점 수 · P = Convex Hull 층수 · X = 속성별 기준축을 적용한 전역 사영 ID #000–#999')}
-    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 해리 4개·소외 6개의 개시 연산은 확정했으며, 나머지 33개 사영도의 기존 역할명은 검토 중인 가설입니다.</p>
+    <p class="muted">5대속성의 모티프·상징·전투 역할은 <a href="#attributes">Attributes</a>의 개별 표제어에서 확인할 수 있어요. 해리 4개·소외 6개·초조 6개의 개시 연산은 확정했으며, 고착·반추의 나머지 27개 역할명은 검토 중인 가설입니다.</p>
     <nav class="attribute-term-nav" aria-label="5대속성 정의 바로가기">${data.elements.map(element => `<a href="#attributes/wiki/${encodeURIComponent(element.id)}">${escapeHtml(element.name)}</a>`).join('')}</nav>
     <div id="projectionPeriodicTable"></div>
     ${section('Projection simulation','정다면체 선택 → 좌우 드래그 · 방향키 · #nnn 사영 번호로 전환')}
