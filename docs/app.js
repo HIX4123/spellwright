@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=chojo-roots-20261021-1';
+import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=gochak-rmt-20261024-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
 import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261019-1';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
