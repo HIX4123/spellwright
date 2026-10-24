@@ -605,37 +605,6 @@
       "dependencies": [
         "effect-graph"
       ]
-    },
-    {
-      "id": "engraving-families",
-      "name": "범용·특화 각인 분류",
-      "category": "magic",
-      "status": "review",
-      "definition": "여러 사영도가 공유하는 제어 문법과 각 사영도 고유 매개변수의 구분.",
-      "details": "범용 각인 후보는 시전 시간, 범위·대상·조건, 여집합 지정과 조건부 동적 대상 편입이다. 특화 각인 후보는 초조의 목표 속도·각속도처럼 기본 연산에 종속되는 값이다. 구분 방향은 수용했으나 실제 타입·목록·카르마·마나 비용·공급 규칙은 미정이다. 범용 각인을 마음대로 운동·공간·물질을 변경하는 만능 연산으로 확장하지 않는다.",
-      "introduced": "v0.2",
-      "lastModified": "v0.2",
-      "lastModifiedAt": "2026-10-24",
-      "dependencies": [
-        "development",
-        "spell-grammar",
-        "projection-operator"
-      ]
-    },
-    {
-      "id": "magic-reproduction",
-      "name": "외부 기술 재현 검증",
-      "category": "magic",
-      "status": "review",
-      "definition": "외부 매체의 기술을 사영도 조합으로 역설계하는 표현력 검증.",
-      "details": "Systems 화면의 '마법 재현 검증' 목록이 9개 기술의 재현 판정과 미결 과제를 관리하는 유일한 원본이다. 이론적 가능성과 실제 전투 구현의 차이를 구별하며, 기술 사례가 곧 미확정 사영도의 기능 채택을 뜻하지는 않는다.",
-      "introduced": "v0.2",
-      "lastModified": "v0.2",
-      "lastModifiedAt": "2026-10-24",
-      "dependencies": [
-        "projection-operator",
-        "spell-grammar"
-      ]
     }
   ],
   "elements": [
