@@ -168,6 +168,57 @@ function rootView(element, projectionReference) {
   </section>`;
 }
 
+
+function relationStudyView(element) {
+  const study = element.relationStudy;
+  if (!study) return '';
+  const research = study.rmt;
+  const researchGroups = research.principles.map(group => `
+    <details class="attribute-research-group">
+      <summary><strong>${safe(group.name)} (${safe(group.code)})</strong> · 작용 후보 ${group.candidates.length}종</summary>
+      <p class="muted">${safe(group.rule)}</p>
+      <div class="attribute-quadrant-scroll"><table class="attribute-quadrant attribute-root-table">
+        <thead><tr><th scope="col">이름</th><th scope="col">하는 역할</th><th scope="col">용례</th></tr></thead>
+        <tbody>${group.candidates.map(candidate => `<tr>
+          <th scope="row">${safe(candidate.name)}</th>
+          <td>${safe(candidate.role)}</td>
+          <td>${safe(candidate.example)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </details>`).join('');
+  return `
+    <section id="relations" class="attribute-article-section" tabindex="-1">
+      <h3>관계의 정의와 작용 <small>설계 방향 · 검토</small></h3>
+      <dl class="attribute-facts">
+        <div><dt>정의의 질문</dt><dd>${safe(study.philosophy.definitionQuestion)}</dd></div>
+        <div><dt>작용의 질문</dt><dd>${safe(study.philosophy.actionQuestion)}</dd></div>
+      </dl>
+      <p>${safe(study.philosophy.interpretation)}</p>
+      <p class="muted">${safe(study.philosophy.note)}</p>
+      <h4>하이퍼그래프와 집합 표현식 <small>검토</small></h4>
+      <p>${safe(study.representation.headline)}</p>
+      <ul class="attribute-compact-list">${study.representation.details.map(value => `<li>${safe(value)}</li>`).join('')}</ul>
+      <h4>원시 연산 계열 <small>최소성 미검증</small></h4>
+      <div class="attribute-quadrant-scroll"><table class="attribute-quadrant attribute-root-table">
+        <thead><tr><th scope="col">계열</th><th scope="col">역할</th></tr></thead>
+        <tbody>${study.representation.primitives.map(entry => `<tr><th scope="row">${safe(entry.name)}</th><td>${safe(entry.role)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="muted">${safe(study.representation.primitiveNote)}</p>
+    </section>
+    <section id="rmt" class="attribute-article-section" tabindex="-1">
+      <h3>${safe(research.title)} <small>이론 참고 · 후보 미확정</small></h3>
+      <p>${safe(research.theoryNote)}</p>
+      ${researchGroups}
+      <p class="muted">${safe(research.caution)}</p>
+      <h4>기존 후보의 검토 경과</h4>
+      <p><strong>주요 작용·정의 후보:</strong> ${safe(study.candidateHistory.core.join(' · '))}</p>
+      <p><strong>재검토할 파생 후보:</strong> ${safe(study.candidateHistory.composite.join(' · '))}</p>
+      <ul class="attribute-compact-list">${study.candidateHistory.decisions.map(value => `<li>${safe(value)}</li>`).join('')}</ul>
+      <h4>남은 질문 <small>미정</small></h4>
+      <ul class="attribute-compact-list">${study.openQuestions.map(value => `<li>${safe(value)}</li>`).join('')}</ul>
+    </section>`;
+}
+
 function attributeArticle(element, elements, projectionReference) {
   const rich = value => linkAttributeNames(value, elements, element.id);
   const body = `
@@ -189,6 +240,7 @@ function attributeArticle(element, elements, projectionReference) {
     </section>
     ${quadrantView(element, projectionReference)}
     ${rootView(element, projectionReference)}
+    ${relationStudyView(element)}
     <section id="examples" class="attribute-article-section" tabindex="-1">
       <h3>기본 공방 <small>구현 예시 · 검토</small></h3>
       <div class="attribute-action-pair">
@@ -202,9 +254,12 @@ function attributeArticle(element, elements, projectionReference) {
       <p class="attribute-see-also">공통 개시 규칙: <a href="${href('rules')}">개시 규칙</a>
         · 사영도별 기능: <a href="#projections">Projections</a></p>
     </section>`;
-  return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body,
-    element.rootFramework ? LABELS.map(([id, title]) => id === 'operators' ? [id, '6대 연산'] : [id, title])
-      : element.quadrantFramework ? LABELS : LABELS.filter(([id]) => id !== 'operators'));
+  const labels = element.rootFramework ? LABELS.map(([id, title]) => id === 'operators' ? [id, '6대 연산'] : [id, title])
+    : element.quadrantFramework ? LABELS : LABELS.filter(([id]) => id !== 'operators');
+  if (element.relationStudy) {
+    labels.splice(3, 0, ['relations', '관계 모델'], ['rmt', 'RMT 작용 후보']);
+  }
+  return articleShell(element.name, `${element.solid} · ${element.projectionClasses}개 사영 클래스 · ${element.summary}`, element.id, elements, body, labels);
 }
 
 function rulesArticle(elements, rules) {
