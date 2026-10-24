@@ -114,3 +114,13 @@ The **Story & World** area is now a topic wiki. Character documents own their na
 - The `#attributes/wiki/chojo/operators` term document adopts **3A₁ = A₁⊕A₁⊕A₁** as a symbolic model with six independent roots `Φ(3A₁)={±α,±β,±γ}`. The three axes are 변위 (spatial motion), 변성 (internal state change), 파급 (propagation). These are **six roots, not six Weyl chambers** (the latter number eight).
 - Confirmed roles preserving the existing global serials and geometric keys: `octahedron:1` **#002 추진**, `octahedron:6` **#441 제동**, `octahedron:3` **#361 촉진**, `octahedron:4` **#283 억제**, `octahedron:5` **#666 발산**, `octahedron:2` **#461 수렴**. Opposing operations are separate base projections, never a 0-karma generic inversion engraving.
 - Chojo manipulates **the processes of possible/ongoing change**, not instantaneous spatial reassignment, arbitrary creation, reversal of history, or global time control. Effects, targets, energies, propagation media, engraving details, and karma costs remain undecided. Of 43 projection roles, 16 are confirmed; 고착·반추's remaining 27 roles are drafts.
+
+## Magic reproduction trials and engraving design (2026-10-24)
+
+- The Systems view includes an expandable **마법 재현 검증** catalog sourced only from `docs/data/project.json.magicTrials`. The nine cross-media cases distinguish observed operators, provisional verdicts and unresolved constraints. They do not confirm previously hypothetical projections.
+- **Adopted motion model:** 초조·추진 adds a motion component and 제동 removes one, including translational, rotational and selected-part motion. Linear/angular target velocity does not imply automatic continuous speed maintenance; the effect ends on reaching the target. Exact mana costs are undecided.
+- **Engraving proposal:** distinguish generic casting/targeting/condition engravings from projection-specific parameters. Sustained/reaction casting belongs to later completion-stage design.
+- **Gochak:** vertices and hyperedges are metaphysical references and relations, not automatically physical anchors or spatial tunnels. Dynamic membership, complements, 편입 and 동조 remain drafts, not confirmed dodecahedron roles.
+- **Banchu:** magical action-history replay remains the canonical definition. A representation/mental-sensory expansion is a proposal, not an adopted rule.
+- **Divine exception:** Portal-style physical junctions of spacetime are provisionally outside ordinary engravings and reserved for Topos; realistic curved-spacetime gameplay simulation is not planned.
+- Test with `node --test test/magic-trials.test.mjs` and `node --test test/*.test.mjs`.
