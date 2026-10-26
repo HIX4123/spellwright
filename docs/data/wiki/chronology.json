@@ -15,6 +15,10 @@
         "event-prologue",
         "event-gathering",
         "event-fieldwork",
+        "event-memory",
+        "event-premia",
+        "event-yuma",
+        "event-fake-boss",
         "event-restoration",
         "event-sacrifice",
         "event-aftermath",
@@ -75,7 +79,12 @@
       ]
     }
   ],
-  "related": [],
+  "related": [
+    "event-memory",
+    "event-premia",
+    "event-yuma",
+    "event-fake-boss"
+  ],
   "flow": {
     "nodes": [
       {
@@ -114,7 +123,7 @@
         "y": 228,
         "lane": "kai",
         "href": "#story/wiki/event-hand",
-        "note": "니벨과 공멸을 시도하나 카르만 전이 · 이후 비마법사 동료가 개입"
+        "note": "니벨과 공멸을 시도하나 카르만 전이 · 이후 에테아가 개입"
       },
       {
         "id": "kai-reunion",
