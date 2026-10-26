@@ -28,10 +28,24 @@
           "status": "원전 두 축과 성격 채택 / 구체적 외형 미정"
         }
       ]
+    },
+    {
+      "id": "lab-response",
+      "title": "연구자 니벨과 연구소",
+      "items": [
+        {
+          "title": "기술적 성과와 윤리적 비용을 함께 보다",
+          "description": "니벨은 원래 마법 연구 자체를 좋아하는 공학도이며, 연구소의 인공 회로 성과에도 학문적 호기심을 느낄 수 있다. 그러나 강경파가 그 성과를 위해 공여체의 희생을 정당화하는 상황은 별개의 윤리적 문제다. 이 경험이 이후 마법 소멸 계획의 여러 동기 중 하나가 될 수 있으나 단독 원인으로 확정하지 않는다.",
+          "status": "서사 연결 후보 · 미확정"
+        }
+      ]
     }
   ],
   "related": [
     "ieumsae",
-    "event-meeting"
+    "event-meeting",
+    "research-lab",
+    "fake-boss",
+    "event-restoration"
   ]
 }
