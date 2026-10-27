@@ -122,5 +122,16 @@ The **Story & World** area is now a topic wiki. Character documents own their na
 - **Engraving proposal:** distinguish generic casting/targeting/condition engravings from projection-specific parameters. Sustained/reaction casting belongs to later completion-stage design.
 - **Gochak:** vertices and hyperedges are metaphysical references and relations, not automatically physical anchors or spatial tunnels. Dynamic membership, complements, 편입 and 동조 remain drafts, not confirmed dodecahedron roles.
 - **Banchu:** magical action-history replay remains the canonical definition. A representation/mental-sensory expansion is a proposal, not an adopted rule.
-- **Divine exception:** Portal-style physical junctions of spacetime are provisionally outside ordinary engravings and reserved for Topos; realistic curved-spacetime gameplay simulation is not planned.
+- **Divine exception:** Portal-style physical junctions of spacetime are provisionally outside ordinary engravings and reserved for Vaha; realistic curved-spacetime gameplay simulation is not planned.
 - Test with `node --test test/magic-trials.test.mjs` and `node --test test/*.test.mjs`.
+
+## 육환신수 명명 (2026-10-27)
+
+- 시간 **크로노스(Chronos)**: 고대 그리스 Χρόνος, 시간의 의인화.
+- 공간 **바하(Vaha)**: 폴리네시아 통가어 vaha, 사물 사이의 공간·간격.
+- 존재 **스티(Sti)**: 페르시아어 hastī(존재)·nīstī(비존재)의 공통 철자로 만든 조어.
+- 환상 **후르칼리아(Hūrqalyā)**: 페르시아·이슬람 신비철학의 형상적 중간세계.
+- 무간 **헨(Hen)**: 고대 그리스어 ἕν, 플로티노스의 일자.
+- 영원 **아난타(Ananta)**: 산스크리트어 अनन्त, 끝없음.
+
+문화권은 명명의 모티프이며 신위 자체의 역사적 기원이나 화신의 출신을 뜻하지 않는다. 신위 문서의 영구 ID(`aion`, `topos`, `zero`, `ontos`, `phantasma`)는 링크 호환을 위해 유지하고, 옛 명칭은 검색 별칭으로 보존한다. 어원 설명의 유일한 상세 원본은 개별 위키 JSON의 `naming-origin` 절이다.

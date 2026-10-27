@@ -218,42 +218,59 @@
       "title": "크로노스",
       "category": "신수·환수",
       "summary": "크로노스 · 시간 — 메가네우라",
-      "aliases": []
+      "aliases": [
+        "Chronos"
+      ]
     },
     {
       "id": "aion",
-      "title": "아이온",
+      "title": "아난타",
       "category": "신수·환수",
-      "summary": "아이온 · 영원 — 물곰",
-      "aliases": []
+      "summary": "아난타 · 영원 — 물곰",
+      "aliases": [
+        "아이온",
+        "Ananta"
+      ]
     },
     {
       "id": "topos",
-      "title": "토포스",
+      "title": "바하",
       "category": "신수·환수",
-      "summary": "토포스 · 공간 — 담요문어",
-      "aliases": []
+      "summary": "바하 · 공간 — 담요문어",
+      "aliases": [
+        "토포스",
+        "Vaha"
+      ]
     },
     {
       "id": "zero",
-      "title": "제로",
+      "title": "헨",
       "category": "신수·환수",
-      "summary": "제로 · 무간 — 대왕고래",
-      "aliases": []
+      "summary": "헨 · 무간 — 대왕고래",
+      "aliases": [
+        "제로",
+        "Hen"
+      ]
     },
     {
       "id": "ontos",
-      "title": "온토스",
+      "title": "스티",
       "category": "신수·환수",
-      "summary": "온토스 · 존재 — 메갈로케로스",
-      "aliases": []
+      "summary": "스티 · 존재 — 메갈로케로스",
+      "aliases": [
+        "온토스",
+        "Sti"
+      ]
     },
     {
       "id": "phantasma",
-      "title": "판타즈마",
+      "title": "후르칼리아",
       "category": "신수·환수",
-      "summary": "판타즈마 · 환상 — 큰정원사새",
-      "aliases": []
+      "summary": "후르칼리아 · 환상 — 큰정원사새",
+      "aliases": [
+        "판타즈마",
+        "Hūrqalyā"
+      ]
     },
     {
       "id": "beast-war",
