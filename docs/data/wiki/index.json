@@ -549,10 +549,12 @@
     },
     {
       "id": "event-kai-dissociation",
-      "title": "3부 · 마지막 자아의 파괴와 신위 분리",
+      "title": "3부 · 설계된 마지막 해리와 신위 분리",
       "category": "사건",
       "summary": "3부 종막 · 마지막 결투와 신위 해제.",
-      "aliases": []
+      "aliases": [
+        "3부 · 마지막 자아의 파괴와 신위 분리"
+      ]
     },
     {
       "id": "event-demiurge-inheritance",
