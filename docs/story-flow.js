@@ -36,29 +36,6 @@ function svgNode(node) {
   </a>`;
 }
 
-// Readable fit-to-width graph; the original interwoven SVG remains available on demand.
-function fitTimeline(model) {
-  const sorted = [...model.nodes].sort((a,b) => a.x - b.x);
-  return `<div class="story-flow-fit" aria-label="화면 너비에 맞춘 세계시간 연대표">
-    ${regions.map(region => `<section class="story-fit-era">
-      <header class="story-fit-era-heading"><strong>${text(region.label)}</strong><span>${text(region.sub)}</span></header>
-      ${lanes.map(lane => {
-        const events = sorted.filter(node => node.lane === lane.id && node.x >= region.from && node.x < region.to);
-        if (!events.length) return '';
-        return `<div class="story-fit-lane story-fit-lane--${lane.id}">
-          <strong class="story-fit-lane-name">${text(lane.label)}</strong>
-          <ol class="story-fit-chain" aria-label="${text(region.label)} · ${text(lane.label)}">
-            ${events.map(node => `<li><a href="${safeLink(node.href)}" class="story-fit-node" aria-label="${text(node.title)} · ${text(node.era)}"><strong>${text(node.title)}</strong><small>${text(node.era)}</small></a></li>`).join('')}
-          </ol>
-        </div>`;
-      }).join('')}
-    </section>`).join('')}
-    <div class="story-fit-jumps"><strong>시간 이동 · 인물 간 인과</strong>
-      <ul>${model.edges.filter(edge=>['jump','join','uncertain'].includes(edge.kind) && edge.label).map(edge=>`<li>${text(edge.label)}</li>`).join('')}</ul>
-    </div>
-  </div>`;
-}
-
 export function storyFlow(n) {
   const model = n.storyFlow;
   if (!model?.nodes?.length || !model?.edges?.length) return '';
@@ -72,11 +49,6 @@ export function storyFlow(n) {
       <span class="story-flow-order-tip">아래 세계시간 축과 다름 · 세부 에피소드는 아래 연대표 참조</span>
     </div>
     <div id="time-map" class="story-flow-map story-block" tabindex="-1">
-      <p class="story-fit-intro">화면 너비에 맞춰 시대별 사건을 펼쳤습니다. 사건을 선택하면 각 문서로 이동합니다.</p>
-      ${fitTimeline(model)}
-      <details class="story-flow-expanded">
-        <summary>정밀 교차 시간선 보기 · 원본 그래프 확대</summary>
-        <p class="story-fit-intro">인물 간 시간 이동 경로를 원래 크기로 보려면 좌우로 이동하세요.</p>
       <div class="story-flow-key" aria-label="경로 범례">
         <span class="story-flow-key-item kai">카르</span>
         <span class="story-flow-key-item ur">우르 → 데미우르고스</span>
@@ -102,7 +74,6 @@ export function storyFlow(n) {
           <text class="story-flow-axis-note" x="106" y="814">점선: 시간 이동·발신 시점 미정 / 가는 연결선: 인물 간 인과</text>
         </svg>
       </div>
-      </details>
       <p class="story-flow-disclaimer">카르·우르·히로인의 개인 경험은 화살표 방향을 따라가세요. 1부의 세부 사건 전체는 아래 에피소드 연대표에서 각각의 문서로 이동할 수 있습니다. 세계시간의 거리와 각 사건 간 간격은 축척이 아닙니다. 우르를 옮긴 미래 데미우르고스의 <strong>정확한 발신 세계시점은 미정</strong>이며, 연대표의 '토벌'은 3부 주인공의 구원 의도를 뜻하지 않습니다.</p>
     </div>`;
 }

@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { storyFlow } from './story-flow.js?v=story-flow-fit-20261028-1';
+import { storyFlow } from './story-flow.js?v=story-flow-original-20261028-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;

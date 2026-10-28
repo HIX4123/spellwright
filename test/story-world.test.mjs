@@ -101,13 +101,14 @@ test('1부 세부 에피소드와 3부 최종전이 연대표에서 누락되지
   for(const id of ['kai-domain','kai-first','kai-demon','kai-final','kai-memory','kai-lab','kai-loss']) assert.ok(timeline.flow.nodes.some(n=>n.id===id));
 });
 
-test('chronology renders a full-width readable graph with all era nodes and retains detailed SVG',()=>{
+test('chronology shows only the original full-width cross-time graph by default',()=>{
  const html=page('chronology');
  assert.match(html,/wiki-article wiki-article--chronology/);
- assert.match(html,/class="story-flow-fit"/);
- assert.match(html,/class="story-flow-expanded"/);
+ assert.match(html,/id="time-map"/);
  assert.match(html,/class="story-flow-svg"/);
- assert.equal((html.match(/class="story-fit-era"/g)||[]).length,4);
- for(const node of byId.get('chronology').flow.nodes) assert.ok(html.includes('aria-label="'+node.title+' · '+node.era+'"'),node.id);
+ assert.match(html,/class="story-flow-scroll"/);
+ assert.match(html,/class="story-flow-key"/);
+ assert.doesNotMatch(html,/story-flow-fit|story-fit-|story-flow-expanded|<details class="story-flow-expanded"/);
+ for(const node of byId.get('chronology').flow.nodes) assert.ok(html.includes('href="'+node.href+'"'),node.id);
  assert.doesNotMatch(page('kar'),/wiki-article--chronology/);
 });
