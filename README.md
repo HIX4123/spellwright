@@ -135,3 +135,9 @@ The **Story & World** area is now a topic wiki. Character documents own their na
 - 영원 **아난타(Ananta)**: 산스크리트어 अनन्त, 끝없음.
 
 문화권은 명명의 모티프이며 신위 자체의 역사적 기원이나 화신의 출신을 뜻하지 않는다. 신위 문서의 영구 ID(`aion`, `topos`, `zero`, `ontos`, `phantasma`)는 링크 호환을 위해 유지하고, 옛 명칭은 검색 별칭으로 보존한다. 어원 설명의 유일한 상세 원본은 개별 위키 JSON의 `naming-origin` 절이다.
+
+## Page freshness and change propagation
+
+Every main section, Story wiki article and Attributes term page displays its page update time and related-content review time in KST. Historical review times remain unrecorded; a recent file update does not imply a complete semantic review. Local drafts are labelled separately.
+
+Follow [the content-update workflow](maintenance/content-updates.md) on every update. `node scripts/content-freshness.mjs --status` lists affected pages and changed inputs. Synchronize canonical article previews with `--sync-index`, inspect each affected page, and record an individual `--review PAGE_ID "outcome"`. CI runs `--check` to reject stale input fingerprints and divergent index metadata. Existing content remains canonical in the data JSON files; the freshness manifest stores only provenance and review receipts.

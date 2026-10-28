@@ -1,3 +1,4 @@
+import { freshnessPageId, freshnessMarkup } from './freshness.js?v=freshness-20261029-1';
 import { escapeHtml, section } from './html.js';
 import { renderMagicTrials } from './magic-trials-view.js?v=magic-trials-20261024-1';
 import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=gochak-rmt-20261024-1';
@@ -8,6 +9,8 @@ import { mountProjectionSelector } from './projection-selector.js?v=solid-origin
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=periodic-grouping-20261020-1';
 import { dashboardViewFromHash, dashboardViewHref } from './dashboard-routing.js?v=attributes-20261020-1';
 
+let freshness = null;
+let usingLocalDraft = false;
 let data;
 let relationships;
 let statsDocument;
@@ -77,6 +80,8 @@ function isRelationshipData(value) {
 }
 
 async function load() {
+  freshness = await fetch('./data/freshness.json', {cache:'no-store'})
+    .then(response => response.ok ? response.json() : null).catch(() => null);
   const [projectResponse, relationshipResponse, statsResponse, projectionContext] = await Promise.all([
     fetch('./data/project.json', { cache: 'no-store' }),
     fetch('./data/relationships.json', { cache: 'no-store' }),
@@ -111,6 +116,7 @@ async function load() {
     try {
       const parsed = JSON.parse(draft);
       data = parsed.revision === repositoryRevision && isProjectData(parsed.data) ? parsed.data : remote;
+      usingLocalDraft = data !== remote;
       if (data === remote) {
         localStorage.setItem(STALE_DRAFT_KEY, JSON.stringify(parsed.data || parsed));
         localStorage.removeItem(DRAFT_KEY);
@@ -180,6 +186,12 @@ function render() {
     archive:renderArchive
   })[currentView];
   fn();
+  if (currentView !== 'story') renderFreshness();
+}
+
+function renderFreshness(storyRoute) {
+  const id = freshnessPageId(currentView, location.hash, storyRoute);
+  document.getElementById('pageFreshness').innerHTML = freshnessMarkup(freshness?.pages?.[id], usingLocalDraft || dirty);
 }
 
 function renderOverview() {
@@ -220,6 +232,7 @@ async function fetchWikiFile(name) {
 async function renderStory() {
   const request = ++storyRequest;
   const hash = location.hash;
+  document.getElementById('pageFreshness').textContent = '';
   view.innerHTML = '<p role="status">문서를 불러오고 있어요…</p>';
   try {
     if (!wikiIndex) {
@@ -239,6 +252,7 @@ async function renderStory() {
     }
     if (request !== storyRequest || currentView !== 'story' || location.hash !== hash) return;
     view.innerHTML = renderStoryWorld(data.narrative, wikiIndex, route, article);
+    renderFreshness(route);
     const search = document.getElementById('wikiSearch');
     if (search) search.addEventListener('input', () => {
       const query = search.value.trim().toLowerCase();
@@ -642,6 +656,7 @@ $('#editorForm').addEventListener('submit', e => {
 });
 
 function markDirty() {
+  usingLocalDraft = true;
   data.project.updatedAt = new Date().toLocaleDateString('sv-SE');
   dirty = true;
   $('#saveBtn').textContent = 'Save local draft *';

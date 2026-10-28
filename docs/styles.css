@@ -786,3 +786,5 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
 .wiki-article--chronology > .wiki-section,
 .wiki-article--chronology > footer { max-width: 960px; margin-left: auto; margin-right: auto; }
 .wiki-article--chronology > .story-flow-map { width: 100%; min-width: 0; max-width: none; }
+
+.page-freshness { margin: 10px 24px; font-size: .8rem; color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }

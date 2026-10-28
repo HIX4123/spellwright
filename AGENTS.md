@@ -29,3 +29,11 @@
 - Keep adopted motion principles separate from the generic/specialized engraving syntax proposals. All 27 Gochak/Banchu projections remain provisional, even when working words like 편입 or 동조 are used.
 - Gochak graph edges are metaphysical references, not physical shortcuts between spaces. Topos's cutting/rejoining of spacetime is distinct from the magic graph.
 - Banchu's representation, sensory and mental expansion is pending; preserve the canonical magical action-history scope until explicitly redesigned.
+
+## Change propagation and freshness gate
+
+- Every dashboard update MUST follow `maintenance/content-updates.md`. Before editing, run `node scripts/content-freshness.mjs --status` and read the affected pages' timestamps and review notes in `docs/data/freshness.json`.
+- An article edit is not complete until index previews, chronology lists/world time/personal time/flow, referring articles, and open questions are checked. Search IDs, titles and old aliases beyond explicit links. Preserve confirmed/proposed/unresolved status.
+- Run `--sync-index`; article title/summary/category are canonical. Keep historical search aliases. Do not hand-maintain competing index summaries.
+- After reviewing each affected page, record `--review PAGE_ID "specific changes or reason already consistent"`. Never bulk-stamp approvals or reset the initial baseline to bypass missing reviews. Unknown historical reviews remain null.
+- Finish with `node scripts/content-freshness.mjs --check` and all tests. Report propagation coverage and unresolved semantic questions, not just the edited article. Hash checks enforce input freshness, not factual truth.
