@@ -93,6 +93,9 @@ test('1부 세부 에피소드와 3부 최종전이 연대표에서 누락되지
   const act1=timeline.sections.find(s=>s.id==='reading-order');
   for(const id of ["event-prologue","event-gathering","event-fieldwork","event-memory","event-premia","event-yuma","event-fake-boss","event-restoration","event-sacrifice","event-aftermath","event-meeting","event-hand","event-fourth-answer"]) assert.ok(act1.links.includes(id),id);
   assert.ok(act1.links.indexOf('event-memory') < act1.links.indexOf('event-premia'));
+  assert.ok(act1.links.indexOf('event-fieldwork') < act1.links.indexOf('event-alley'));
+  assert.ok(act1.links.indexOf('event-alley') < act1.links.indexOf('event-memory'));
+  for (const id of ['hyundan','bori','martial-lineage','event-alley']) assert.ok(byId.has(id),id);
   assert.ok(act1.links.indexOf('event-fake-boss') < act1.links.indexOf('event-restoration'));
   const act3=timeline.sections.find(s=>s.id==='reading-order-third');
   for(const id of ['event-third-first-encounter','event-third-final-battle','event-kai-dissociation']) assert.ok(act3.links.includes(id));
