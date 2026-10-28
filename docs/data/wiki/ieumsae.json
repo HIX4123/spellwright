@@ -51,6 +51,17 @@
           "status": "핵심 조작 채택"
         }
       ]
+    },
+    {
+      "id": "outside",
+      "title": "이음새 바깥의 우호 관계",
+      "items": [
+        {
+          "title": "현단·이보리와의 교류",
+          "description": "해리 무공 문파의 현단과 보리는 이음새에 정식으로 합류하지 않은 외부 동문이다. 골목 첫 만남 이후 우호 관계를 유지하며 보리는 개인적으로 놀러 올 수 있다. 연구소편에서는 문파의 문제 때문에 두 사람의 직접적인 등장 빈도를 줄이는 안을 검토한다.",
+          "status": "외부 교류 방향 채택 / 구체 재등장 미정"
+        }
+      ]
     }
   ],
   "related": [
@@ -62,6 +73,10 @@
     "morcia",
     "nonmage",
     "event-memory",
-    "event-premia"
+    "event-premia",
+    "hyundan",
+    "bori",
+    "martial-lineage",
+    "event-alley"
   ]
 }
