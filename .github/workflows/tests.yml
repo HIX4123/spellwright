@@ -16,5 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check content freshness
+        run: node scripts/content-freshness.mjs --check
       - name: Run tests
         run: node --test test/*.test.mjs

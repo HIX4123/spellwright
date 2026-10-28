@@ -22,7 +22,7 @@
       "id": "premia",
       "title": "프레미아",
       "category": "인물",
-      "summary": "프레미아(애칭 프레미) · 이음새의 창설자",
+      "summary": "프레미아(프레미) · 이음새의 창설자",
       "aliases": [
         "프레미",
         "리오"
@@ -32,7 +32,7 @@
       "id": "rakir",
       "title": "유마",
       "category": "인물",
-      "summary": "유마 · 실전 경험과 세속적 자비의 동료",
+      "summary": "유마 · 경험 많은 야전형 동료",
       "aliases": [
         "라키르",
         "아스터"
@@ -108,7 +108,7 @@
       "id": "nonmage",
       "title": "에테아",
       "category": "인물",
-      "summary": "에테아 · 일기와 독자적인 제4의 답을 가진 비마법사",
+      "summary": "에테아 · 비마법사 동료와 제4의 답",
       "aliases": [
         "비마법사 동료",
         "비마법사 히로인",
@@ -207,7 +207,7 @@
       "id": "six-beasts",
       "title": "육환신수",
       "category": "신수·환수",
-      "summary": "삼신수와 삼환수의 개념적 대칭과 생물 모티프.",
+      "summary": "삼신수와 삼환수의 확정 명칭, 개념적 대칭과 생물 모티프.",
       "aliases": [
         "삼신수",
         "삼환수"
@@ -428,7 +428,7 @@
       "id": "event-restoration",
       "title": "연구소편 · 토마와 테라",
       "category": "사건",
-      "summary": "1부 · 연구소편 최종 대결",
+      "summary": "1부 · 현대",
       "aliases": [
         "중간 보스 · 토마와 테라"
       ]
@@ -518,7 +518,7 @@
       "id": "event-third-act",
       "title": "3부 · 과거 시대의 카르 토벌",
       "category": "사건",
-      "summary": "과거 시대의 신역과 용사 토벌대.",
+      "summary": "3부 · 세계시간상 1부 이전",
       "aliases": []
     },
     {
