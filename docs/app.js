@@ -2,7 +2,7 @@ import { escapeHtml, section } from './html.js';
 import { renderMagicTrials } from './magic-trials-view.js?v=magic-trials-20261024-1';
 import { attributeLocation, renderAttributeReference } from './attributes-view.js?v=gochak-rmt-20261024-1';
 import { resolveSystem } from './system-resolver.mjs?v=20261011';
-import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=wiki-20261028-1';
+import { isNarrativeData, renderStoryWorld, storyLocation, isWikiIndex, isWikiDocument } from './story-world.js?v=story-chronology-20261028-2';
 import { CATEGORY_ORDER, buildGraphModel, edgePath, layoutGraph } from './graph-model.mjs?v=stat-panel-20260831-1';
 import { mountProjectionSelector } from './projection-selector.js?v=solid-origins-20261020-1';
 import { mountProjectionPeriodicTable } from './projection-periodic-table.js?v=periodic-grouping-20261020-1';
@@ -259,7 +259,8 @@ async function renderStory() {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
       document.getElementById('wiki-title')?.focus({ preventScroll: true });
     }
-  } catch {
+  } catch (error) {
+    console.error('Story wiki rendering failed:', error);
     if (request !== storyRequest || currentView !== 'story' || location.hash !== hash) return;
     view.innerHTML = '<div class="card"><h2>문서를 불러오지 못했어요</h2><p>연결 상태를 확인한 뒤 다시 시도해 주세요.</p><button id="wikiRetry">다시 시도</button> <a href="#story">전체 문서</a></div>';
     document.getElementById('wikiRetry').onclick = renderStory;
