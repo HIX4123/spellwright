@@ -6,13 +6,13 @@ const lanes = [
   { id: 'heroine', label: '엘로이 히로인', subtitle: '엘로이 → 어린 카르의 시대' }
 ];
 const regions = [
-  { from: 48, to: 510, label: '3부의 과거', sub: '세계시간상 1부 이전' },
-  { from: 510, to: 920, label: '신수전쟁 · 낙원 설계', sub: '1부 이전의 역사' },
-  { from: 920, to: 1325, label: '1부 · 현대', sub: '카르의 유년기와 종장' },
-  { from: 1325, to: 1870, label: '2부 · 엘로이 시대', sub: '문명 말기 · 신격화' }
+  { from: 48, to: 1070, label: '3부의 과거', sub: '세계시간상 1부 이전' },
+  { from: 1070, to: 1420, label: '신수전쟁 · 낙원 설계', sub: '1부 이전의 역사' },
+  { from: 1420, to: 2550, label: '1부 · 현대', sub: '합류·인물편·연구소·종장' },
+  { from: 2550, to: 3460, label: '2부 · 엘로이 시대', sub: '문명 말기 · 신격화' }
 ];
 const axisY = { kai: 228, ur: 444, heroine: 648 };
-const widthFor = node => node.lane === 'ur' ? 142 : 160;
+const widthFor = node => node.lane === 'kai' && node.x >= 1420 && node.x <= 2550 ? 128 : node.lane === 'ur' ? 142 : 152;
 const text = value => escapeHtml(String(value ?? ''));
 const coord = value => Number.isFinite(value) ? value : 0;
 const safeLink = value => /^#story\/(?:wiki|plot|world|cast|questions)\/[a-z0-9-]+$/.test(value || '') ? value : '#story/plot';
@@ -46,7 +46,7 @@ export function storyFlow(n) {
       <strong>작품 순서</strong><a href="#story/wiki/event-prologue">1부 · 현대</a><span aria-hidden="true">→</span>
       <a href="#story/wiki/event-reunion">2부 · 엘로이</a><span aria-hidden="true">→</span>
       <a href="#story/wiki/event-third-act">3부 · 과거</a>
-      <span class="story-flow-order-tip">아래 가로축과 다름</span>
+      <span class="story-flow-order-tip">아래 세계시간 축과 다름 · 세부 에피소드는 아래 연대표 참조</span>
     </div>
     <div id="time-map" class="story-flow-map story-block" tabindex="-1">
       <div class="story-flow-key" aria-label="경로 범례">
@@ -57,23 +57,23 @@ export function storyFlow(n) {
         <span class="story-flow-key-item join">교차 인과</span>
       </div>
       <div class="story-flow-scroll" tabindex="0" role="region" aria-label="시간선 다이어그램. 화면이 좁으면 좌우로 스크롤하여 탐색">
-        <svg xmlns="http://www.w3.org/2000/svg" class="story-flow-svg" viewBox="0 0 1910 835" role="group"
+        <svg xmlns="http://www.w3.org/2000/svg" class="story-flow-svg" viewBox="0 0 3520 835" role="group"
           aria-label="세계시간은 왼쪽에서 오른쪽. 카르는 현대에서 미래를 거쳐 3부 과거로, 엘로이 히로인은 미래에서 현대 과거로 이동한다. 우르는 3부 과거에서 시간 신위를 계승해 신수전쟁과 낙원 건설을 거친다. 굵은 연결선은 카르와 우르의 만남, 전투와 계승을 나타낸다.">
           <defs>
             ${lanes.map(lane => `<marker id="story-flow-arrow-${lane.id}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" viewBox="0 0 8 8"><path d="M0 0L8 4L0 8Z" class="story-flow-marker-${lane.id}"/></marker>`).join('')}
             <marker id="story-flow-arrow-join" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" viewBox="0 0 8 8"><path d="M0 0L8 4L0 8Z" class="story-flow-marker-join"/></marker>
           </defs>
           ${regions.map((r,i) => `<g class="story-flow-era"><rect x="${r.from}" y="58" width="${r.to-r.from}" height="678" class="${i%2 ? 'alternate' : ''}" rx="7"/><text x="${(r.from+r.to)/2}" y="86">${text(r.label)}</text><text class="story-flow-era-sub" x="${(r.from+r.to)/2}" y="106">${text(r.sub)}</text></g>`).join('')}
-          ${lanes.map(lane => `<g class="story-flow-axis story-flow-axis--${lane.id}"><line x1="60" y1="${axisY[lane.id]}" x2="1870" y2="${axisY[lane.id]}"/><text x="72" y="${axisY[lane.id]-57}">${text(lane.label)}</text><text class="story-flow-lane-sub" x="72" y="${axisY[lane.id]-39}">${text(lane.subtitle)}</text></g>`).join('')}
+          ${lanes.map(lane => `<g class="story-flow-axis story-flow-axis--${lane.id}"><line x1="60" y1="${axisY[lane.id]}" x2="3460" y2="${axisY[lane.id]}"/><text x="72" y="${axisY[lane.id]-57}">${text(lane.label)}</text><text class="story-flow-lane-sub" x="72" y="${axisY[lane.id]-39}">${text(lane.subtitle)}</text></g>`).join('')}
           ${edges.map(edge => `<g class="story-flow-edge story-flow-edge--${text(edge.lane || 'join')} story-flow-edge--${text(edge.kind || 'normal')}">
             <path d="${text(routePath(edge,nodes))}" marker-end="url(#story-flow-arrow-${text(edge.lane || 'join')})"/>
             ${edge.label ? `<text x="${coord(edge.labelX)}" y="${coord(edge.labelY)}">${text(edge.label)}</text>` : ''}
           </g>`).join('')}
           ${model.nodes.map(svgNode).join('')}
-          <text class="story-flow-axis-note" x="1848" y="32">세계시간 →</text>
+          <text class="story-flow-axis-note" x="3440" y="32">세계시간 →</text>
           <text class="story-flow-axis-note" x="106" y="814">점선: 시간 이동·발신 시점 미정 / 가는 연결선: 인물 간 인과</text>
         </svg>
       </div>
-      <p class="story-flow-disclaimer">카르·우르·히로인의 개인 경험은 화살표 방향을 따라가세요. 세계시간의 거리와 각 사건 간 간격은 축척이 아닙니다. 우르를 옮긴 미래 데미우르고스의 <strong>정확한 발신 세계시점은 미정</strong>이며, 연대표의 '토벌'은 3부 주인공의 구원 의도를 뜻하지 않습니다.</p>
+      <p class="story-flow-disclaimer">카르·우르·히로인의 개인 경험은 화살표 방향을 따라가세요. 1부의 세부 사건 전체는 아래 에피소드 연대표에서 각각의 문서로 이동할 수 있습니다. 세계시간의 거리와 각 사건 간 간격은 축척이 아닙니다. 우르를 옮긴 미래 데미우르고스의 <strong>정확한 발신 세계시점은 미정</strong>이며, 연대표의 '토벌'은 3부 주인공의 구원 의도를 뜻하지 않습니다.</p>
     </div>`;
 }

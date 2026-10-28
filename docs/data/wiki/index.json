@@ -4,7 +4,7 @@
       "id": "kar",
       "title": "카르",
       "category": "인물",
-      "summary": "카르 · 주인공",
+      "summary": "현대 소서러에서 신역의 두 카르까지.",
       "aliases": [
         "카이"
       ]
@@ -101,7 +101,7 @@
       "id": "third-protagonist",
       "title": "3부 주인공",
       "category": "인물",
-      "summary": "3부 주인공 · 카르 토벌대",
+      "summary": "3부 · 마왕에 맞서는 독립적인 용사 주인공.",
       "aliases": []
     },
     {
@@ -167,7 +167,7 @@
       "id": "circuits",
       "title": "마력회로",
       "category": "개념·규칙",
-      "summary": "인간의 계통 분화와 엘로이의 순수 회로.",
+      "summary": "엘로이 순수 회로, 인간 계통 분화 및 3부의 기원 구상.",
       "aliases": [
         "순수 회로",
         "마법회로"
@@ -324,10 +324,31 @@
       "aliases": []
     },
     {
+      "id": "kar-domain",
+      "title": "카르의 신역",
+      "category": "개념·규칙",
+      "summary": "카르의 기억에서 태어난 실체 있는 주민과 엘로이 평원.",
+      "aliases": [
+        "신역",
+        "기억의 낙원"
+      ]
+    },
+    {
+      "id": "kar-duality",
+      "title": "두 카르와 설계된 해리",
+      "category": "개념·규칙",
+      "summary": "주된 자아와 의식화된 무의식이 서로 다른 방식으로 행복을 지킨다.",
+      "aliases": [
+        "마왕 카르",
+        "내부 카르",
+        "자아 분리"
+      ]
+    },
+    {
       "id": "third-act",
       "title": "3부",
       "category": "서사·작법",
-      "summary": "세계시간상 1부 이전에 벌어지는 카르 토벌과 우르의 계승.",
+      "summary": "신역과 두 카르, 용사의 토벌과 우르의 계승.",
       "aliases": []
     },
     {
@@ -348,7 +369,7 @@
       "id": "chronology",
       "title": "연대표와 사건도",
       "category": "서사·작법",
-      "summary": "세계 연대기·인물의 개인 시간·작품 순서를 함께 탐색.",
+      "summary": "1·2·3부 에피소드와 세계·개인시간을 잇는 연대표.",
       "aliases": [
         "세계 연대기",
         "교차 시간선"
@@ -497,8 +518,27 @@
       "id": "event-third-act",
       "title": "3부 · 과거 시대의 카르 토벌",
       "category": "사건",
-      "summary": "3부 · 세계시간상 1부 이전",
+      "summary": "과거 시대의 신역과 용사 토벌대.",
       "aliases": []
+    },
+    {
+      "id": "event-third-first-encounter",
+      "title": "3부 · 신역 첫 대면",
+      "category": "사건",
+      "summary": "보이지 않는 마왕의 존재 침해와 '다시 돌아와'.",
+      "aliases": [
+        "다시 돌아와"
+      ]
+    },
+    {
+      "id": "event-third-final-battle",
+      "title": "3부 · 마왕과 인간 카르의 최종전",
+      "category": "사건",
+      "summary": "마왕의 저항, 보드게임, 해후와 마력검 3페이즈.",
+      "aliases": [
+        "마지막 3페이즈",
+        "최후의 결투"
+      ]
     },
     {
       "id": "event-human-demiurge",
@@ -511,7 +551,7 @@
       "id": "event-kai-dissociation",
       "title": "3부 · 마지막 자아의 파괴와 신위 분리",
       "category": "사건",
-      "summary": "3부 · 종장",
+      "summary": "3부 종막 · 마지막 결투와 신위 해제.",
       "aliases": []
     },
     {

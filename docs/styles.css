@@ -575,7 +575,7 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
 .story-flow-key-item.jump::before { border-color: var(--primary); border-top-style: dashed; }
 .story-flow-key-item.join::before { border-color: var(--story-join); border-top-width: 2px; }
 .story-flow-scroll { max-width: 100%; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; border: 1px solid var(--line); border-radius: 0 0 14px 14px; background: var(--surface-2); scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
-.story-flow-svg { display: block; min-width: 1510px; width: 100%; height: auto; }
+.story-flow-svg { display: block; min-width: 3200px; width: 100%; height: auto; }
 .story-flow-era rect { fill: var(--surface-2); stroke: var(--line); stroke-width: 1; }
 .story-flow-era rect.alternate { fill: var(--surface-3); }
 .story-flow-era text { font-size: 17px; font-weight: 680; fill: var(--text); text-anchor: middle; }
@@ -767,3 +767,14 @@ html[data-theme="light"] .story-flow-map { --story-kai: #316cb7; --story-ur: #93
 .attribute-root-table tbody th small { display: block; margin-top: 6px; font-size: 11px; font-weight: 400; line-height: 1.5; color: var(--muted); }
 .attribute-root-table td { overflow-wrap: anywhere; }
 .attribute-root-table td p { line-height: 1.6; }
+
+/* Story episode rail; detailed episode text stays in dedicated wiki documents. */
+.wiki-episode-timeline{list-style:none;padding:0 0 0 1.15rem;margin:1.2rem 0 1.7rem;border-left:2px solid var(--line);display:grid;gap:.7rem}
+.wiki-episode-timeline li{position:relative;min-width:0}
+.wiki-episode-timeline li::before{content:'';position:absolute;left:calc(-1.15rem - .34rem);top:1rem;width:.55rem;height:.55rem;border-radius:50%;background:var(--text);box-shadow:0 0 0 3px var(--surface)}
+.wiki-episode-timeline a{display:flex;gap:.9rem;align-items:flex-start;padding:.8rem .9rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;color:var(--text);text-decoration:none}
+.wiki-episode-timeline a:hover,.wiki-episode-timeline a:focus-visible{border-color:var(--text);outline-offset:2px}
+.wiki-episode-number{min-width:1.5rem;color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.wiki-episode-timeline a span:last-child{display:grid;gap:.25rem;min-width:0}
+.wiki-episode-timeline strong{font-size:.95rem;line-height:1.4}
+.wiki-episode-timeline small{font-size:.82rem;color:var(--muted);line-height:1.45}

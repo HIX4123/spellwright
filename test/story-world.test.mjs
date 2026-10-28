@@ -86,3 +86,17 @@ test('old text narrative imports remain valid and escaped, questions remain comp
   assert.match(renderStoryWorld({story:'<script>bad</script>'},index), /&lt;script&gt;bad&lt;\/script&gt;/);
   assert.deepEqual(narrative.questionGroups.flatMap(g=>g.indices).sort((a,b)=>a-b),narrative.unresolved.map((_,i)=>i));
 });
+
+
+test('1부 세부 에피소드와 3부 최종전이 연대표에서 누락되지 않는다', () => {
+  const timeline=byId.get('chronology');
+  const act1=timeline.sections.find(s=>s.id==='reading-order');
+  for(const id of ["event-prologue","event-gathering","event-fieldwork","event-memory","event-premia","event-yuma","event-fake-boss","event-restoration","event-sacrifice","event-aftermath","event-meeting","event-hand","event-fourth-answer"]) assert.ok(act1.links.includes(id),id);
+  assert.ok(act1.links.indexOf('event-memory') < act1.links.indexOf('event-premia'));
+  assert.ok(act1.links.indexOf('event-fake-boss') < act1.links.indexOf('event-restoration'));
+  const act3=timeline.sections.find(s=>s.id==='reading-order-third');
+  for(const id of ['event-third-first-encounter','event-third-final-battle','event-kai-dissociation']) assert.ok(act3.links.includes(id));
+  assert.match(page('chronology'),/wiki-episode-timeline/);
+  for(const id of ['kar-domain','kar-duality','event-third-first-encounter','event-third-final-battle']) assert.ok(byId.has(id));
+  for(const id of ['kai-domain','kai-first','kai-demon','kai-final','kai-memory','kai-lab','kai-loss']) assert.ok(timeline.flow.nodes.some(n=>n.id===id));
+});

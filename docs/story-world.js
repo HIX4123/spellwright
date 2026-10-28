@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { storyFlow } from './story-flow.js?v=wiki-20261019-1';
+import { storyFlow } from './story-flow.js?v=wiki-20261028-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;
@@ -128,7 +128,7 @@ export function isWikiDocument(doc, index) {
     && Array.isArray(doc.related) && doc.related.every(has)
     && Array.isArray(doc.sections) && doc.sections.every(s => s && idPattern.test(s.id)
       && typeof s.title === 'string'
-      && (s.kind === undefined || ['pairs','causal','restoration','conflict'].includes(s.kind))
+      && (s.kind === undefined || ['pairs','causal','restoration','conflict','timeline'].includes(s.kind))
       && (Array.isArray(s.links) ? s.links.every(has) : Array.isArray(s.items) && s.items.every(item => item
         && typeof item.description === 'string'
         && (s.kind === 'pairs' ? ['time','space','existence'].includes(item.diagram)
@@ -192,7 +192,8 @@ export function renderStoryWorld(n = {}, index = { documents: [], legacy: {} }, 
     const rich = text => linkText(text, index, doc.id);
     const content = doc.sections.map(s => {
       let body;
-      if (s.links) body = articleLinks(s.links, index, true);
+      if (s.links && s.kind === 'timeline') body = '<ol class="wiki-episode-timeline">' + s.links.map((id,i) => { const d=index.documents.find(x=>x.id===id); return d ? '<li><a href="' + wikiHref(id) + '"><span class="wiki-episode-number">' + (i+1) + '</span><span><strong>' + escapeHtml(d.title) + '</strong><small>' + escapeHtml(d.summary) + '</small></span></a></li>' : ''; }).join('') + '</ol>';
+      else if (s.links) body = articleLinks(s.links, index, true);
       else if (s.kind === 'pairs') body = `<div class="world-pair-grid">${s.items.map(pair => `<article class="card"><h3>${rich(pair.divine)} ↔ ${rich(pair.mythical)}</h3>${pairDiagram(pair)}<p>${rich(pair.description)}</p></article>`).join('')}</div><p class="muted">도형은 개념적 대칭을 나타내는 모식도이며 일대일 맞계약을 뜻하지 않아요.</p>`;
       else if (s.kind === 'causal') body = causalLoop(s.items);
       else if (s.kind === 'restoration') body = restorationCycle(s.items);
