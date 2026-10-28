@@ -65,6 +65,24 @@
       ]
     },
     {
+      "id": "hyundan",
+      "title": "현단",
+      "category": "인물",
+      "summary": "玄檀 · 해리 무공 회로를 막 계승한 젊은 여성 무인.",
+      "aliases": [
+        "玄檀"
+      ]
+    },
+    {
+      "id": "bori",
+      "title": "이보리",
+      "category": "인물",
+      "summary": "보리 · 현단의 비마법사 여성 동문이자 이음새의 외부 친구.",
+      "aliases": [
+        "보리"
+      ]
+    },
+    {
       "id": "kanha",
       "title": "칸하",
       "category": "인물",
@@ -128,6 +146,17 @@
       "category": "조직",
       "summary": "기존 회로의 선택적 강화와 인공 회로 이원화의 연구기관",
       "aliases": []
+    },
+    {
+      "id": "martial-lineage",
+      "title": "무공 문파",
+      "category": "조직",
+      "summary": "해리 특화 무공과 마력회로를 대대로 전승해온 독립 문파.",
+      "aliases": [
+        "무공",
+        "내공",
+        "단전"
+      ]
     },
     {
       "id": "eloi",
@@ -395,6 +424,16 @@
       "category": "사건",
       "summary": "1부 · 초반",
       "aliases": []
+    },
+    {
+      "id": "event-alley",
+      "title": "골목의 하산객들",
+      "category": "사건",
+      "summary": "1부 · 모르시아 복귀와 기억 조작 발각 사이의 현단·보리 조우 에피소드.",
+      "aliases": [
+        "하산편",
+        "현단·보리 첫 등장"
+      ]
     },
     {
       "id": "event-memory",
