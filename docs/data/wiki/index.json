@@ -142,10 +142,14 @@
     },
     {
       "id": "research-lab",
-      "title": "연구소",
+      "title": "피카트릭스",
       "category": "조직",
-      "summary": "기존 회로의 선택적 강화와 인공 회로 이원화의 연구기관",
-      "aliases": []
+      "summary": "마법 지식의 집대성을 작명 모티프로 삼은 마력회로 연구기관",
+      "aliases": [
+        "Picatrix",
+        "피카트릭스 연구소",
+        "연구소"
+      ]
     },
     {
       "id": "martial-lineage",
