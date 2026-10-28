@@ -16,6 +16,7 @@
         "event-prologue",
         "event-gathering",
         "event-fieldwork",
+        "event-alley",
         "event-memory",
         "event-premia",
         "event-yuma",
@@ -100,7 +101,7 @@
         },
         {
           "title": "1부 · 이음새와 개별 사건",
-          "description": "카르의 합류부터 에테아·모르시아의 기억 사건, 프레미아 계승, 유마·칸하, 연구소의 완성작과 토마·테라로 이어진다.",
+          "description": "카르의 합류, 에테아와 모르시아의 복귀 이후 현단·보리의 골목 에피소드, 에테아의 기억 조작 발견, 프레미아 계승, 유마·칸하, 연구소의 완성작과 토마·테라로 이어진다. 골목 사건의 세부는 검토 중이다.",
           "status": "현재 구상"
         },
         {
@@ -150,7 +151,10 @@
     "kar-domain",
     "kar-duality",
     "event-third-first-encounter",
-    "event-third-final-battle"
+    "event-third-final-battle",
+    "event-alley",
+    "hyundan",
+    "bori"
   ],
   "flow": {
     "nodes": [
