@@ -1,5 +1,5 @@
 import { escapeHtml, section } from './html.js';
-import { storyFlow } from './story-flow.js?v=wiki-20261028-1';
+import { storyFlow } from './story-flow.js?v=story-flow-fit-20261028-1';
 
 export function isNarrativeData(n) {
   if (n === undefined) return true;
@@ -203,7 +203,7 @@ export function renderStoryWorld(n = {}, index = { documents: [], legacy: {} }, 
     }).join('');
     const toc = `<nav class="wiki-toc" aria-label="문서 목차"><strong>목차</strong><ol>${doc.sections.map(s => `<li><a href="${wikiHref(doc.id)}/${s.id}">${escapeHtml(s.title)}</a></li>`).join('')}</ol></nav>`;
     const flow = doc.flow ? storyFlow({ storyFlow: doc.flow }) : '';
-    return `${header}${nav}<article class="wiki-article">
+    return `${header}${nav}<article class="wiki-article${doc.id === 'chronology' ? ' wiki-article--chronology' : ''}">
       <header class="wiki-heading"><p class="muted"><a href="#story">전체 문서</a> / ${escapeHtml(doc.category)}</p>
       <h2 id="wiki-title" tabindex="-1">${escapeHtml(doc.title)}</h2><p>${rich(doc.summary)}</p></header>
       ${toc}${flow}${content}
