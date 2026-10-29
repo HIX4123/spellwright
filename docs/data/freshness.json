@@ -5,7 +5,7 @@
     "docs/attributes-view.js": "d965826baefb4c21986ff36456adac02362903616c723c22800c61837869fa88",
     "docs/dashboard-routing.js": "41abea42bb51b5e25599effa6106b0f297c094b1ec0ab765f57f60bf3a5de817",
     "docs/data/classes.json": "ce7c33d41cd1ec674d22362d26bab1ca4b280649b8fbef871ed5281a8ef6b659",
-    "docs/data/project.json": "36e95b1bee34a5f1cc5fae69eabeb63f0ad4fac9a58ad31bb988e415a0ee11f8",
+    "docs/data/project.json": "dd2f26f0cef2d64ba90e5d20fb5be1d34d5202540496adb963901e97e4c94891",
     "docs/data/projection-views.json": "bcfd3decedd23e625a87af65b95b09a4bc3a47cc140a5d111d3cf51c3db89778",
     "docs/data/projections.json": "50fef9c7e8333102d84f70b191c595de74d1342927c785f1f2d4ca39761ad4f8",
     "docs/data/relationships.json": "5220e31d69d5a19e445f19f290c9f7a8be02a228a51bf108795d01c269e0eab0",
@@ -15,7 +15,7 @@
     "docs/data/wiki/beast-war.json": "6a221196e44bbf161ad0e7770f913c3a92ebc15ccdc4bcfb04c97a92faccdb62",
     "docs/data/wiki/bori.json": "d2462f574a71433415ac1db28efcb00eea8e0432b0b6e1cb154d51365bff7299",
     "docs/data/wiki/causal-loop.json": "3b48fcdef2bef6c5f3a6bab27a010460f2941e84da025fce5777335c6bbfbb53",
-    "docs/data/wiki/chronology.json": "f784bc74ff667808760527169b074db1e626287161024da1e60c08440a286df3",
+    "docs/data/wiki/chronology.json": "c2d26a295f8479a54e05385780a0922db742681bd7981bc56b704cf4812ef35d",
     "docs/data/wiki/chronos.json": "6eaab4259764a4c5ceeace6bcecc2240da7426da4d5224a7f1033f6dddd4e6da",
     "docs/data/wiki/circuit-loss.json": "35fc102731ead4d29870a06a0821198c0c99d4a4fb84f11dfa28f7df2bcd8482",
     "docs/data/wiki/circuits.json": "fe07f701d19cf31b25fda83fe89d0ac00413ca81f9bb2f944963d8ebba0fc417",
@@ -41,9 +41,9 @@
     "docs/data/wiki/event-human-demiurge.json": "4bdf2960f07aa42b6ac60dda928c51c0032a70034c6099c17a5ec036a610a958",
     "docs/data/wiki/event-kai-dissociation.json": "77afd0c004bfe16331dfd79e7e0df78923dc68e09fa80fb39926161b89916e03",
     "docs/data/wiki/event-meeting.json": "1292d0ae5506adeb83719cadfa02cb42c4a5649af720f82a9b75a21cbdd0d0bf",
-    "docs/data/wiki/event-memory.json": "3bada6048f211de596a4f48fb1293a7c430d2611e6d4096186f9f5de9ea56aa5",
+    "docs/data/wiki/event-memory.json": "a8204a24055f7e5d64bff7690a9fc3503074db47229bc1e009df9253c997a1f6",
     "docs/data/wiki/event-omniscience.json": "8cb40e180578e7c21b6a09ef2b0b667f0b88fce6da64dd4ff5b0eaafdf42050e",
-    "docs/data/wiki/event-premia.json": "2878e11de0d4c4458f993396f21e0b234ddd78dff7f2ad8940bc33546298398b",
+    "docs/data/wiki/event-premia.json": "4b026c2053d0de8e3ff04e4cf8ca62d674fac158805a9ec0b1d686dc966bce33",
     "docs/data/wiki/event-prologue.json": "28d39ce2eff1b04f5e60befc76caed7bc8e3566418e379ee084f5a4aac930442",
     "docs/data/wiki/event-resistance.json": "9a88a1248c77c2b630613a934a4fd80135ee72c409cd88f4fe57c8fe7d00a5b8",
     "docs/data/wiki/event-restoration.json": "0830671a131a02df9801f826afd275ac480da030f50e21632567ec1096ea75ff",
@@ -55,8 +55,8 @@
     "docs/data/wiki/event-yuma.json": "ea6589b2422598182521a7ec8d2ac0f46e22c8f4f03008c5c4d8823e3485d5bb",
     "docs/data/wiki/fake-boss.json": "3045cf86402af9dc225344f4cf5a7c888afc28a501b51393aba11f3e4eeb25b2",
     "docs/data/wiki/hyundan.json": "92529b6d79d64a800c37292617a5ecaf27967dfa406018302f964465b76229f3",
-    "docs/data/wiki/ieumsae.json": "b5783148f7a3945e50d13cdc38daaa1fbad54e8f30b23c8a3e1a1de4c267be06",
-    "docs/data/wiki/index.json": "0ec41985b121c07b5b86e051bea10bc4ef26c389db8c363cd91d4b26f6bf6a46",
+    "docs/data/wiki/ieumsae.json": "e6c132fc87743ef777e5b9334e1cbfd48a3f4f8a807451e1b339ec14464b83d7",
+    "docs/data/wiki/index.json": "ff7cd8a7a915d281db78dc2ee39ffc18b8bbf37e0873727578044314c07c2a2e",
     "docs/data/wiki/kanha.json": "69c7c5fadb7f515304c939e4fcac52ee1a406a5f393e1e39896c03d8e7cf83f4",
     "docs/data/wiki/kar-domain.json": "88d1570cf911dcbb7ba5c71b78f74f7f3c4139503bf1c481a45b9ac5b2aa6fbc",
     "docs/data/wiki/kar-duality.json": "bad4cc0f2ec816b01610ce9fe15a10f876eb6dfaa80235ad644b73df8279c192",
@@ -64,14 +64,15 @@
     "docs/data/wiki/loss-jinx.json": "20fb9181f50bbcd8348e356331bc857d13d15b31cec7eab76e2407e81a34c967",
     "docs/data/wiki/martial-lineage.json": "cbba1b2aa12ffbca4118331f53a73f3bae7aac847fe09fa2d1a3d2a1598d0696",
     "docs/data/wiki/modern.json": "4aa6d425ca7914b3b0e0f6f690eab244d988cbb83bf9862c894d09e068bf03ab",
-    "docs/data/wiki/morcia.json": "8a3ddf38abf5a64804aa26b40da4f1775c4b9b1582008e48a7c88ceaa2964f30",
+    "docs/data/wiki/morcia.json": "9ec995fe61e530d1629152f6920326cfc3257d3c33fe7475cad389bca1e9b995",
     "docs/data/wiki/nibel.json": "530bf5bdb7c702e4fa4d6cc193827537b5d9d70343c828bc380da6f4e9e153c9",
     "docs/data/wiki/nonmage.json": "8622748cb57257d0cf79817ffb9d98bf80ca0088fd73ce5b67b8427941e8ffa7",
     "docs/data/wiki/ontos.json": "940c25e7758ec5344c20b48936b9f191d8ba99d9db0cccde179d50952b4f3347",
     "docs/data/wiki/phantasma.json": "98af7fc93b7152a2e4df10b5174330fbd65e1dd6d95af175e36ed6df35a9649b",
-    "docs/data/wiki/premia.json": "349ad85ff12ecdd457f9381e86ccacd68a9a930155aa2778bf7eb1766abeac8b",
+    "docs/data/wiki/pharos.json": "a724fd295568c7c2fa0a98a9decd0525d33180cd9a7c98dcc85165da28fb8346",
+    "docs/data/wiki/premia.json": "b85999a7060cb52bf6ecc7e93503f3d62d7d9931755bf68850769633b8b8f21e",
     "docs/data/wiki/rakir.json": "558cfd292ea5a0c6ca63fe0b8a8f311bab12fe194834330382317681ed26dd54",
-    "docs/data/wiki/research-lab.json": "0f20f778ab3cc8b9b841c6c5b46a5585077a9eb373addce7c77245f1ec26ef9e",
+    "docs/data/wiki/research-lab.json": "b04dde5be49a7485923ed9421868241c4dfb70213e059c06a1826a982bb610bf",
     "docs/data/wiki/restoration.json": "052c628298bc75dfff750d39798008850c95130c787594423d7a4b8e6842ff22",
     "docs/data/wiki/single-timeline.json": "3985c3385567e92e1d824e40764eeba7f157e0199e298d40386e410221d2ef2f",
     "docs/data/wiki/six-beasts.json": "999e97f293f788ef0f24b52bbece2c2afb2685801f9df867a3ab1a65d8578d7e",
@@ -149,10 +150,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7a55367629703bb1b0881025b0a77bb6ecc01ab85d9b6cb7b89daa53cee66ff4",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "aee27998b717f4271dc5679d61f161663c84d23337a78576c3c4d327d4bcb0da",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. overview의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "story": {
       "title": "story",
@@ -244,6 +245,7 @@
         "docs/data/wiki/nonmage.json",
         "docs/data/wiki/ontos.json",
         "docs/data/wiki/phantasma.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -275,10 +277,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "fc1c46e8575f47e9dc2e9330b4fba86ec23109082b35f9b8109114ea64a6621e",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "15b4169609623fa5479c46bbbf880239f53e0f7925bb1c34edc2ec256a2ba7bc",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "Story & World 색인과 전용 문서 pharos 일치 확인. 기존 선대 조직 서사를 파로스로 참조, 기존 시점·사건 순서 유지."
     },
     "systems": {
       "title": "systems",
@@ -334,10 +336,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "4237651101c2a23d47fefdbdca9d853f6002b43074b4beadf35328c2d5d8c186",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "ec3f2b502d4d61d56845d9c769f04e196d40960b3a1ab241dd6ba275a1a684d2",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. systems의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "character": {
       "title": "character",
@@ -391,10 +393,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "832c7c9fec5aa46f29bd928f2f207ed13af015cdacdcd2b002da719d07d7c3b4",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "aa78f8b725199c3d3aa76642fc3c2e802b15e31e265cb48db12742a4656d4999",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. character의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "attributes": {
       "title": "attributes",
@@ -448,10 +450,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ad32a580292103cc3854cc2552de71f0fabc3c35f8e0b09892d6b7aadc845f60",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "2a295e5f195b1835f3049159416e64ecbb27b9d24507958f65cfeed9a40f6bc2",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. attributes의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "projections": {
       "title": "projections",
@@ -505,10 +507,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ad32a580292103cc3854cc2552de71f0fabc3c35f8e0b09892d6b7aadc845f60",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "2a295e5f195b1835f3049159416e64ecbb27b9d24507958f65cfeed9a40f6bc2",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. projections의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "questions": {
       "title": "questions",
@@ -598,6 +600,7 @@
         "docs/data/wiki/nonmage.json",
         "docs/data/wiki/ontos.json",
         "docs/data/wiki/phantasma.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -629,10 +632,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9e5f4713cb8df2bc87a7bf4e566cfd58ff277eb0da5b366cd4b9a2ccf527a291",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "cac77e947911a5e160b236000df23af03ad2f432cb3137a314d4ff9d54000a87",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 미정 사항의 선대 조직 명칭을 파로스로 갱신. 해체 가해 세력·연구소 관련성·회로 양도 기전은 여전히 미정."
     },
     "archive": {
       "title": "archive",
@@ -682,10 +685,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7a55367629703bb1b0881025b0a77bb6ecc01ab85d9b6cb7b89daa53cee66ff4",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "aee27998b717f4271dc5679d61f161663c84d23337a78576c3c4d327d4bcb0da",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. archive의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
     },
     "attributes/wiki/haeri": {
       "title": "해리",
@@ -721,10 +724,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "attributes/wiki/soeoe": {
       "title": "소외",
@@ -760,10 +763,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "attributes/wiki/chojo": {
       "title": "초조",
@@ -799,10 +802,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "attributes/wiki/gochak": {
       "title": "고착",
@@ -838,10 +841,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "attributes/wiki/banchu": {
       "title": "반추",
@@ -877,10 +880,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "attributes/wiki/rules": {
       "title": "개시 규칙",
@@ -916,10 +919,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
+      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
     },
     "story/wiki/aion": {
       "title": "아난타",
@@ -1117,6 +1120,7 @@
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -1133,10 +1137,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b941c17f2ef04b1006304a2442dd0c295c9763a52dc0a1e552b25ca4bf1c6f62",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "fe06b83d49ba78e9165786f6b98aec81ff2e7ba2e8def313cfc832f19cd9dd36",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 해체 및 연결 회로 계승의 선대 사건을 세계 연대기에 배치. 1부 흐름 및 개인 시간·플로우 노드 무변경 확인. 카르 유년 사건과의 정확한 선후는 미정."
     },
     "story/wiki/chronos": {
       "title": "크로노스",
@@ -1202,10 +1206,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "1df577684a52a332e60637a5cfab8364fb8d5d0d48346ef1d00f2204c786fd56",
+      "fingerprint": "ee67027d62b77a25e0f9b1cb6bb02d30295748699b6352e63a2b42f4ce6b0624",
       "updatedAt": "2026-10-28T13:24:37.362Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 마력회로 소실 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/circuits": {
       "title": "마력회로",
@@ -1239,10 +1243,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "41af2348240091eb17db5db6b317d268b6b1eb3b66b7347153d88d531abedb0d",
+      "fingerprint": "09b24e38a77afbe5b3ac764d7bd27c78b2c6cb084953400e545c6bb3543d55a4",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 마력회로 본문은 미수정. 변경된 관련 출처(premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/constraints": {
       "title": "육환신수의 상호 제약",
@@ -1320,10 +1324,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5ff899b266f8fb217acd44c22a19e46118a3aad2ec15d3e46ce3294ced553d95",
+      "fingerprint": "93f56a4b55d051d539053a2756c6bcbeb1c679008fad8010744e8e5e21a801f1",
       "updatedAt": "2026-10-28T13:24:37.511Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 서사 운영 원칙 본문은 미수정. 변경된 관련 출처(chronology.json, morcia.json, premia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/creative-references": {
       "title": "창작 참고와 보류안",
@@ -1418,10 +1422,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0aef7e8ab1f7dffc51fbdc621e648f0c19de8f485ac9f958fba37807917c7abe",
+      "fingerprint": "cf38370ca542f9b8af43d9a826f6d208c553ae7176b32865e97aef4ca9579328",
       "updatedAt": "2026-10-28T13:24:37.679Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 이원화 실험 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/elin": {
       "title": "엘린",
@@ -1562,10 +1566,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "dda8a8e7a5b5891378dffaf19deac475049aa621a99c7ca61493209599dc745d",
+      "fingerprint": "fc8bcebd0d18084ac5e88163a37c57c691d60ea9cadfb17dda82fdbd8dfc561d",
       "updatedAt": "2026-10-28T13:24:37.869Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 유마의 희생·니벨의 이탈 이후 · 남은 일상 본문은 미수정. 변경된 관련 출처(chronology.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-chronos-battle": {
       "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
@@ -1596,10 +1600,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b39a892f7d6ed40ac9a7c0784ed57cfe024bc8a2cdeb064b97669975f763de06",
+      "fingerprint": "8e9afaec15e7d1896856be590e74cf04cd5fc815906e59469b34e394f90494a2",
       "updatedAt": "2026-10-28T13:24:37.908Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 시간의 신수 · 데미우르고스 토벌과 흡수 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-collapse": {
       "title": "배양판 · 200만 년의 이상낙원과 수확",
@@ -1632,10 +1636,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d9ba18fa50e666e829281e2ca3d1a108b67ce0193fc97352eb2ace29495edad1",
+      "fingerprint": "e84cd4dee6354a2660727fbbce8bd527e183046e129ca415b95a0e6613885b5b",
       "updatedAt": "2026-10-28T13:24:37.953Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 배양판 · 200만 년의 이상낙원과 수확 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-demiurge-inheritance": {
       "title": "우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과",
@@ -1665,10 +1669,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "66756c7d31521c287a378335c8739c387911695b25108a223934223536b1c7b6",
+      "fingerprint": "bb07a7209b6fede9ad3a4c683bb84c3616e784abb244e7e84cc4ac85d29861a2",
       "updatedAt": "2026-10-28T13:24:37.992Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-departure": {
       "title": "히로인 · 대신 과거로",
@@ -1698,10 +1702,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b72035c1accf101a32a15f911da948f98b2498aaf8bbdb5f3d39e830a0722c34",
+      "fingerprint": "b91dca5c6e5d637670fa8b0bce623595f0027588d2eb4ff589c6708c4cade1e3",
       "updatedAt": "2026-10-28T13:24:38.031Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 히로인 · 대신 과거로 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-fake-boss": {
       "title": "연구소편 · 완성작 보스",
@@ -1731,10 +1735,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "18d648a15559f93ba29148deab0798887bdd9ffda5ce1fee738ff8b219437c1d",
+      "fingerprint": "0e2cbcf69d1b868103267bfc4c882438651ba2b4449b3c02a996c678f74c0fa6",
       "updatedAt": "2026-10-28T13:24:38.072Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 연구소편 · 완성작 보스 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-fieldwork": {
       "title": "1부 초반 · 피카레스크식 사건과 새 동료",
@@ -1784,10 +1788,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d06d1eddba01939cf3ea8c0f092305e2dd1bde045b2ff68ee9f79d1a5ae16f61",
+      "fingerprint": "6dc1b2b5d9d4427c58ed7d2c2a80a8aa04a960f3ed67f04901cbd7ab4761a8f2",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 1부 초반 · 피카레스크식 사건과 새 동료 본문은 미수정. 변경된 관련 출처(project.json, chronology.json, event-memory.json, event-premia.json, ieumsae.json, morcia.json, premia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-fourth-answer": {
       "title": "에테아의 개입 · 삼파전의 제4축",
@@ -1820,10 +1824,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e937af1cb49e17969b1e6d93fe21b7dedd237418e2a08beca5d6497edf3646c1",
+      "fingerprint": "cd0af5a16e94219a40683a1ba97d9a549dea0907680a3138290ec3c4fb12275c",
       "updatedAt": "2026-10-28T13:24:38.151Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 에테아의 개입 · 삼파전의 제4축 본문은 미수정. 변경된 관련 출처(chronology.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-gathering": {
       "title": "다른 마법사를 경계한 카르 · 자발적인 합류",
@@ -1856,10 +1860,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8d6bbe3578e71718d31c3672a2daa0dab21b15718bbe7fb52b34fe7c24f2d309",
+      "fingerprint": "6ae586023e6755a475e45ec785ebeb8e3eb86214f3113a8de171ed59c302bbdd",
       "updatedAt": "2026-10-28T13:24:38.191Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 다른 마법사를 경계한 카르 · 자발적인 합류 본문은 미수정. 변경된 관련 출처(chronology.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-hand": {
       "title": "1부 마지막 · 블랙홀과 손",
@@ -1890,10 +1894,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6ae498674172e4c4fcf7c5df651c78e48c1d93ccecc76b01f37b27f02039bec8",
+      "fingerprint": "97c48c5ea794467bbc92902cde1a86841dcc5101baad24e8e78b77f0964e1795",
       "updatedAt": "2026-10-28T13:24:38.227Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 1부 마지막 · 블랙홀과 손 본문은 미수정. 변경된 관련 출처(chronology.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-human-demiurge": {
       "title": "3부 · 인간 우르의 동행",
@@ -1924,10 +1928,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2f31089a84cb7b83308309b108baa43825e2791649eee3040ed1b23b871cc415",
+      "fingerprint": "fa4f02dcd4a299356fab04507741979074222e190f1966ea4760d237ab0857f4",
       "updatedAt": "2026-10-28T13:24:38.267Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 3부 · 인간 우르의 동행 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-kai-dissociation": {
       "title": "3부 · 설계된 마지막 해리와 신위 분리",
@@ -1963,10 +1967,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "32b5e468c4046db581e3fd02033aa2958b0c675f59b91ccc0f4c0e39556c2a65",
+      "fingerprint": "c2f68292e01a8e5fdb86b4e8f04862882a6d7b1d469292101f0945a4b9c9d080",
       "updatedAt": "2026-10-28T13:24:38.304Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 3부 · 설계된 마지막 해리와 신위 분리 본문은 미수정. 변경된 관련 출처(project.json, chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-meeting": {
       "title": "대화의 자리 · 삼파전",
@@ -1997,10 +2001,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "98507aeea975edcdbdfabc0a4abeef37a4ecf26af75e92bd8da100ac553be69d",
+      "fingerprint": "65ff6b8deb4df19e090ed660ed4ddfa43bc29671ac475d29e0d331f6aebc81cd",
       "updatedAt": "2026-10-28T13:24:38.336Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 대화의 자리 · 삼파전 본문은 미수정. 변경된 관련 출처(chronology.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-memory": {
       "title": "에테아 · 기억 조작 사건",
@@ -2023,6 +2027,7 @@
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/zero.json",
         "docs/freshness.js",
@@ -2033,10 +2038,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b930fc8759ec9007464d467ff60f360104cda8fd30481e23b3d9024164a90bdf",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "b92c896529501d8370716e94ed6720218e483998e95b54916934b667614f9bcd",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 생존자라는 진실과 이음새 공동 창단자라는 기억 조작을 구분. 골목 사건과 일기 발견의 상대적 순서 유지."
     },
     "story/wiki/event-omniscience": {
       "title": "시간 신위 · 정체와 운명",
@@ -2068,10 +2073,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "543a2fe2c364e7a40b10f303e9150f7480868874b6c9aba3b3c33ebecdaf0937",
+      "fingerprint": "722c1c78adad24e96c624bd6d4428b9afd290627c49595eb06e183b51223bac9",
       "updatedAt": "2026-10-28T13:24:38.418Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 시간 신위 · 정체와 운명 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-premia": {
       "title": "프레미아 · 계승의 후일담",
@@ -2090,6 +2095,7 @@
         "docs/data/wiki/event-premia.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/morcia.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/freshness.js",
         "docs/html.js",
@@ -2099,10 +2105,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "832179671613a807a28e5b64617df7475982ea7ad81e58bc9b8029b05960ce45",
-      "updatedAt": "2026-10-28T13:24:38.452Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "cbc2549c65a4aaf7ec2e824274b725ac3f728df699c4d0bf02c0f5d99782b5a6",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "옛 파로스 지도자와의 후일담, 프레미아·모르시아의 상이한 계승관 반영. 사건의 장면 순서·지도자 인명 미확정."
     },
     "story/wiki/event-prologue": {
       "title": "프롤로그 · 소꿉친구",
@@ -2131,10 +2137,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b4593f83c1acca202422e3038f81d4d0935162104d5baf62d8d73d7c0af080b3",
+      "fingerprint": "836409ad551603014edd7d9778221c80c1846d8441649657d3adb1d1504c22f9",
       "updatedAt": "2026-10-28T13:24:38.492Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 프롤로그 · 소꿉친구 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-resistance": {
       "title": "저항 · 대피와 시간 연결",
@@ -2160,10 +2166,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "838b2ccabce8212ade2ce678ce7fed3a23a319679f44bf7151c8ab114b5235a3",
+      "fingerprint": "27b2c60c0dd5263b7283b456948bc310680ad56b0f4070327a458a2f04001ffb",
       "updatedAt": "2026-10-28T13:24:38.524Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 저항 · 대피와 시간 연결 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-restoration": {
       "title": "연구소편 · 토마와 테라",
@@ -2198,10 +2204,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b5227fc2cc3578253c4597a4b83779e599241dd4523a78ba9a549b1ebc34129c",
+      "fingerprint": "62e8d7b3c6b9a53b0ccbef72d00716530ed9f107963e78b8f78c8c67417a09cb",
       "updatedAt": "2026-10-28T13:24:38.559Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 연구소편 · 토마와 테라 본문은 미수정. 변경된 관련 출처(chronology.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-reunion": {
       "title": "2부 도착 · 첫 만남",
@@ -2228,10 +2234,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6f754628634c1b1783f819a1e6200ae58d0d37421252bdf0ed9622f0b7f8824b",
+      "fingerprint": "d0afe39f432e7b6493ba634c78e266351e1c418fa8ee475e5c07d9af475d869e",
       "updatedAt": "2026-10-28T13:24:38.596Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 2부 도착 · 첫 만남 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-sacrifice": {
       "title": "유마의 희생 · 갈라지는 세 친구",
@@ -2260,10 +2266,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "02d3fc0f5580ce8564be52157cfc03026bc71224cbfa47de8a44f01404d1df31",
+      "fingerprint": "59a1e1160de4d879fe15e9904b1571b9602a5abb164468cd94b4688ab16b744f",
       "updatedAt": "2026-10-28T13:24:38.629Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 유마의 희생 · 갈라지는 세 친구 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-third-act": {
       "title": "3부 · 과거 시대의 카르 토벌",
@@ -2297,10 +2303,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "bf36ba3e7a7055277611a27e6985d301e8a4a86effebbf77e3471781a71ecaef",
+      "fingerprint": "485aa70706dafb932b5183dd5d81b87165ba605b038d4a4d32631df4fd2b957d",
       "updatedAt": "2026-10-28T13:24:38.664Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 3부 · 과거 시대의 카르 토벌 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-third-final-battle": {
       "title": "3부 · 마왕과 인간 카르의 최종전",
@@ -2333,10 +2339,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a654ee1881b9e1f492a7ecf5b6af6e28be21b61058d6f497284142a1b8902f16",
+      "fingerprint": "04153b65a38552953ae81d4b153e5b4a2dac42b8562a5cf1a99ad0d5582641dc",
       "updatedAt": "2026-10-28T13:24:38.698Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 3부 · 마왕과 인간 카르의 최종전 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-third-first-encounter": {
       "title": "3부 · 신역 첫 대면",
@@ -2401,10 +2407,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "08e49fed169549ad208aa0ef706b12a2fa7513782f30ceda90a9479b3507e046",
+      "fingerprint": "2c0b64d88f64292f800de3a3765f50e6e4c2222bdff25b20f88fd6403dfa8c3f",
       "updatedAt": "2026-10-28T13:24:38.765Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 유마 · 칸하 사건 본문은 미수정. 변경된 관련 출처(morcia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/fake-boss": {
       "title": "완성작 보스",
@@ -2435,10 +2441,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ac55e99b46bf99aa23c4667532cdcdb4f859693dd1402b841c3c92b20bd52e6d",
+      "fingerprint": "076692856f129a5f47a2808a2478105ed70fc48afc14a940628973acc37bffc4",
       "updatedAt": "2026-10-28T13:24:38.804Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 완성작 보스 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/ieumsae": {
       "title": "이음새",
@@ -2467,6 +2473,7 @@
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -2478,10 +2485,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "fedd8743493a54d9b3e3ae364ef804ddc080ebf7c2c04c869155e1d36dcffb8e",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "77f0579713a93b01528bd397f08b1fb8df71d00e4bb379fea6b9709b7873a7ea",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "이음새는 파로스의 개칭이나 공식 후계 조직이 아님을 명시. 창립자는 프레미아·유마이며 모르시아는 거짓 공동 창립자."
     },
     "story/wiki/kanha": {
       "title": "칸하",
@@ -2511,10 +2518,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2a940dc94cd6185818b42172872bf21d66ed4d5ce448911fc9f32c30385fb9a7",
+      "fingerprint": "9445905c20fd01812bd3bd193e90c873dda4c3c17f0c4e29ac428c528a39e3b6",
       "updatedAt": "2026-10-28T13:24:38.886Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 칸하 본문은 미수정. 변경된 관련 출처(morcia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/kar-domain": {
       "title": "카르의 신역",
@@ -2582,10 +2589,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ec8be7113fbf757115938b94959b0e242951df4dea65a32becb956ce5903591f",
+      "fingerprint": "1fde88f952b1259c84687ebe4412ad1788524cc43ae1e3e11c6af7f456b4a269",
       "updatedAt": "2026-10-28T13:24:38.968Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 두 카르와 설계된 해리 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/kar": {
       "title": "카르",
@@ -2633,10 +2640,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "49818f8b5498d5f9107e9925f0f0cc73ea7f50cd3f0dc80059f8fcc5cbef40ab",
+      "fingerprint": "81b75c412a23f4c6ee035a44b174e9944fe78576ffcded10286930d94d31a054",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 카르 본문은 미수정. 변경된 관련 출처(project.json, event-memory.json, ieumsae.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/loss-jinx": {
       "title": "상실의 징크스",
@@ -2672,10 +2679,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "076bc55d1833f3743a5566cae07e76be2a47e05b379f612c70457d60e238b2d4",
+      "fingerprint": "49e17e483c7c981c3c975b61d83b0bf10517976f27760214d5f06ee80d1e98b2",
       "updatedAt": "2026-10-28T13:24:39.038Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 상실의 징크스 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/modern": {
       "title": "현대의 마법사",
@@ -2710,10 +2717,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c777694abb559ae319a3006291ca54adcb6a6cb5bdec675b1c65badca398e921",
+      "fingerprint": "684e2085883174b26e25a5ccaa961facc41cebac82cba535c78dc09f9f0e6147",
       "updatedAt": "2026-10-28T13:24:39.084Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 현대의 마법사 본문은 미수정. 변경된 관련 출처(ieumsae.json, morcia.json, premia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/morcia": {
       "title": "모르시아",
@@ -2738,6 +2745,7 @@
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -2752,10 +2760,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "34191f50ba7e62a3f0a0266a17c28514fa039551ae2833a1304445a64e3ae991",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "28e3235d8de4a57f7913680a126f3ad51cd72da4d3a80f630c7d487fbe97556c",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 재건을 지향하는 모르시아의 해석과 실제 창립 이념을 구분. 이음새 공동 창단자라는 거짓 기억 유지."
     },
     "story/wiki/nibel": {
       "title": "니벨",
@@ -2786,10 +2794,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2812cff6c8b81164915231fee8f782d832fd81676dd556ef5c4a8ba0a2a247b5",
+      "fingerprint": "b1d219a5851b391a15cd480d58a4cccbcadcd3bf4ba21036a2f1a8c0f0d458b3",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 니벨 본문은 미수정. 변경된 관련 출처(ieumsae.json, premia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/nonmage": {
       "title": "에테아",
@@ -2821,10 +2829,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "87b6cc875b20456136f0e50f478d80649648136d5bdd474207daabf871224265",
+      "fingerprint": "553643702433c91cd0332694f0983d70c6527ad938c08c87589e1f827aeeb443",
       "updatedAt": "2026-10-28T13:24:39.204Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 에테아 본문은 미수정. 변경된 관련 출처(event-memory.json, ieumsae.json, morcia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/ontos": {
       "title": "스티",
@@ -2910,6 +2918,7 @@
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
         "docs/data/wiki/research-lab.json",
@@ -2922,10 +2931,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8d373778dabd4927f054665c9b10bdd2cd71203856e94e6260be52591f255ef9",
-      "updatedAt": "2026-10-28T13:24:39.321Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "cdcbbb0d694ba8d60feab1f3cc892cfea315a6385cb4d3f794924e2e7d1bfb97",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "파로스 소속·해체와 프레미아의 새로운 이음새 설립을 분리. 이전 지도자의 회로 양도 기전은 미정."
     },
     "story/wiki/rakir": {
       "title": "유마",
@@ -2957,10 +2966,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e9bf5ac797a92d8ee8a7ccc0ad846266fadde2c1153cb97d755617f85b60b22b",
+      "fingerprint": "78b8f3f32b1f1eb99c168a87eb13691213f1cac633685957464d05d6b2e5aa8d",
       "updatedAt": "2026-10-28T13:24:39.355Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 유마 본문은 미수정. 변경된 관련 출처(ieumsae.json, premia.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/research-lab": {
       "title": "피카트릭스",
@@ -2988,6 +2997,7 @@
         "docs/data/wiki/kanha.json",
         "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/morcia.json",
+        "docs/data/wiki/pharos.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/research-lab.json",
         "docs/data/wiki/tera.json",
@@ -3000,10 +3010,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f431eed9f7a9f5d2c9b37ef303d28feed12024e122e56e6e63d02c3abed1c6b0",
-      "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "fingerprint": "3412eab9f66d6c8f4d59e9cedcb327f8d6623877cb9d867f35c42618c63becc9",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "피카트릭스와 파로스의 가능한 역사적 접점만 명칭으로 연결. 두 조직 동일시 및 연구소 개입 확정 금지."
     },
     "story/wiki/restoration": {
       "title": "복원 마법",
@@ -3040,10 +3050,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0fb5f60d16dc6328ab39bf145b83b1116a5ec6354cbac6a109b84dfa87cbe77d",
+      "fingerprint": "18507ba09d6c0bf8dedd1bb141bc1371c9b2c1001d5f57b36b7becd4850d1093",
       "updatedAt": "2026-10-28T13:24:39.427Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 복원 마법 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/single-timeline": {
       "title": "단일 시간선",
@@ -3071,10 +3081,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2e8fdd25037c7857bb5fe0dd43a85a93354f99045d0ebc285c680069a52e497d",
+      "fingerprint": "6d0cc45a18e8bfff21cf00438da6d6cead6ac45784d428ffeb4fa0f676c68324",
       "updatedAt": "2026-10-28T13:24:39.471Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 단일 시간선 본문은 미수정. 변경된 관련 출처(chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/six-beasts": {
       "title": "육환신수",
@@ -3140,10 +3150,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9ef5333a81228df73dce36d9e9e058f7e9b4163b187e0abccf7e1636e052dccc",
+      "fingerprint": "90fe74e0135501c2e69129d21fe8f562e9c91b157dcf2703f33f09d32e98db00",
       "updatedAt": "2026-10-28T13:24:39.542Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 테라 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/third-act": {
       "title": "3부",
@@ -3183,10 +3193,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7222c80b19c2072b07707165c253afcd2a4ec7e84c55db634f36c6c5a80aeeb2",
+      "fingerprint": "4e0f907d86c751d984f40069432e77991d97f517b8a8f85c791ef58951401aa0",
       "updatedAt": "2026-10-28T13:24:39.582Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 3부 본문은 미수정. 변경된 관련 출처(project.json, chronology.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/third-protagonist": {
       "title": "3부 주인공",
@@ -3254,10 +3264,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "bef3990fd239da260cc4414c1eedf41c61f530ab9289489c4fec24f7bc1e406d",
+      "fingerprint": "7a0cf752b66424b831eac8276793631533e538453596e12afd04c7dd4313fc4a",
       "updatedAt": "2026-10-28T13:24:39.655Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 토마 본문은 미수정. 변경된 관련 출처(research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/topos": {
       "title": "바하",
@@ -3387,10 +3397,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7bd10322ffca6da05caf0657c4debd86251def6b345ce19d6d8355fb51bbae85",
+      "fingerprint": "f9e2b8b93ee90bba7d73758f2576984aed3f2f2945559e63c7b68b5d4cbd30e8",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 이보리 본문은 미수정. 변경된 관련 출처(ieumsae.json, morcia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/event-alley": {
       "title": "골목의 하산객들",
@@ -3427,10 +3437,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f8abfe4c832e2eb89b21e559563e0c11dcc1c8d910b6f46f30ba261663e05cb0",
+      "fingerprint": "77478ed5388b63195bc5b890cd4d8e945af1d96d73fb16e13a4483bb554233d2",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 골목의 하산객들 본문은 미수정. 변경된 관련 출처(project.json, event-memory.json, ieumsae.json, morcia.json, premia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/hyundan": {
       "title": "현단",
@@ -3464,10 +3474,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b0a9c946938058d10c5491ceb165dfb124e3e6a00697a3273f00a64d795e0c4e",
+      "fingerprint": "8d2a29be15f6414ea74f044803a55ad16b8433cd7cce8c92cf6fbac20cc35ff0",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 현단 본문은 미수정. 변경된 관련 출처(project.json, ieumsae.json, morcia.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
     },
     "story/wiki/martial-lineage": {
       "title": "천뢰율려문",
@@ -3501,10 +3511,46 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "39dae765456231b245f6686497bdd546f83ba6815a0cf389ce603e0cd5060ce6",
+      "fingerprint": "0d3a08cdabaf2c2bf369454c0ad75fcecfb453e79f5536485ff261fd50fa5b67",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:24:48.240Z",
-      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "간접 참조 재검토: 천뢰율려문 본문은 미수정. 변경된 관련 출처(project.json, ieumsae.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
+    },
+    "story/wiki/pharos": {
+      "title": "파로스",
+      "ownSources": [
+        "docs/data/wiki/pharos.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/chronology.json",
+        "docs/data/wiki/event-memory.json",
+        "docs/data/wiki/event-premia.json",
+        "docs/data/wiki/ieumsae.json",
+        "docs/data/wiki/morcia.json",
+        "docs/data/wiki/pharos.json",
+        "docs/data/wiki/premia.json",
+        "docs/data/wiki/research-lab.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "fingerprint": "ea5c3b15cff6d4dd3130c691c7a3f5e3706f9e56a1d8666907c34a552b4cea8a",
+      "updatedAt": "2026-10-29T14:51:29.292Z",
+      "reviewedAt": "2026-10-29T14:51:29.292Z",
+      "reviewNote": "신규 파로스 문서: 알렉산드리아 등대 모티프와 조직명 확정. 설립 목적·지도자 이름·해체 원인·피카트릭스 관여는 미정 유지."
     }
   }
 }
