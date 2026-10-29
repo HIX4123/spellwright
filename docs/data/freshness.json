@@ -5,7 +5,7 @@
     "docs/attributes-view.js": "d965826baefb4c21986ff36456adac02362903616c723c22800c61837869fa88",
     "docs/dashboard-routing.js": "41abea42bb51b5e25599effa6106b0f297c094b1ec0ab765f57f60bf3a5de817",
     "docs/data/classes.json": "ce7c33d41cd1ec674d22362d26bab1ca4b280649b8fbef871ed5281a8ef6b659",
-    "docs/data/project.json": "941d6ea6dc9078aaa732ce4f7111713e5b885bd6bcb1abd9794c14c6cd4f7d4a",
+    "docs/data/project.json": "36e95b1bee34a5f1cc5fae69eabeb63f0ad4fac9a58ad31bb988e415a0ee11f8",
     "docs/data/projection-views.json": "bcfd3decedd23e625a87af65b95b09a4bc3a47cc140a5d111d3cf51c3db89778",
     "docs/data/projections.json": "50fef9c7e8333102d84f70b191c595de74d1342927c785f1f2d4ca39761ad4f8",
     "docs/data/relationships.json": "5220e31d69d5a19e445f19f290c9f7a8be02a228a51bf108795d01c269e0eab0",
@@ -13,11 +13,12 @@
     "docs/data/wiki/aion.json": "e660b390f246a1a6eedbe31465ff68de07e2fdb27c80d28d2d2f8bbf788353af",
     "docs/data/wiki/ascension.json": "bde9b3a66b1077f214c9e83fbb1a8e385e29be6ec5ab0ba7df0a6296dfea1185",
     "docs/data/wiki/beast-war.json": "6a221196e44bbf161ad0e7770f913c3a92ebc15ccdc4bcfb04c97a92faccdb62",
+    "docs/data/wiki/bori.json": "d2462f574a71433415ac1db28efcb00eea8e0432b0b6e1cb154d51365bff7299",
     "docs/data/wiki/causal-loop.json": "3b48fcdef2bef6c5f3a6bab27a010460f2941e84da025fce5777335c6bbfbb53",
-    "docs/data/wiki/chronology.json": "f1f26e75a8e45dd104b8493e2bd708427a748d2ad1bcf87acdf7f97c7050934b",
+    "docs/data/wiki/chronology.json": "f784bc74ff667808760527169b074db1e626287161024da1e60c08440a286df3",
     "docs/data/wiki/chronos.json": "6eaab4259764a4c5ceeace6bcecc2240da7426da4d5224a7f1033f6dddd4e6da",
     "docs/data/wiki/circuit-loss.json": "35fc102731ead4d29870a06a0821198c0c99d4a4fb84f11dfa28f7df2bcd8482",
-    "docs/data/wiki/circuits.json": "559ce8af7c5ee11d987689706f1b7086dcf8371094743d68bea817f3aad0aa48",
+    "docs/data/wiki/circuits.json": "fe07f701d19cf31b25fda83fe89d0ac00413ca81f9bb2f944963d8ebba0fc417",
     "docs/data/wiki/constraints.json": "9f18a670edb9aa1204914989da81c38a09783e1765cb489693266ca1ec010e92",
     "docs/data/wiki/craft.json": "c4a280e899b6e8b01b5e7a6f655a14c8cb05d7bc507ab678c22a7d1e7c2b9bfc",
     "docs/data/wiki/creative-references.json": "237c9286957fc3be9bef37815a9f2536e9c30342dcd71dfa90c379cc2afc6371",
@@ -27,19 +28,20 @@
     "docs/data/wiki/eloi-civilization.json": "05733b11be94eb03f5cc61166aaaaeb8929f61a1858cc92e8909c5487be1a8d2",
     "docs/data/wiki/eloi.json": "13b150087742c40896de3975c41d1265476dd15234480243762af1277e09b0f4",
     "docs/data/wiki/event-aftermath.json": "53e533802477f7d36e5a0b49c785ad499803b74d671a951f9e8052eacc337257",
+    "docs/data/wiki/event-alley.json": "bfbec9624f34fabf0facaa1d40c7cbfd2c58e46c9c45c3e4db0825d8027407c9",
     "docs/data/wiki/event-chronos-battle.json": "9e3df158f89504f40278ca89aaba1bad7c3b3862cd22e6acf7d66f45359d744c",
     "docs/data/wiki/event-collapse.json": "47df8a6b1d76330395e68ca1b1c759096528ffbe9462534489b392e48e50eb3b",
     "docs/data/wiki/event-demiurge-inheritance.json": "76688c374756b40604a56d666464d947d0278a36602aba2f5369e5ce82095534",
     "docs/data/wiki/event-departure.json": "9448b5855f1bd0817f2c3695643d578a5a858d4f3afce0ce305c58234cb22a1f",
     "docs/data/wiki/event-fake-boss.json": "eb42fa5da6b5831fbf7d80692ac171fa9308eb40b4f118fb870c30141626429c",
-    "docs/data/wiki/event-fieldwork.json": "79b9f17246c98ff3010793e24ac0b9acc940144d1f47e3de8d6f138e4e7c3a56",
+    "docs/data/wiki/event-fieldwork.json": "7a1589445311fb9d8d05e15e08adc2b298d0df0fbe528df1b1a91f0122ff0144",
     "docs/data/wiki/event-fourth-answer.json": "f2d6239b817bddaab68fbfb1d7649133d156968d5d892d86053b2f2ef9d7ddaa",
     "docs/data/wiki/event-gathering.json": "3d10dd4ccfeaac3889476de941d6b62a3d373dd9f1a813b2def4c7c21ff4755a",
     "docs/data/wiki/event-hand.json": "3b94cf3456301c690faae6096e027cee8903a1f8e9c51a1ceb7ce5d714e4933c",
     "docs/data/wiki/event-human-demiurge.json": "4bdf2960f07aa42b6ac60dda928c51c0032a70034c6099c17a5ec036a610a958",
     "docs/data/wiki/event-kai-dissociation.json": "77afd0c004bfe16331dfd79e7e0df78923dc68e09fa80fb39926161b89916e03",
     "docs/data/wiki/event-meeting.json": "1292d0ae5506adeb83719cadfa02cb42c4a5649af720f82a9b75a21cbdd0d0bf",
-    "docs/data/wiki/event-memory.json": "17473f97d94be6eda4bfad79632eba7e51b00ce7319e240ce377cfc3186b3cbd",
+    "docs/data/wiki/event-memory.json": "3bada6048f211de596a4f48fb1293a7c430d2611e6d4096186f9f5de9ea56aa5",
     "docs/data/wiki/event-omniscience.json": "8cb40e180578e7c21b6a09ef2b0b667f0b88fce6da64dd4ff5b0eaafdf42050e",
     "docs/data/wiki/event-premia.json": "2878e11de0d4c4458f993396f21e0b234ddd78dff7f2ad8940bc33546298398b",
     "docs/data/wiki/event-prologue.json": "28d39ce2eff1b04f5e60befc76caed7bc8e3566418e379ee084f5a4aac930442",
@@ -52,22 +54,24 @@
     "docs/data/wiki/event-third-first-encounter.json": "c7a56c2a7bcbaee2f6939a63612d05ff49fbe73cec9661d712a73390be8951cd",
     "docs/data/wiki/event-yuma.json": "ea6589b2422598182521a7ec8d2ac0f46e22c8f4f03008c5c4d8823e3485d5bb",
     "docs/data/wiki/fake-boss.json": "3045cf86402af9dc225344f4cf5a7c888afc28a501b51393aba11f3e4eeb25b2",
-    "docs/data/wiki/ieumsae.json": "d0f7297dc0f5ec355410dec290431538b1bc20f6676838b4e27d4a49b2bdc386",
-    "docs/data/wiki/index.json": "7014f59ab6217d6e016f6ff0f3e8810a9826abde9384b7e57167931e7fcffd6e",
+    "docs/data/wiki/hyundan.json": "92529b6d79d64a800c37292617a5ecaf27967dfa406018302f964465b76229f3",
+    "docs/data/wiki/ieumsae.json": "b5783148f7a3945e50d13cdc38daaa1fbad54e8f30b23c8a3e1a1de4c267be06",
+    "docs/data/wiki/index.json": "0ec41985b121c07b5b86e051bea10bc4ef26c389db8c363cd91d4b26f6bf6a46",
     "docs/data/wiki/kanha.json": "69c7c5fadb7f515304c939e4fcac52ee1a406a5f393e1e39896c03d8e7cf83f4",
     "docs/data/wiki/kar-domain.json": "88d1570cf911dcbb7ba5c71b78f74f7f3c4139503bf1c481a45b9ac5b2aa6fbc",
     "docs/data/wiki/kar-duality.json": "bad4cc0f2ec816b01610ce9fe15a10f876eb6dfaa80235ad644b73df8279c192",
-    "docs/data/wiki/kar.json": "358d1627222cb5b6a775d626effd3b9d07a5ff789c8b4121791116385d24cefe",
+    "docs/data/wiki/kar.json": "d65bfa774d37858dd1977efcbc63f3a8c41163fd18c3a8653be4e56c81f05a6c",
     "docs/data/wiki/loss-jinx.json": "20fb9181f50bbcd8348e356331bc857d13d15b31cec7eab76e2407e81a34c967",
+    "docs/data/wiki/martial-lineage.json": "cbba1b2aa12ffbca4118331f53a73f3bae7aac847fe09fa2d1a3d2a1598d0696",
     "docs/data/wiki/modern.json": "4aa6d425ca7914b3b0e0f6f690eab244d988cbb83bf9862c894d09e068bf03ab",
-    "docs/data/wiki/morcia.json": "1dabac392e0705d6c7b1829832ae417b647e934f27929a773f45a49d88415648",
-    "docs/data/wiki/nibel.json": "c316578c413adb8dab86e7d1d8231f2d93405ac78e3b70c3378d75a9d7038c5e",
+    "docs/data/wiki/morcia.json": "8a3ddf38abf5a64804aa26b40da4f1775c4b9b1582008e48a7c88ceaa2964f30",
+    "docs/data/wiki/nibel.json": "530bf5bdb7c702e4fa4d6cc193827537b5d9d70343c828bc380da6f4e9e153c9",
     "docs/data/wiki/nonmage.json": "8622748cb57257d0cf79817ffb9d98bf80ca0088fd73ce5b67b8427941e8ffa7",
     "docs/data/wiki/ontos.json": "940c25e7758ec5344c20b48936b9f191d8ba99d9db0cccde179d50952b4f3347",
     "docs/data/wiki/phantasma.json": "98af7fc93b7152a2e4df10b5174330fbd65e1dd6d95af175e36ed6df35a9649b",
     "docs/data/wiki/premia.json": "349ad85ff12ecdd457f9381e86ccacd68a9a930155aa2778bf7eb1766abeac8b",
     "docs/data/wiki/rakir.json": "558cfd292ea5a0c6ca63fe0b8a8f311bab12fe194834330382317681ed26dd54",
-    "docs/data/wiki/research-lab.json": "bc4e57018bdaa32118421d757879d84f1efd406ffb6841f18fb80df92c0c723a",
+    "docs/data/wiki/research-lab.json": "0f20f778ab3cc8b9b841c6c5b46a5585077a9eb373addce7c77245f1ec26ef9e",
     "docs/data/wiki/restoration.json": "052c628298bc75dfff750d39798008850c95130c787594423d7a4b8e6842ff22",
     "docs/data/wiki/single-timeline.json": "3985c3385567e92e1d824e40764eeba7f157e0199e298d40386e410221d2ef2f",
     "docs/data/wiki/six-beasts.json": "999e97f293f788ef0f24b52bbece2c2afb2685801f9df867a3ab1a65d8578d7e",
@@ -145,10 +149,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "459845a71ec2b34830886744b61ad857f93831c30bfbffd9ffd037676714a8bc",
-      "updatedAt": "2026-10-28T13:29:02.076Z",
-      "reviewedAt": "2026-10-28T13:29:02.089Z",
-      "reviewNote": "공통 UI 변경 검토: 페이지 기록 표시 추가, 개요 집계·우선순위·MVP 데이터 변경 없음."
+      "fingerprint": "7a55367629703bb1b0881025b0a77bb6ecc01ab85d9b6cb7b89daa53cee66ff4",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "story": {
       "title": "story",
@@ -184,6 +188,7 @@
         "docs/data/wiki/aion.json",
         "docs/data/wiki/ascension.json",
         "docs/data/wiki/beast-war.json",
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/causal-loop.json",
         "docs/data/wiki/chronology.json",
         "docs/data/wiki/chronos.json",
@@ -198,6 +203,7 @@
         "docs/data/wiki/eloi-civilization.json",
         "docs/data/wiki/eloi.json",
         "docs/data/wiki/event-aftermath.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-chronos-battle.json",
         "docs/data/wiki/event-collapse.json",
         "docs/data/wiki/event-demiurge-inheritance.json",
@@ -223,6 +229,7 @@
         "docs/data/wiki/event-third-first-encounter.json",
         "docs/data/wiki/event-yuma.json",
         "docs/data/wiki/fake-boss.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/index.json",
         "docs/data/wiki/kanha.json",
@@ -230,6 +237,7 @@
         "docs/data/wiki/kar-duality.json",
         "docs/data/wiki/kar.json",
         "docs/data/wiki/loss-jinx.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/modern.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
@@ -267,10 +275,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "52f3a2dd87a9aac8d0c7dfb2e1829150afad082af003a0b6bc92c42309364ee4",
-      "updatedAt": "2026-10-28T13:29:02.342Z",
-      "reviewedAt": "2026-10-28T13:29:02.353Z",
-      "reviewNote": "목차의 6개 요약을 표제어 원본으로 동기화. 시각 표시는 비동기 문서 로드 완료 후 현재 경로에 적용하며 이전 문서 기록은 지움. 기존 사건 순서는 변경하지 않음."
+      "fingerprint": "fc1c46e8575f47e9dc2e9330b4fba86ec23109082b35f9b8109114ea64a6621e",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "systems": {
       "title": "systems",
@@ -326,10 +334,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9708e52cd5d2f2d56f5013ccc855f83308e779f4ed09ea8018490de98e23cda1",
-      "updatedAt": "2026-10-28T13:29:02.624Z",
-      "reviewedAt": "2026-10-28T13:29:02.636Z",
-      "reviewNote": "공통 UI 변경 검토: 시스템 필터·관계선 의미·원본은 유지. 로컬 수정과 저장 후에도 저장소 기준 기록임을 표시."
+      "fingerprint": "4237651101c2a23d47fefdbdca9d853f6002b43074b4beadf35328c2d5d8c186",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "character": {
       "title": "character",
@@ -383,10 +391,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "299c57eb7da8e085ead1e7fa12a2c1f836244055f9fcfbd4bad9d7f8212b7c04",
-      "updatedAt": "2026-10-28T13:29:02.875Z",
-      "reviewedAt": "2026-10-28T13:29:02.886Z",
-      "reviewNote": "공통 UI 변경 검토: 스탯·직업 원본과 편집 동작은 유지. 페이지 기록만 추가."
+      "fingerprint": "832c7c9fec5aa46f29bd928f2f207ed13af015cdacdcd2b002da719d07d7c3b4",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes": {
       "title": "attributes",
@@ -440,10 +448,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9ecd046242775b63ac5b6482eec9f2ef4f8d97f928096d22a28998e910e3bdcd",
-      "updatedAt": "2026-10-28T13:29:03.144Z",
-      "reviewedAt": "2026-10-28T13:29:03.154Z",
-      "reviewNote": "속성 목록과 각 표제어·공통 규칙 경로를 별도 기록에 매핑. 개시 규칙·연산자 상태는 변경하지 않음."
+      "fingerprint": "ad32a580292103cc3854cc2552de71f0fabc3c35f8e0b09892d6b7aadc845f60",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "projections": {
       "title": "projections",
@@ -497,10 +505,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9ecd046242775b63ac5b6482eec9f2ef4f8d97f928096d22a28998e910e3bdcd",
-      "updatedAt": "2026-10-28T13:29:03.413Z",
-      "reviewedAt": "2026-10-28T13:29:03.428Z",
-      "reviewNote": "공통 UI 변경 검토: 사영도 번호·배치·분류 원본과 계산은 유지. 페이지 기록만 추가."
+      "fingerprint": "ad32a580292103cc3854cc2552de71f0fabc3c35f8e0b09892d6b7aadc845f60",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "questions": {
       "title": "questions",
@@ -535,6 +543,7 @@
         "docs/data/wiki/aion.json",
         "docs/data/wiki/ascension.json",
         "docs/data/wiki/beast-war.json",
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/causal-loop.json",
         "docs/data/wiki/chronology.json",
         "docs/data/wiki/chronos.json",
@@ -549,6 +558,7 @@
         "docs/data/wiki/eloi-civilization.json",
         "docs/data/wiki/eloi.json",
         "docs/data/wiki/event-aftermath.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-chronos-battle.json",
         "docs/data/wiki/event-collapse.json",
         "docs/data/wiki/event-demiurge-inheritance.json",
@@ -574,12 +584,14 @@
         "docs/data/wiki/event-third-first-encounter.json",
         "docs/data/wiki/event-yuma.json",
         "docs/data/wiki/fake-boss.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kanha.json",
         "docs/data/wiki/kar-domain.json",
         "docs/data/wiki/kar-duality.json",
         "docs/data/wiki/kar.json",
         "docs/data/wiki/loss-jinx.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/modern.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
@@ -617,10 +629,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6766b91880a7d5b775ea715042b4b1cc4965e66ae1ca43650e667f6b577c0723",
-      "updatedAt": "2026-10-28T13:29:03.677Z",
-      "reviewedAt": "2026-10-28T13:29:03.690Z",
-      "reviewNote": "표제어 요약 동기화는 미정 사항의 채택 상태에 영향 없음. 모든 위키 원본 변경 시 이 페이지도 검토 대상으로 등록. 우르 사건 순서 해석은 미결로 기록."
+      "fingerprint": "9e5f4713cb8df2bc87a7bf4e566cfd58ff277eb0da5b366cd4b9a2ccf527a291",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "archive": {
       "title": "archive",
@@ -670,10 +682,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "459845a71ec2b34830886744b61ad857f93831c30bfbffd9ffd037676714a8bc",
-      "updatedAt": "2026-10-28T13:29:03.949Z",
-      "reviewedAt": "2026-10-28T13:29:03.960Z",
-      "reviewNote": "공통 UI 변경 검토: 결정·폐기 기록 원본과 렌더링은 유지. 페이지 기록만 추가."
+      "fingerprint": "7a55367629703bb1b0881025b0a77bb6ecc01ab85d9b6cb7b89daa53cee66ff4",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/haeri": {
       "title": "해리",
@@ -709,10 +721,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:36.717Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/soeoe": {
       "title": "소외",
@@ -748,10 +760,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:36.788Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/chojo": {
       "title": "초조",
@@ -787,10 +799,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:36.855Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/gochak": {
       "title": "고착",
@@ -826,10 +838,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:36.931Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/banchu": {
       "title": "반추",
@@ -865,10 +877,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:37.010Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "attributes/wiki/rules": {
       "title": "개시 규칙",
@@ -904,10 +916,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b9009943d8f12c72a4c6f9043cb3b60feb1814c0f7fea32d27cae0fb9df89d3f",
-      "updatedAt": "2026-10-28T13:24:37.091Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "c3611e2bc6c9e537c507c7dffe8332236c711d8c5f7787a69af110339081c918",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "스토리/질문/속성 인덱스의 변경 의존성 및 출처 최신화 동기화 확인. 상세 서사 전수 검수는 아님."
     },
     "story/wiki/aion": {
       "title": "아난타",
@@ -971,10 +983,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0ff509755fa48088f15fc5474f03b615114e9d800b0f17316e095243c8d81d81",
+      "fingerprint": "12e4f312b27ed260ffe72c34a6b48f4e811969cd47a792adaa1ddd8d0cbe3358",
       "updatedAt": "2026-10-28T13:24:37.173Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/beast-war": {
       "title": "신수전쟁",
@@ -1039,10 +1051,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "cb68afa2178320b34483c14643f26657886cd567a5de593dd43237d01a7c2038",
+      "fingerprint": "e495f30dd9384141f33d0746b60f04f21f425dd77fa7c61184d37e29a917c431",
       "updatedAt": "2026-10-28T13:24:37.249Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/chronology": {
       "title": "연대표와 사건도",
@@ -1061,6 +1073,7 @@
         "docs/data/projections.json",
         "docs/data/wiki/ascension.json",
         "docs/data/wiki/beast-war.json",
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/chronology.json",
         "docs/data/wiki/circuits.json",
         "docs/data/wiki/constraints.json",
@@ -1069,6 +1082,7 @@
         "docs/data/wiki/eloi-civilization.json",
         "docs/data/wiki/eloi.json",
         "docs/data/wiki/event-aftermath.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-chronos-battle.json",
         "docs/data/wiki/event-collapse.json",
         "docs/data/wiki/event-demiurge-inheritance.json",
@@ -1093,11 +1107,13 @@
         "docs/data/wiki/event-third-final-battle.json",
         "docs/data/wiki/event-third-first-encounter.json",
         "docs/data/wiki/event-yuma.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kanha.json",
         "docs/data/wiki/kar-domain.json",
         "docs/data/wiki/kar-duality.json",
         "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
@@ -1117,10 +1133,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "277c88f6c763d8f61e9c88ba07c5ba3c364086582d6010e959f63e67221d4199",
-      "updatedAt": "2026-10-28T13:24:37.287Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "b941c17f2ef04b1006304a2442dd0c295c9763a52dc0a1e552b25ca4bf1c6f62",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/chronos": {
       "title": "크로노스",
@@ -1153,10 +1169,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "dc4738d41e88de2f282716fb420d7ff7e25cebbae55eece8374c1f47d9870de8",
+      "fingerprint": "d90778daabe0d37a2a152029606115f1f678cb516bd3ba893dd09ac4511a3e4d",
       "updatedAt": "2026-10-28T13:24:37.321Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/circuit-loss": {
       "title": "마력회로 소실",
@@ -1186,10 +1202,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9e4f757ecedd1ace69c9409c2e3dd215f31f49d9eb0588b128ad8d4db1f730d7",
+      "fingerprint": "1df577684a52a332e60637a5cfab8364fb8d5d0d48346ef1d00f2204c786fd56",
       "updatedAt": "2026-10-28T13:24:37.362Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/circuits": {
       "title": "마력회로",
@@ -1212,6 +1228,7 @@
         "docs/data/wiki/eloi.json",
         "docs/data/wiki/event-kai-dissociation.json",
         "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/third-act.json",
         "docs/freshness.js",
@@ -1222,10 +1239,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6d8641926ab6b0ddb6ae2c3292cdc8c01f5223e6f5b7fe791a58c49136ecedd7",
-      "updatedAt": "2026-10-28T13:24:37.404Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "41af2348240091eb17db5db6b317d268b6b1eb3b66b7347153d88d531abedb0d",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/constraints": {
       "title": "육환신수의 상호 제약",
@@ -1257,10 +1274,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "530e26e3fcf8826bbee364c917732936efad9399cc800a6685bf25cf804c5f3b",
+      "fingerprint": "a6e95317752d51389bde5b05d6a8a94fb121021ce38c78f394d082880d4edc8c",
       "updatedAt": "2026-10-28T13:24:37.454Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/craft": {
       "title": "서사 운영 원칙",
@@ -1303,10 +1320,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "3968f145e2f188d144826197a8fb2df67c0ee89dfead622411b492f7c00a0d1e",
+      "fingerprint": "5ff899b266f8fb217acd44c22a19e46118a3aad2ec15d3e46ce3294ced553d95",
       "updatedAt": "2026-10-28T13:24:37.511Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/creative-references": {
       "title": "창작 참고와 보류안",
@@ -1336,10 +1353,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8dc99b6393eaa21f92237fef430bc690cf0a5c1ca008f3042472c91cb35f55a7",
+      "fingerprint": "2ebf0d4e6482df38e5ae8c0fec87501218fc057bf52fd0758f6c76a9b177ed2b",
       "updatedAt": "2026-10-28T13:24:37.557Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/divinity": {
       "title": "신위",
@@ -1401,10 +1418,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e058c6104d0ce0564faf84587432b3592dd11c77f3e10abc0717eb05857b5808",
+      "fingerprint": "0aef7e8ab1f7dffc51fbdc621e648f0c19de8f485ac9f958fba37807917c7abe",
       "updatedAt": "2026-10-28T13:24:37.679Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/elin": {
       "title": "엘린",
@@ -1438,10 +1455,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f6d3a2e70bfadc39ed2bbaa1476a589ef701bca29e5363b61b0a81f4e4478c83",
+      "fingerprint": "273100fe81d696896e5a66cdde6d3dd185eae190bb77ea4c3caf84712634f08a",
       "updatedAt": "2026-10-28T13:24:37.733Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/eloi-civilization": {
       "title": "엘로이 문명",
@@ -1476,10 +1493,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a8de009d3c8754993e137e34a09141b745dee198f74545cfe24efed07366b4ab",
+      "fingerprint": "3639c8ee144103f4e5712b5534d884e4cc853c8007c4a7bb6198131cbd47c6a2",
       "updatedAt": "2026-10-28T13:24:37.790Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/eloi": {
       "title": "엘로이족",
@@ -1512,10 +1529,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a58cafea9daee12d03744531c123d388d172836ebb54d80ca1ba991c26b1c8bf",
+      "fingerprint": "455b744e9cff4f90f87277773ee2a9385787569e79d742641942d2ed909db701",
       "updatedAt": "2026-10-28T13:24:37.835Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-aftermath": {
       "title": "유마의 희생·니벨의 이탈 이후 · 남은 일상",
@@ -1545,10 +1562,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "aed37dff24eb70e13ff0c55e7ffaecabfe9ad59e85f7d6ecebbfdd42eb10f499",
+      "fingerprint": "dda8a8e7a5b5891378dffaf19deac475049aa621a99c7ca61493209599dc745d",
       "updatedAt": "2026-10-28T13:24:37.869Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-chronos-battle": {
       "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
@@ -1579,10 +1596,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f4ec56e6dc8bec32b46412aec682959004306302ff28af47385f0b1b67465309",
+      "fingerprint": "b39a892f7d6ed40ac9a7c0784ed57cfe024bc8a2cdeb064b97669975f763de06",
       "updatedAt": "2026-10-28T13:24:37.908Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-collapse": {
       "title": "배양판 · 200만 년의 이상낙원과 수확",
@@ -1615,10 +1632,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "75a18d79591cc7c318cd726332543df551fe9ca74f68f60d6861df31c8f45945",
+      "fingerprint": "d9ba18fa50e666e829281e2ca3d1a108b67ce0193fc97352eb2ace29495edad1",
       "updatedAt": "2026-10-28T13:24:37.953Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-demiurge-inheritance": {
       "title": "우르 → 데미우르고스 · 자기 자신을 만든 폐쇄 인과",
@@ -1648,10 +1665,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "93e180496005f188326ace2af5d5c2a1f376cfdfc83f907bcc7215af7475f8d0",
+      "fingerprint": "66756c7d31521c287a378335c8739c387911695b25108a223934223536b1c7b6",
       "updatedAt": "2026-10-28T13:24:37.992Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-departure": {
       "title": "히로인 · 대신 과거로",
@@ -1681,10 +1698,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c71d03dec2d46955bd64913f0984f2e8c3dbe4efe37f2959f2a296db9b807529",
+      "fingerprint": "b72035c1accf101a32a15f911da948f98b2498aaf8bbdb5f3d39e830a0722c34",
       "updatedAt": "2026-10-28T13:24:38.031Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-fake-boss": {
       "title": "연구소편 · 완성작 보스",
@@ -1714,10 +1731,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a85d2398080104d45373d1000758a817a0fdd90c32db8e6da42f9e76070d7f9c",
+      "fingerprint": "18d648a15559f93ba29148deab0798887bdd9ffda5ce1fee738ff8b219437c1d",
       "updatedAt": "2026-10-28T13:24:38.072Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-fieldwork": {
       "title": "1부 초반 · 피카레스크식 사건과 새 동료",
@@ -1732,8 +1749,12 @@
         "docs/typography-scale.css"
       ],
       "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/chronology.json",
         "docs/data/wiki/dualization.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-fake-boss.json",
         "docs/data/wiki/event-fieldwork.json",
         "docs/data/wiki/event-gathering.json",
@@ -1741,9 +1762,11 @@
         "docs/data/wiki/event-premia.json",
         "docs/data/wiki/event-yuma.json",
         "docs/data/wiki/fake-boss.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kanha.json",
         "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
@@ -1761,10 +1784,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9714b221715633bb76a690f508d0a2268ff20266117ac5f9a6649b69cdd7fd76",
-      "updatedAt": "2026-10-28T13:24:38.108Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "d06d1eddba01939cf3ea8c0f092305e2dd1bde045b2ff68ee9f79d1a5ae16f61",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-fourth-answer": {
       "title": "에테아의 개입 · 삼파전의 제4축",
@@ -1797,10 +1820,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "367827b76e738cb4a2c5b76d4ae2fdd312fc254dd2603530dd801d976c85b637",
+      "fingerprint": "e937af1cb49e17969b1e6d93fe21b7dedd237418e2a08beca5d6497edf3646c1",
       "updatedAt": "2026-10-28T13:24:38.151Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-gathering": {
       "title": "다른 마법사를 경계한 카르 · 자발적인 합류",
@@ -1833,10 +1856,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0e272cd986c7c00b746cf32249db3520c76803c152f1e00d05cc2319e8443b61",
+      "fingerprint": "8d6bbe3578e71718d31c3672a2daa0dab21b15718bbe7fb52b34fe7c24f2d309",
       "updatedAt": "2026-10-28T13:24:38.191Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-hand": {
       "title": "1부 마지막 · 블랙홀과 손",
@@ -1867,10 +1890,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9c26a087fdaf0ba43f2f87829cb5ea29c03e0f740cf6994d48aca95238884aab",
+      "fingerprint": "6ae498674172e4c4fcf7c5df651c78e48c1d93ccecc76b01f37b27f02039bec8",
       "updatedAt": "2026-10-28T13:24:38.227Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-human-demiurge": {
       "title": "3부 · 인간 우르의 동행",
@@ -1901,10 +1924,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "53a66220824687dcd82ba5742101e21fadaf60dccacfb92b63059ab2321bf826",
+      "fingerprint": "2f31089a84cb7b83308309b108baa43825e2791649eee3040ed1b23b871cc415",
       "updatedAt": "2026-10-28T13:24:38.267Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-kai-dissociation": {
       "title": "3부 · 설계된 마지막 해리와 신위 분리",
@@ -1940,10 +1963,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "800df1a59dbfa434bfeb545e1e8cd570cdbbfea82602f705906e650c4c72a336",
+      "fingerprint": "32b5e468c4046db581e3fd02033aa2958b0c675f59b91ccc0f4c0e39556c2a65",
       "updatedAt": "2026-10-28T13:24:38.304Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-meeting": {
       "title": "대화의 자리 · 삼파전",
@@ -1974,10 +1997,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "4aa9e91610f607d87e3fa688674d91314f37af87cc4a6def2e44157aa27d7711",
+      "fingerprint": "98507aeea975edcdbdfabc0a4abeef37a4ecf26af75e92bd8da100ac553be69d",
       "updatedAt": "2026-10-28T13:24:38.336Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-memory": {
       "title": "에테아 · 기억 조작 사건",
@@ -1992,8 +2015,11 @@
         "docs/typography-scale.css"
       ],
       "sources": [
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-memory.json",
         "docs/data/wiki/event-premia.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nonmage.json",
@@ -2007,10 +2033,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0f2425d0a6eb9b4f13494dd5606484856788660a60d443f7e31e16dbd5ab1b52",
-      "updatedAt": "2026-10-28T13:24:38.376Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "b930fc8759ec9007464d467ff60f360104cda8fd30481e23b3d9024164a90bdf",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-omniscience": {
       "title": "시간 신위 · 정체와 운명",
@@ -2042,10 +2068,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "4c7a9369de0cf9d148887fe88046b74593cdf2aec369e5a5768be60f8ac8e460",
+      "fingerprint": "543a2fe2c364e7a40b10f303e9150f7480868874b6c9aba3b3c33ebecdaf0937",
       "updatedAt": "2026-10-28T13:24:38.418Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-premia": {
       "title": "프레미아 · 계승의 후일담",
@@ -2073,10 +2099,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ab147b2cdc876e5b71eeab973186bda5763fd4e4125671fef5d5f11b9b062861",
+      "fingerprint": "832179671613a807a28e5b64617df7475982ea7ad81e58bc9b8029b05960ce45",
       "updatedAt": "2026-10-28T13:24:38.452Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-prologue": {
       "title": "프롤로그 · 소꿉친구",
@@ -2105,10 +2131,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c57d33c7f18a43ef0f0669627315d0a9e526203c3b8b412740977c15e4da9fd8",
+      "fingerprint": "b4593f83c1acca202422e3038f81d4d0935162104d5baf62d8d73d7c0af080b3",
       "updatedAt": "2026-10-28T13:24:38.492Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-resistance": {
       "title": "저항 · 대피와 시간 연결",
@@ -2134,10 +2160,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "88480443853010a61b9ca1f8cd71ebd0ed39ce42ad290bab0fe19e63c003850a",
+      "fingerprint": "838b2ccabce8212ade2ce678ce7fed3a23a319679f44bf7151c8ab114b5235a3",
       "updatedAt": "2026-10-28T13:24:38.524Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-restoration": {
       "title": "연구소편 · 토마와 테라",
@@ -2172,10 +2198,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "cacfa469515c8a8ca5617390735f34845fc1c1fe93163e0593e6f56570eb977e",
+      "fingerprint": "b5227fc2cc3578253c4597a4b83779e599241dd4523a78ba9a549b1ebc34129c",
       "updatedAt": "2026-10-28T13:24:38.559Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-reunion": {
       "title": "2부 도착 · 첫 만남",
@@ -2202,10 +2228,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "427600acb2664a85f45baf781ae9fa472f60363efd3643ebfc7e91814953a3a6",
+      "fingerprint": "6f754628634c1b1783f819a1e6200ae58d0d37421252bdf0ed9622f0b7f8824b",
       "updatedAt": "2026-10-28T13:24:38.596Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-sacrifice": {
       "title": "유마의 희생 · 갈라지는 세 친구",
@@ -2234,10 +2260,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "18d10fda77751db91aec6c95946bc9125c65a5fdc404001dcd7ce0a0ea42cb8b",
+      "fingerprint": "02d3fc0f5580ce8564be52157cfc03026bc71224cbfa47de8a44f01404d1df31",
       "updatedAt": "2026-10-28T13:24:38.629Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-third-act": {
       "title": "3부 · 과거 시대의 카르 토벌",
@@ -2271,10 +2297,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2fb49e62054c3e09f9df17cf8dd1ab6f979940e17c72498e13f3ab1fbbb99d44",
+      "fingerprint": "bf36ba3e7a7055277611a27e6985d301e8a4a86effebbf77e3471781a71ecaef",
       "updatedAt": "2026-10-28T13:24:38.664Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-third-final-battle": {
       "title": "3부 · 마왕과 인간 카르의 최종전",
@@ -2307,10 +2333,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "cd6a6efa15b4ce34a1cc574f795a1a40f0ea8b6752329e4609eb3644b2ca9a13",
+      "fingerprint": "a654ee1881b9e1f492a7ecf5b6af6e28be21b61058d6f497284142a1b8902f16",
       "updatedAt": "2026-10-28T13:24:38.698Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-third-first-encounter": {
       "title": "3부 · 신역 첫 대면",
@@ -2341,10 +2367,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "08b29fff595894b3fe0639b6b806d3d6749bee29a41ee46c3637b2737d807e54",
+      "fingerprint": "5a3b548c731b32fe6a64f0805394f5c20bfe48fd29ffea0142799239fee6b105",
       "updatedAt": "2026-10-28T13:24:38.731Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/event-yuma": {
       "title": "유마 · 칸하 사건",
@@ -2375,10 +2401,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2f6009a57a54d6018fa768b17730eb9f70c23dcaf813aa239880c5b99c002103",
+      "fingerprint": "08e49fed169549ad208aa0ef706b12a2fa7513782f30ceda90a9479b3507e046",
       "updatedAt": "2026-10-28T13:24:38.765Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/fake-boss": {
       "title": "완성작 보스",
@@ -2409,10 +2435,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b2611f83d97f7f9c5df4b08ae72989d87538e629554fd95edcc1b43c835523fa",
+      "fingerprint": "ac55e99b46bf99aa23c4667532cdcdb4f859693dd1402b841c3c92b20bd52e6d",
       "updatedAt": "2026-10-28T13:24:38.804Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/ieumsae": {
       "title": "이음새",
@@ -2427,16 +2453,23 @@
         "docs/typography-scale.css"
       ],
       "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-gathering.json",
         "docs/data/wiki/event-memory.json",
         "docs/data/wiki/event-premia.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nibel.json",
         "docs/data/wiki/nonmage.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/rakir.json",
+        "docs/data/wiki/research-lab.json",
         "docs/freshness.js",
         "docs/html.js",
         "docs/index.html",
@@ -2445,10 +2478,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "92f9e7ceff7d0062e02aa298a7871ea6c23a58d7a486bb5fb2320c072b6adb3f",
-      "updatedAt": "2026-10-28T13:24:38.840Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "fedd8743493a54d9b3e3ae364ef804ddc080ebf7c2c04c869155e1d36dcffb8e",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/kanha": {
       "title": "칸하",
@@ -2478,10 +2511,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "56f59671b66e5a92970b43f6be4a35c9b7383e04a543612d8109285a245fae5f",
+      "fingerprint": "2a940dc94cd6185818b42172872bf21d66ed4d5ce448911fc9f32c30385fb9a7",
       "updatedAt": "2026-10-28T13:24:38.886Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/kar-domain": {
       "title": "카르의 신역",
@@ -2514,10 +2547,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b375ff722ecab83bbabeeca2203f0650832f80ca4f0e39e13246a70e7248f164",
+      "fingerprint": "e77d44b6f5fa812c3375f938f405945f500468d157665f071f31f5d1ea01cef7",
       "updatedAt": "2026-10-28T13:24:38.932Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/kar-duality": {
       "title": "두 카르와 설계된 해리",
@@ -2549,10 +2582,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2f86b6b86bef4a4d86317d04eb58c4a620c5ead0abf254686623038ec25fa78a",
+      "fingerprint": "ec8be7113fbf757115938b94959b0e242951df4dea65a32becb956ce5903591f",
       "updatedAt": "2026-10-28T13:24:38.968Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/kar": {
       "title": "카르",
@@ -2581,6 +2614,7 @@
         "docs/data/wiki/event-memory.json",
         "docs/data/wiki/event-third-final-battle.json",
         "docs/data/wiki/event-yuma.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kar-domain.json",
         "docs/data/wiki/kar-duality.json",
@@ -2599,10 +2633,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f0da17cb8a2c454c8a7d9fb8ac65fb745b4c98198d07b70a9b4659080aaf92c2",
-      "updatedAt": "2026-10-28T13:24:39.001Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "49818f8b5498d5f9107e9925f0f0cc73ea7f50cd3f0dc80059f8fcc5cbef40ab",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/loss-jinx": {
       "title": "상실의 징크스",
@@ -2638,10 +2672,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6fe112de3597e7d2514132574d2d06dcd7815a5351e58b9edeebe34fbecf553f",
+      "fingerprint": "076bc55d1833f3743a5566cae07e76be2a47e05b379f612c70457d60e238b2d4",
       "updatedAt": "2026-10-28T13:24:39.038Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/modern": {
       "title": "현대의 마법사",
@@ -2676,10 +2710,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "dc5a7acf2c5bf849482c31f4fbeb20c84e3dd20766e8d9361787b4c0cc9e8a19",
+      "fingerprint": "c777694abb559ae319a3006291ca54adcb6a6cb5bdec675b1c65badca398e921",
       "updatedAt": "2026-10-28T13:24:39.084Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/morcia": {
       "title": "모르시아",
@@ -2694,10 +2728,13 @@
         "docs/typography-scale.css"
       ],
       "sources": [
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/circuits.json",
         "docs/data/wiki/dualization.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-memory.json",
         "docs/data/wiki/event-premia.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/nonmage.json",
@@ -2715,10 +2752,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6d98372a0dca5562ec1d18019555adcf4048596b22869ee88eca8a7675812b6a",
-      "updatedAt": "2026-10-28T13:24:39.129Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "34191f50ba7e62a3f0a0266a17c28514fa039551ae2833a1304445a64e3ae991",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/nibel": {
       "title": "니벨",
@@ -2749,10 +2786,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b5035aa4d9026fed9b778b007c6e4e2f3ec8026ac1c0473ae7ce49b2a6bff14e",
-      "updatedAt": "2026-10-28T13:24:39.166Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "2812cff6c8b81164915231fee8f782d832fd81676dd556ef5c4a8ba0a2a247b5",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/nonmage": {
       "title": "에테아",
@@ -2784,10 +2821,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5685ec2f096dd8ee594a6ef78911af4a732b0e049407076bd93bc3ef156911ce",
+      "fingerprint": "87b6cc875b20456136f0e50f478d80649648136d5bdd474207daabf871224265",
       "updatedAt": "2026-10-28T13:24:39.204Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/ontos": {
       "title": "스티",
@@ -2885,10 +2922,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c2681e0ac136f460905e3d79d00ff5daf1713e0ffea5f188fc2e28b69a5dd2eb",
+      "fingerprint": "8d373778dabd4927f054665c9b10bdd2cd71203856e94e6260be52591f255ef9",
       "updatedAt": "2026-10-28T13:24:39.321Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/rakir": {
       "title": "유마",
@@ -2920,13 +2957,13 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5e80d200c902f368b03d8dbf84819ee454c137ffec93afb672f530b832a2ee6d",
+      "fingerprint": "e9bf5ac797a92d8ee8a7ccc0ad846266fadde2c1153cb97d755617f85b60b22b",
       "updatedAt": "2026-10-28T13:24:39.355Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/research-lab": {
-      "title": "연구소",
+      "title": "피카트릭스",
       "ownSources": [
         "docs/data/wiki/research-lab.json",
         "docs/freshness.js",
@@ -2938,14 +2975,18 @@
         "docs/typography-scale.css"
       ],
       "sources": [
+        "docs/data/wiki/bori.json",
         "docs/data/wiki/chronos.json",
         "docs/data/wiki/circuits.json",
         "docs/data/wiki/dualization.json",
+        "docs/data/wiki/event-alley.json",
         "docs/data/wiki/event-fake-boss.json",
         "docs/data/wiki/event-restoration.json",
         "docs/data/wiki/fake-boss.json",
+        "docs/data/wiki/hyundan.json",
         "docs/data/wiki/ieumsae.json",
         "docs/data/wiki/kanha.json",
+        "docs/data/wiki/martial-lineage.json",
         "docs/data/wiki/morcia.json",
         "docs/data/wiki/premia.json",
         "docs/data/wiki/research-lab.json",
@@ -2959,10 +3000,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "27242eb2c8a4dcb34ee6f2e7428452ec1839f1567c618c8c69916649f701e7bb",
-      "updatedAt": "2026-10-28T13:24:39.394Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "fingerprint": "f431eed9f7a9f5d2c9b37ef303d28feed12024e122e56e6e63d02c3abed1c6b0",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/restoration": {
       "title": "복원 마법",
@@ -2999,10 +3040,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ea1aad26817fe74f72fe624a947bdd50302e624d80734a959cf9d10e9e54c13b",
+      "fingerprint": "0fb5f60d16dc6328ab39bf145b83b1116a5ec6354cbac6a109b84dfa87cbe77d",
       "updatedAt": "2026-10-28T13:24:39.427Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/single-timeline": {
       "title": "단일 시간선",
@@ -3030,10 +3071,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "943feb67be4aab3a0a46325e23474b66d694cf06df6371e62f8f6bc72cc95ee7",
+      "fingerprint": "2e8fdd25037c7857bb5fe0dd43a85a93354f99045d0ebc285c680069a52e497d",
       "updatedAt": "2026-10-28T13:24:39.471Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/six-beasts": {
       "title": "육환신수",
@@ -3099,10 +3140,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "6cead5868ba86fa2c23b779ec38134d9bc22c1bf1488293e462191b59ed3d590",
+      "fingerprint": "9ef5333a81228df73dce36d9e9e058f7e9b4163b187e0abccf7e1636e052dccc",
       "updatedAt": "2026-10-28T13:24:39.542Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/third-act": {
       "title": "3부",
@@ -3142,10 +3183,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ba3f419eecb267bc6bfdb00207985730e9100aeceada24983b7df9bb3aecc88b",
+      "fingerprint": "7222c80b19c2072b07707165c253afcd2a4ec7e84c55db634f36c6c5a80aeeb2",
       "updatedAt": "2026-10-28T13:24:39.582Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/third-protagonist": {
       "title": "3부 주인공",
@@ -3177,10 +3218,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a5a7e6e013f11476c06b6234c90945ce0c815fa2404f86a5aff4ef34bd4f146b",
+      "fingerprint": "81bbeac70097d1000e144b9e6a53a1bcb5f1dd1dd31520966640161cd617b9ed",
       "updatedAt": "2026-10-28T13:24:39.620Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/toma": {
       "title": "토마",
@@ -3213,10 +3254,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "60e5750e2bb82be746406477b4f3499f4bf7a2ffb893e126c5d975f688d7bd14",
+      "fingerprint": "bef3990fd239da260cc4414c1eedf41c61f530ab9289489c4fec24f7bc1e406d",
       "updatedAt": "2026-10-28T13:24:39.655Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/topos": {
       "title": "바하",
@@ -3281,10 +3322,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d6697a8395ce808126f51bef3b319775bfe238afd02229fbf6110556c985f5eb",
+      "fingerprint": "8d3ae69dad4a83a3a40dd0ef2aa03ec73bd7a9e7ec99584f1e45c670a12ca8c3",
       "updatedAt": "2026-10-28T13:24:39.725Z",
-      "reviewedAt": null,
-      "reviewNote": null
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     },
     "story/wiki/zero": {
       "title": "헨",
@@ -3314,6 +3355,156 @@
       "updatedAt": "2026-10-28T13:24:39.769Z",
       "reviewedAt": null,
       "reviewNote": null
+    },
+    "story/wiki/bori": {
+      "title": "이보리",
+      "ownSources": [
+        "docs/data/wiki/bori.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "sources": [
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/circuits.json",
+        "docs/data/wiki/event-alley.json",
+        "docs/data/wiki/hyundan.json",
+        "docs/data/wiki/ieumsae.json",
+        "docs/data/wiki/martial-lineage.json",
+        "docs/data/wiki/morcia.json",
+        "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/research-lab.json",
+        "docs/data/wiki/zero.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "fingerprint": "7bd10322ffca6da05caf0657c4debd86251def6b345ce19d6d8355fb51bbae85",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+    },
+    "story/wiki/event-alley": {
+      "title": "골목의 하산객들",
+      "ownSources": [
+        "docs/data/wiki/event-alley.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/event-alley.json",
+        "docs/data/wiki/event-fieldwork.json",
+        "docs/data/wiki/event-memory.json",
+        "docs/data/wiki/hyundan.json",
+        "docs/data/wiki/ieumsae.json",
+        "docs/data/wiki/martial-lineage.json",
+        "docs/data/wiki/morcia.json",
+        "docs/data/wiki/nonmage.json",
+        "docs/data/wiki/premia.json",
+        "docs/data/wiki/research-lab.json",
+        "docs/data/wiki/zero.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "fingerprint": "f8abfe4c832e2eb89b21e559563e0c11dcc1c8d910b6f46f30ba261663e05cb0",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+    },
+    "story/wiki/hyundan": {
+      "title": "현단",
+      "ownSources": [
+        "docs/data/wiki/hyundan.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/event-alley.json",
+        "docs/data/wiki/hyundan.json",
+        "docs/data/wiki/ieumsae.json",
+        "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
+        "docs/data/wiki/morcia.json",
+        "docs/data/wiki/rakir.json",
+        "docs/data/wiki/research-lab.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "fingerprint": "b0a9c946938058d10c5491ceb165dfb124e3e6a00697a3273f00a64d795e0c4e",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
+    },
+    "story/wiki/martial-lineage": {
+      "title": "천뢰율려문",
+      "ownSources": [
+        "docs/data/wiki/martial-lineage.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "sources": [
+        "docs/data/project.json",
+        "docs/data/projections.json",
+        "docs/data/wiki/bori.json",
+        "docs/data/wiki/circuits.json",
+        "docs/data/wiki/event-alley.json",
+        "docs/data/wiki/hyundan.json",
+        "docs/data/wiki/ieumsae.json",
+        "docs/data/wiki/kar.json",
+        "docs/data/wiki/martial-lineage.json",
+        "docs/data/wiki/modern.json",
+        "docs/data/wiki/research-lab.json",
+        "docs/freshness.js",
+        "docs/html.js",
+        "docs/index.html",
+        "docs/story-flow.js",
+        "docs/story-world.js",
+        "docs/styles.css",
+        "docs/typography-scale.css"
+      ],
+      "fingerprint": "39dae765456231b245f6686497bdd546f83ba6815a0cf389ce603e0cd5060ce6",
+      "updatedAt": "2026-10-29T14:24:48.240Z",
+      "reviewedAt": "2026-10-29T14:24:48.240Z",
+      "reviewNote": "세계관 개정 내용과 관련 문서 참조·제목·색인 일치 여부에 대한 동일 컨텍스트 점검. 독립 Goldfish 리뷰 및 개별 문서의 모든 서사적 함의 검토는 아님."
     }
   }
 }
