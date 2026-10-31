@@ -144,12 +144,19 @@
       "id": "pharos",
       "title": "파로스",
       "category": "조직",
-      "summary": "Pharos · 프레미아와 모르시아가 속했던 해체된 선대 마법사 조직.",
+      "summary": "조라데인이 흩어진 마법사들을 모아 창립한 당대 최대 규모의 선대 마법사 조직.",
       "aliases": [
         "Pharos",
         "선대 마법사 조직",
         "옛 마법사 조직"
       ]
+    },
+    {
+      "id": "zoradein",
+      "title": "조라데인",
+      "category": "인물",
+      "summary": "파로스를 창립해 당대 최대 규모의 마법사 집단을 이끌었던 행동력 있는 지도자.",
+      "aliases": []
     },
     {
       "id": "research-lab",
@@ -466,7 +473,7 @@
       "id": "event-premia",
       "title": "프레미아 · 계승의 후일담",
       "category": "사건",
-      "summary": "선대 지도자와 마주하는 잔잔한 계승의 대화",
+      "summary": "파로스의 창립자 조라데인과 마주하는 잔잔한 계승의 대화",
       "aliases": []
     },
     {
