@@ -5,7 +5,7 @@
     "docs/attributes-view.js": "d965826baefb4c21986ff36456adac02362903616c723c22800c61837869fa88",
     "docs/dashboard-routing.js": "41abea42bb51b5e25599effa6106b0f297c094b1ec0ab765f57f60bf3a5de817",
     "docs/data/classes.json": "ce7c33d41cd1ec674d22362d26bab1ca4b280649b8fbef871ed5281a8ef6b659",
-    "docs/data/project.json": "dd2f26f0cef2d64ba90e5d20fb5be1d34d5202540496adb963901e97e4c94891",
+    "docs/data/project.json": "1147852f05143d5d6f1f9776d4c4cc447b9fb6508a818105696270aabe6da8b1",
     "docs/data/projection-views.json": "bcfd3decedd23e625a87af65b95b09a4bc3a47cc140a5d111d3cf51c3db89778",
     "docs/data/projections.json": "50fef9c7e8333102d84f70b191c595de74d1342927c785f1f2d4ca39761ad4f8",
     "docs/data/relationships.json": "5220e31d69d5a19e445f19f290c9f7a8be02a228a51bf108795d01c269e0eab0",
@@ -70,7 +70,7 @@
     "docs/data/wiki/ontos.json": "940c25e7758ec5344c20b48936b9f191d8ba99d9db0cccde179d50952b4f3347",
     "docs/data/wiki/phantasma.json": "98af7fc93b7152a2e4df10b5174330fbd65e1dd6d95af175e36ed6df35a9649b",
     "docs/data/wiki/pharos.json": "77f230a8dfe40da0492ae5fbd2f176f8c8e24cf4994424d198a4d4302b5a392b",
-    "docs/data/wiki/premia.json": "479b8e0f8cc498758fbf999b7812a87d74c7842ca3333b7206fb243ef9842982",
+    "docs/data/wiki/premia.json": "8bfcffac05b7a7b9c4ed97fdc33338590d47d4d11ccd65d1ea58201359d6849f",
     "docs/data/wiki/rakir.json": "558cfd292ea5a0c6ca63fe0b8a8f311bab12fe194834330382317681ed26dd54",
     "docs/data/wiki/research-lab.json": "b04dde5be49a7485923ed9421868241c4dfb70213e059c06a1826a982bb610bf",
     "docs/data/wiki/restoration.json": "052c628298bc75dfff750d39798008850c95130c787594423d7a4b8e6842ff22",
@@ -83,7 +83,7 @@
     "docs/data/wiki/topos.json": "3975961239ac267a9b697e4ad3e961247cb94e80348ce61c0a69fb5cccb0092e",
     "docs/data/wiki/ur.json": "f280060cb7c4ffed40263f277b46a1ae83ca8ec69582e29317f7277d3648bedb",
     "docs/data/wiki/zero.json": "256276cac55a12840e330ad9ad03b97140859f658b6aa7585eb62f70819312dc",
-    "docs/data/wiki/zoradein.json": "30d0ebdd2379559f83e56b146e1c888b64d3aa83b7cd839e45785b508cf991dc",
+    "docs/data/wiki/zoradein.json": "17b859d7dbf1bafc59581a3b8d7600121d20af0cbae6f79c784a49d6c53459cc",
     "docs/freshness.js": "3ecf9adc679247fc37bc56c6bf83f1d7338c204f3d66f0d07363b37f3ce2acd2",
     "docs/graph-model-core.mjs": "bf9d2ae7d0bfbfec5ffef99969bfa6bfe576ff0a6942a58f03035fc231840361",
     "docs/graph-model.mjs": "dae502406c733b0ce05685222b969a7d44a48d9a81a830f0f04a2f50ab5d9c3a",
@@ -151,10 +151,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "aee27998b717f4271dc5679d61f161663c84d23337a78576c3c4d327d4bcb0da",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. overview의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "d832bd206121f743caa30181f8deb2779e24b4f7ad9a7d2eb742787da9f769de",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "프로젝트 전체 소개의 유효성 검토: narrative.story/acts와 다른 데이터는 변경되지 않고 두 미정 질문의 명칭만 명료화됨."
     },
     "story": {
       "title": "story",
@@ -279,10 +279,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "926d765d15af0d792affeac178034f13b415b7e65c058f9d3500765f7ea507d6",
-      "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "Story & World 인덱스의 조라데인 신규 표제어와 파로스·프레미아·모르시아 간 관계를 검토. 기존 검색 별칭과 장면 순서 유지."
+      "fingerprint": "0099aedc1aae56eec533790d6037f9bc09c6d933f85ab11248e846302771d059",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "Story & World 목차·표제어 연결 확인. 우르/데미우르고스의 기존 구별 유지, 프레미아 개요의 파로스 직접 표기 및 조라데인 작명 경위만 보완."
     },
     "systems": {
       "title": "systems",
@@ -338,10 +338,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ec3f2b502d4d61d56845d9c769f04e196d40960b3a1ab241dd6ba275a1a684d2",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. systems의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "7473943eb3ccc620d02d100d86ebff64179becd85897af78b205c45802aec0ae",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "공통 project.json의 서사 미정 질문 두 문장만 변경. 시스템/능력/자원/프로젝션 수치와 기능 정의는 변경 없음."
     },
     "character": {
       "title": "character",
@@ -395,10 +395,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "aa78f8b725199c3d3aa76642fc3c2e802b15e31e265cb48db12742a4656d4999",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. character의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "ea2378f494f2c8adf06f9085c9138a85bd85d5ab1f7a5024cd26e07a9fa61e47",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "공통 데이터의 인물 관련 미정 질문 표현만 보완. 캐릭터 기초 데이터·속성·전투 스탯은 변경 없음."
     },
     "attributes": {
       "title": "attributes",
@@ -452,10 +452,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2a295e5f195b1835f3049159416e64ecbb27b9d24507958f65cfeed9a40f6bc2",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. attributes의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "5439e0e9b25219c221579d69880ee41e98df6c956cc55c6964b76d606541ca52",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "공통 project.json 질문 문장 변경 외에 elements·attributeRules의 값과 분류는 동일함."
     },
     "projections": {
       "title": "projections",
@@ -509,10 +509,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "2a295e5f195b1835f3049159416e64ecbb27b9d24507958f65cfeed9a40f6bc2",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. projections의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "5439e0e9b25219c221579d69880ee41e98df6c956cc55c6964b76d606541ca52",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "공통 project.json 미정 질문 문구 변경만 영향. 사영도 43종·정렬·특성·좌표 데이터는 건드리지 않음."
     },
     "questions": {
       "title": "questions",
@@ -635,10 +635,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "abc575600a144293fe0b282d2300066657006edab03eaf4deaad2b5ab22a0ae6",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "새로운 인물의 미정 설정(성씨·로마자·양도 기전)과 기존 개방된 연구소 관련성·파로스 설립 이념을 검토. 다른 미정 질문은 변경하지 않음."
+      "fingerprint": "961dffb45459ca9de0b78d11a8141c9e2e61d2337d19b3683c8b7055fd528ac2",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "우르는 확정된 인간 본명, 토벌대에서 따로 쓰는 가명은 미정으로 구분하고, 파로스 옛 지도자의 미정 양도 기전 질문을 조라데인 실명으로 갱신. 질문 개수와 그룹 인덱스는 유지."
     },
     "archive": {
       "title": "archive",
@@ -688,10 +688,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "aee27998b717f4271dc5679d61f161663c84d23337a78576c3c4d327d4bcb0da",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "파로스 명칭 반영에 따른 project.json 의존성 검토. archive의 해당 기능·규칙 데이터는 변경하지 않았고 서사 개요의 조직명만 변경."
+      "fingerprint": "d832bd206121f743caa30181f8deb2779e24b4f7ad9a7d2eb742787da9f769de",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "서사 질문 표현만 달라짐. 기존 아카이브와 구조적 데이터는 그대로 유지."
     },
     "attributes/wiki/haeri": {
       "title": "해리",
@@ -727,10 +727,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "해리: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "attributes/wiki/soeoe": {
       "title": "소외",
@@ -766,10 +766,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "소외: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "attributes/wiki/chojo": {
       "title": "초조",
@@ -805,10 +805,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "초조: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "attributes/wiki/gochak": {
       "title": "고착",
@@ -844,10 +844,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "고착: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "attributes/wiki/banchu": {
       "title": "반추",
@@ -883,10 +883,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "반추: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "attributes/wiki/rules": {
       "title": "개시 규칙",
@@ -922,10 +922,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "976a0513ac4dba6a1c4093de7acfb267d08c006c8f79e3c436f04d4afb538d19",
-      "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "프로젝트 서사 개요의 파로스 명칭 변경만 영향. 속성·사영도·운용 규칙 데이터와 해당 항목의 기술 정의는 미수정 확인."
+      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "개시 규칙: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
     },
     "story/wiki/aion": {
       "title": "아난타",
@@ -1141,10 +1141,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d4d392944ba3fed65fc4f2b7ef003b41c17a0c42b45abde63ecba90a2b578a3b",
+      "fingerprint": "589c7e49d6005c74cfada1ac43753eeebca5bb09f8557e6e4fedf12f22ea0424",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "수정: 실제 세계 연대기의 파로스 창립·해체·계승 연결. 1부 세부 에피소드·개인 시간·flow.nodes/edges와 충돌 없음. 창립·해체 정확 연대 미정."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "파로스 창립·해체, 조라데인 계승, 인간 우르의 세계/개인 시간과 3부 동행 흐름을 재확인. 사건 목록·개인시간·flow 노드와 연결은 기존과 일치하며 변경 불필요."
     },
     "story/wiki/chronos": {
       "title": "크로노스",
@@ -1210,10 +1210,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ee67027d62b77a25e0f9b1cb6bb02d30295748699b6352e63a2b42f4ce6b0624",
+      "fingerprint": "e4dfb9fceaac379ec9f5667266920322a2c7ba1765e4cadb1d8d138d49d5c08a",
       "updatedAt": "2026-10-28T13:24:37.362Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "간접 참조 재검토: 마력회로 소실 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "마력회로 소실: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/circuits": {
       "title": "마력회로",
@@ -1247,10 +1247,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5d7191a414afecd9c2285de44062d6c736d53969cfc23ab3091f49d500369caf",
+      "fingerprint": "b155509c082c041ffef5f6db29672d8522745f038f42d55158c23b22f87ec786",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 마력회로 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "마력회로: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/constraints": {
       "title": "육환신수의 상호 제약",
@@ -1328,10 +1328,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "33bdfd78011b7ba501ea8ce2cd78e72544fb43a9ad7a159675fcacda28cae7e3",
+      "fingerprint": "8ecc9385792b1af257697d79e45caf640030c7d22de70bba92391c37af7f1c37",
       "updatedAt": "2026-10-28T13:24:37.511Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 서사 운영 원칙 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, morcia.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "서사 운영 원칙: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/creative-references": {
       "title": "창작 참고와 보류안",
@@ -1570,10 +1570,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8a29a63b3ddda6e74d11d00bc16a0739ac3c7742bb47e3e4b6608ade660cbdac",
+      "fingerprint": "a370a9886b9b6cb9cc74671b479804de55660c0fc13edd48b3ddc268aa8181a3",
       "updatedAt": "2026-10-28T13:24:37.869Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 유마의 희생·니벨의 이탈 이후 · 남은 일상 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "유마의 희생·니벨의 이탈 이후 · 남은 일상: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-chronos-battle": {
       "title": "시간의 신수 · 데미우르고스 토벌과 흡수",
@@ -1792,10 +1792,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c7f1ba4b2033588c750c8e33f48689f465479a81635f1cb129ca585e53172a7c",
+      "fingerprint": "9fb0151cd703c25eb321f6685b0ceb88eb00259a56f4d29cda523ec66dbbab1c",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 1부 초반 · 피카레스크식 사건과 새 동료 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, event-premia.json, morcia.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "1부 초반 · 피카레스크식 사건과 새 동료: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-fourth-answer": {
       "title": "에테아의 개입 · 삼파전의 제4축",
@@ -1828,10 +1828,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ce0ba8e7fc961bb063dad15b52fd2d453509b465286d4fad3d12d3abdf998144",
+      "fingerprint": "4c13ac732f1639fb638844c99ffbf08a4e45ccab7312c27bbf0a73c14953d093",
       "updatedAt": "2026-10-28T13:24:38.151Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 에테아의 개입 · 삼파전의 제4축 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "에테아의 개입 · 삼파전의 제4축: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-gathering": {
       "title": "다른 마법사를 경계한 카르 · 자발적인 합류",
@@ -1864,10 +1864,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5a0fe6fd121135664099bddba2950eee060ea1ccbb4ed348f8cba3b02c3fc9b4",
+      "fingerprint": "3366f2ca64528558ce008267eadc96ddc21ea34ded2427c15725bcd2018f0382",
       "updatedAt": "2026-10-28T13:24:38.191Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 다른 마법사를 경계한 카르 · 자발적인 합류 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "다른 마법사를 경계한 카르 · 자발적인 합류: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-hand": {
       "title": "1부 마지막 · 블랙홀과 손",
@@ -1898,10 +1898,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "80b42047dfd06054db90fd45b5649f8cab308a4840df14ff585c6f7b09fef3fe",
+      "fingerprint": "2f1b4b0dde0c237f03cf4e73c14d3d749423f3c05ce4a29e34f77659eb9f56ef",
       "updatedAt": "2026-10-28T13:24:38.227Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 1부 마지막 · 블랙홀과 손 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "1부 마지막 · 블랙홀과 손: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-human-demiurge": {
       "title": "3부 · 인간 우르의 동행",
@@ -1971,10 +1971,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8b1ecaeef0967768dc36a28ee786fe7942a7f428f01ee723e92cf872ee2119fd",
+      "fingerprint": "81f3cdc5e48a057a60d0c50d4a9d83e801fb69a7b5bd4aabd9e3a3fd4818defe",
       "updatedAt": "2026-10-28T13:24:38.304Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 3부 · 설계된 마지막 해리와 신위 분리 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "3부 · 설계된 마지막 해리와 신위 분리: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-meeting": {
       "title": "대화의 자리 · 삼파전",
@@ -2005,10 +2005,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7e950f7c72b0314e2c81b7472486bced35cef03973a5accaae8bd8d18f3f97df",
+      "fingerprint": "ba3e6eb8f64b71ea93af2bc3e80f22a4aac15198f8152d288dd872a69a4f8a6e",
       "updatedAt": "2026-10-28T13:24:38.336Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 대화의 자리 · 삼파전 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "대화의 자리 · 삼파전: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-memory": {
       "title": "에테아 · 기억 조작 사건",
@@ -2042,10 +2042,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f6abbbf122b12557bac7c43d47b4cd08adb854884809f1168cd32881370c5821",
+      "fingerprint": "3eebfa0b6b88f086968a015eafd59d82b1d40a9b72f3fa4df6c978631613ff10",
       "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 에테아 · 기억 조작 사건 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(event-premia.json, morcia.json, pharos.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "에테아 · 기억 조작 사건: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/event-omniscience": {
       "title": "시간 신위 · 정체와 운명",
@@ -2110,10 +2110,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c6f5113d65815d4fea078aaf0714ec43a3190ca0bb223b617ee92a0406ac4980",
+      "fingerprint": "810fd1ad74807ed2d8d8f1667175aa32cb9255055b192b1e6f2f885f30c8b48a",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "수정: 옛 지도자 이름을 조라데인으로 확정. 후일담 대화와 재회 시기·권위적 정답 부여는 미정 유지."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "프레미아와 조라데인의 후일담은 이미 실명으로 작성되어 있음. 회로 양도 기전/대화 시각은 미정 유지, 다른 이름 후보는 서사 인물로 추가하지 않음."
     },
     "story/wiki/event-prologue": {
       "title": "프롤로그 · 소꿉친구",
@@ -2490,10 +2490,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "fd1923ffe12c2e875309f89bb5dc55775b51b6be12e1fd2018c05068b313f2b4",
+      "fingerprint": "01fccb2f5be80c2656c3c941c294d9924cca24f9ef952aa261d2a77882151470",
       "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 이음새 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(event-premia.json, morcia.json, pharos.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "이음새: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/kanha": {
       "title": "칸하",
@@ -2594,10 +2594,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "1fde88f952b1259c84687ebe4412ad1788524cc43ae1e3e11c6af7f456b4a269",
+      "fingerprint": "e9a659676cc5d8ea8cacfe0c564d62575fd85ef3f8c648769bc995db39a05a34",
       "updatedAt": "2026-10-28T13:24:38.968Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "간접 참조 재검토: 두 카르와 설계된 해리 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "두 카르와 설계된 해리: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/kar": {
       "title": "카르",
@@ -2645,10 +2645,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "631125bc32957c10e02cf5d414f995b4776d9a945cf05838e29253bc86329753",
+      "fingerprint": "a03af7c1e70197b544fe50b001ba82420d1188dd43e51e9f5deb94fe2613f74e",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 카르 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "카르: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/loss-jinx": {
       "title": "상실의 징크스",
@@ -2684,10 +2684,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "49e17e483c7c981c3c975b61d83b0bf10517976f27760214d5f06ee80d1e98b2",
+      "fingerprint": "e6090e63d034b1e81a141cbc4869397f3014e4bdf3956ff56ca2b294c4374ac1",
       "updatedAt": "2026-10-28T13:24:39.038Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "간접 참조 재검토: 상실의 징크스 본문은 미수정. 변경된 관련 출처(project.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "상실의 징크스: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/modern": {
       "title": "현대의 마법사",
@@ -2722,10 +2722,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "bd70823e9deb47449c6f360a52aa72a764998f6ffa54f60b0da8e2b2b0d1411c",
+      "fingerprint": "4a160d48fe7f7eed3e7dac6ca85f2e340946abf3f6b2211ed25a7af91bebf2be",
       "updatedAt": "2026-10-28T13:24:39.084Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 현대의 마법사 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(morcia.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "현대의 마법사: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/morcia": {
       "title": "모르시아",
@@ -2766,10 +2766,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7ac5ca28d5a1ff8ec81570db0b7e7840d366a92cc049ec60e1bc927b7fdea5bf",
+      "fingerprint": "62a7f79ce0724c381e83fb465a31723afa9fab55d682b6eec309e6d9ea95c7f2",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "수정: 조라데인의 파로스 창립·규모를 인정하되 모르시아의 영웅적 재건관을 과거 조직의 공식 신념으로 승격하지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "모르시아: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json, zoradein.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/nibel": {
       "title": "니벨",
@@ -2800,10 +2800,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "1be2fb8b105e34732c8b109d3b10cf7c77450225c1598ee3035f25956c61867d",
+      "fingerprint": "d0a602a7604ac2d71017718eef31fb181805ad4c73bd71816a31fffb50bae390",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 니벨 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "니벨: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/nonmage": {
       "title": "에테아",
@@ -2938,10 +2938,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "4a8d4491fabf08c049789f7fd67590de7c1f7197374af17336f988593d6c989d",
-      "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "수정: 조라데인의 연결 회로 계승 사실과 프레미아의 다른 공동체 선택을 대조. 회로 이식 방법·재회 장면 미정 유지."
+      "fingerprint": "37f2ff22f9e079d95b1d2f34ddc4b306dd7643ee2a337d2dcc5721c84fec4e8c",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "개요의 구식 '선대 마법사 조직' 표현을 '파로스'로 명료화. 조라데인 계승과 모티프, 프레미아의 이음새 창립은 그대로 유지."
     },
     "story/wiki/rakir": {
       "title": "유마",
@@ -2973,10 +2973,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "bf257941a2a1ef6d14ab3995791672668e8f64bf5a017d8618380e50b3e60575",
+      "fingerprint": "d258e6db7b1eee87ab010856f87d3bf2664b924915787d5f6743fa9a624273a5",
       "updatedAt": "2026-10-28T13:24:39.355Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 유마 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "유마: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/research-lab": {
       "title": "피카트릭스",
@@ -3017,10 +3017,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7246c66087d933900a67fd4b0e0c4b8590bfb9188b6a9862ea66aa77db749311",
+      "fingerprint": "7d2b301eacb6864c389db54ed630baadda70c6d6dbf01547f32180f2490b54bd",
       "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 피카트릭스 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(morcia.json, pharos.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "피카트릭스: 해당 표제어의 인물·사건 관계와 연결된 출처(premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/restoration": {
       "title": "복원 마법",
@@ -3200,10 +3200,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "889e3c5751723605985c9d78b8f15bf63e932e3b088196241d0d074f886d8db2",
+      "fingerprint": "fcdc842eee6f37af5dcc506f811430461dce2736422bb4f75d2813c6e24b2379",
       "updatedAt": "2026-10-28T13:24:39.582Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 3부 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(chronology.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "3부: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/third-protagonist": {
       "title": "3부 주인공",
@@ -3444,10 +3444,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d2c50ae370e0e9c38b0211d472a50cc1eef2af797c0fde9c9eda7ad8b186a798",
+      "fingerprint": "d704d2fb8d100a93407f5c438a331fc6e2c2e5426c67d29e53832fd1016f624c",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 골목의 하산객들 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(morcia.json, premia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "골목의 하산객들: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/hyundan": {
       "title": "현단",
@@ -3481,10 +3481,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a9128d8d397e6a8516655544e076b5ef7cfc17611d41149e1f7be06ac4421b26",
+      "fingerprint": "9156778eb8162da80bb782508b8a1006a345054d1e6bc03910d0a52657101edb",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "간접 참조 재검토: 현단 문서의 직접 원문은 그대로임을 확인. 변경 관련 문서(morcia.json)와 검색어를 점검했으며 조라데인 신설이 기존 인물·사건의 확정 상태를 바꾸지 않음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "현단: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/martial-lineage": {
       "title": "천뢰율려문",
@@ -3518,10 +3518,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0d3a08cdabaf2c2bf369454c0ad75fcecfb453e79f5536485ff261fd50fa5b67",
+      "fingerprint": "271933eab6feb0237ab4d60d20adc13af20367a8bd75c084a5d6564766a6c30b",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-29T14:51:29.292Z",
-      "reviewNote": "간접 참조 재검토: 천뢰율려문 본문은 미수정. 변경된 관련 출처(project.json, ieumsae.json, research-lab.json)와 기존 사건·캐릭터 설정의 관계를 검토했으며 새 파로스 명칭으로 직접적인 서사 확정이 필요한 곳은 없음."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "천뢰율려문: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
     },
     "story/wiki/pharos": {
       "title": "파로스",
@@ -3555,10 +3555,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a5aeb9ab97f7df570efade102e9c90f7dfb3fc1e43e6764337e00bd61111e6f8",
+      "fingerprint": "a5910a6f2c4dea5aad14f8c7b31050d355d2a51b69d12c70b275f6082a3ecc52",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "수정: 창립자 조라데인이 흩어진 마법사를 모아 당대 최대 집단을 형성했음을 반영. 실제 설립 이념과 회로 양도 기전은 여전히 미정."
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "당대 최대 규모, 조라데인의 창립과 두 계승자의 해석이 이미 반영된 상태임을 재검토. 직접 문서 수정 없이 프레미아 개요·작명 근거 변경만 반영."
     },
     "story/wiki/zoradein": {
       "title": "조라데인",
@@ -3590,10 +3590,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c813d27f30b7471cc2ae67ef705b5dbd75197f3de20f2cd07889541bf8d32855",
-      "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:22:03.529Z",
-      "reviewNote": "신규 표제어 검토: 조라데인 이름, 당대 최대 규모 파로스 창립, 행동력·강단, 아이다 루이스에서 따온 작가용 모티프 명시. 로마자 성명·세부 행동·양도 기전은 미정."
+      "fingerprint": "4dc731616e2263eabe431bb26459afa380e10af970dce3bbc5d557354186260a",
+      "updatedAt": "2026-10-31T14:39:00.275Z",
+      "reviewedAt": "2026-10-31T14:39:00.275Z",
+      "reviewNote": "조라디아 발음에서 카리스마를 살리되 프레미아·모르시아와 같은 -아 어미를 피한 최종 작명 경위를 추가. 아비·아이다·조라디아는 미채택 후보임을 명시, 실존 인물 오마주와 인물 자체를 구분."
     }
   }
 }
