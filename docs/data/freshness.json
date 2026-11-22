@@ -5,7 +5,7 @@
     "docs/attributes-view.js": "d965826baefb4c21986ff36456adac02362903616c723c22800c61837869fa88",
     "docs/dashboard-routing.js": "41abea42bb51b5e25599effa6106b0f297c094b1ec0ab765f57f60bf3a5de817",
     "docs/data/classes.json": "ce7c33d41cd1ec674d22362d26bab1ca4b280649b8fbef871ed5281a8ef6b659",
-    "docs/data/project.json": "1147852f05143d5d6f1f9776d4c4cc447b9fb6508a818105696270aabe6da8b1",
+    "docs/data/project.json": "81676b73ac8e770d8a9a191b28eaca65d4b96b8292bbdb41be88db5cb8c9ca45",
     "docs/data/projection-views.json": "bcfd3decedd23e625a87af65b95b09a4bc3a47cc140a5d111d3cf51c3db89778",
     "docs/data/projections.json": "50fef9c7e8333102d84f70b191c595de74d1342927c785f1f2d4ca39761ad4f8",
     "docs/data/relationships.json": "5220e31d69d5a19e445f19f290c9f7a8be02a228a51bf108795d01c269e0eab0",
@@ -151,10 +151,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d832bd206121f743caa30181f8deb2779e24b4f7ad9a7d2eb742787da9f769de",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "프로젝트 전체 소개의 유효성 검토: narrative.story/acts와 다른 데이터는 변경되지 않고 두 미정 질문의 명칭만 명료화됨."
+      "fingerprint": "892499149aee7fb406f8b46f1242ef56f116b8c39699d6838aed7a009e50a472",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "MVP 범위를 해리·소외·초조 3속성으로 정정하고 우선순위·최근 결정·확정 16종 중 선별 방침을 확인함. 나머지 MVP 기능 항목은 기존의 검증 구상 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story": {
       "title": "story",
@@ -279,10 +279,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0099aedc1aae56eec533790d6037f9bc09c6d933f85ab11248e846302771d059",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "Story & World 목차·표제어 연결 확인. 우르/데미우르고스의 기존 구별 유지, 프레미아 개요의 파로스 직접 표기 및 조라데인 작명 경위만 보완."
+      "fingerprint": "8d1946b981298db33d38056f1b03980d727a0b9c9c5eb08a9308a03fda5f6de0",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "이번 변경은 3속성 MVP의 게임 설계 우선순위로, Story & World 위키 명칭·사건·인물·스토리 대본은 변경하지 않았음을 확인. 기존 세계관 확정/미정 보존. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "systems": {
       "title": "systems",
@@ -338,10 +338,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "7473943eb3ccc620d02d100d86ebff64179becd85897af78b205c45802aec0ae",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "공통 project.json의 서사 미정 질문 두 문장만 변경. 시스템/능력/자원/프로젝션 수치와 기능 정의는 변경 없음."
+      "fingerprint": "a0698c0505053040124adce501bc9d897b39c57c6477be97c11da7c6aa94ae61",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "개시·사영도 시스템 설명을 3속성 MVP 시험 예외와 정식 5속성 설계 게이트로 구분. 전개/완결 각인의 전체 정식 사전 및 최종 카르마 공식은 미정 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "character": {
       "title": "character",
@@ -395,10 +395,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "ea2378f494f2c8adf06f9085c9138a85bd85d5ab1f7a5024cd26e07a9fa61e47",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "공통 데이터의 인물 관련 미정 질문 표현만 보완. 캐릭터 기초 데이터·속성·전투 스탯은 변경 없음."
+      "fingerprint": "e8086dc3d507e53030b8588e1a1957fede8539408fcf04aef86c30a912157713",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "MVP 속성 범위를 3종으로 변경했으나 7스탯·클래스·정신력/각인력 수치와 캐릭터 데이터 소유 원본은 변경하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes": {
       "title": "attributes",
@@ -452,10 +452,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5439e0e9b25219c221579d69880ee41e98df6c956cc55c6964b76d606541ca52",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "공통 project.json 질문 문장 변경 외에 elements·attributeRules의 값과 분류는 동일함."
+      "fingerprint": "fe69bbf130fb986402e3bcc1715a8a8fa8dd51d350f3dfaf85421496067e9405",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착에 격 모티프 11종/4개 신규 후보의 미정 상태를 기록하고 반추를 유보. 해리·소외·초조 16개 확정 연산 유지, 정십이면체·정이십면체 27개 역할 미확정 확인. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "projections": {
       "title": "projections",
@@ -509,10 +509,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "5439e0e9b25219c221579d69880ee41e98df6c956cc55c6964b76d606541ca52",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "공통 project.json 미정 질문 문구 변경만 영향. 사영도 43종·정렬·특성·좌표 데이터는 건드리지 않음."
+      "fingerprint": "fe69bbf130fb986402e3bcc1715a8a8fa8dd51d350f3dfaf85421496067e9405",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "사영도 원본 projections.json과 43종 기하 클래스·전역 연번·MDS·그림 참조 변경 없음. MVP는 기존 16개 확정 연산의 부분집합만 선별하며 27개 가설의 승격 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "questions": {
       "title": "questions",
@@ -635,10 +635,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "961dffb45459ca9de0b78d11a8141c9e2e61d2337d19b3683c8b7055fd528ac2",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "우르는 확정된 인간 본명, 토벌대에서 따로 쓰는 가명은 미정으로 구분하고, 파로스 옛 지도자의 미정 양도 기전 질문을 조라데인 실명으로 갱신. 질문 개수와 그룹 인덱스는 유지."
+      "fingerprint": "67bfa277779c1858c5e281a6c5612ad334f390ef0e4d54da344fa34afa831d4b",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착 인칭·격, 11개 관계 원형 독립성, 나머지 3종 검증 질문을 추가. 기존 질문과 관련 오픈 이슈 미해결 유지, 세계관 질문 편집 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "archive": {
       "title": "archive",
@@ -688,10 +688,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d832bd206121f743caa30181f8deb2779e24b4f7ad9a7d2eb742787da9f769de",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "서사 질문 표현만 달라짐. 기존 아카이브와 구조적 데이터는 그대로 유지."
+      "fingerprint": "892499149aee7fb406f8b46f1242ef56f116b8c39699d6838aed7a009e50a472",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "신규 MVP 범위와 검토 기획 기록 외에 폐기된 시스템·용어·기존 결정 및 아카이브 데이터 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/haeri": {
       "title": "해리",
@@ -727,10 +727,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "해리: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "해리의 4종 개시 연산과 사분면/확정 상태는 유지. MVP에 포함됨; 5속성 정식 비용 게이트와 구분한 시험용 최소 규칙만 허용. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/soeoe": {
       "title": "소외",
@@ -766,10 +766,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "소외: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "소외의 A2 기반 6종 개시 연산 및 공간 점유 역할/상태는 유지. MVP에 포함되지만 미정 세부 판정과 비용 확정은 아님. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/chojo": {
       "title": "초조",
@@ -805,10 +805,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "초조: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "초조의 3A1 기반 6종 개시 연산과 운동/변성/파급 경계 유지. MVP 포함; 고착의 상대 관계 조작과 구분되는 직접 변화 원칙 확인. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/gochak": {
       "title": "고착",
@@ -844,10 +844,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "고착: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착 기존 '단순 교환=복수 전가'와 신규 '교환대가격=쌍방 실패 연동·관계 해지'를 독립적으로 명료화. 인칭·격 11종 잠정 연구 및 14개 사영도 미배정 유지; MVP 제외."
     },
     "attributes/wiki/banchu": {
       "title": "반추",
@@ -883,10 +883,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "반추: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "기존 마법 작용 이력 재발현 정의 유지. 표상·감각·정신 확장은 미채택이며 13종 사영도/재귀 방지/비용 설계는 MVP 뒤로 보류. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/rules": {
       "title": "개시 규칙",
@@ -922,10 +922,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "8375b18f7e8caf7ebbf92938d90436d70f447fc1a15fc2cb721ff7645705a1c7",
-      "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "개시 규칙: project.json에서 3부 본명/별도 가명 및 조라데인 미정 질문의 표현만 변경했음을 확인. 해당 속성의 정의·기술·상태는 유지."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "5속성 자유 선택·연속 개시 보상 원칙 변경 없음. MVP는 확정된 세 속성만 선택적으로 시험하며 전체 개시/비용 정식 설계 완료를 주장하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/aion": {
       "title": "아난타",
@@ -1141,10 +1141,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "589c7e49d6005c74cfada1ac43753eeebca5bb09f8557e6e4fedf12f22ea0424",
+      "fingerprint": "314cde27e0bf84a5ff32ec4debfdeb15affb30100eee5d22b1d0c1c68155011e",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "파로스 창립·해체, 조라데인 계승, 인간 우르의 세계/개인 시간과 3부 동행 흐름을 재확인. 사건 목록·개인시간·flow 노드와 연결은 기존과 일치하며 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "연대표·사건도 내 해리 관련 서사 언급 3건을 확인. 이번 MVP 범위 조정은 사건 목록·세계시간·개인시간·flow 구성과 무관하므로 모두 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/chronos": {
       "title": "크로노스",
@@ -1210,10 +1210,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e4dfb9fceaac379ec9f5667266920322a2c7ba1765e4cadb1d8d138d49d5c08a",
+      "fingerprint": "11e62b948614f12c2d6e8c3a03e457659e6e7a63e00bee7d7e270abf2615f4b9",
       "updatedAt": "2026-10-28T13:24:37.362Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "마력회로 소실: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "마력회로 소실은 5속성 명칭을 설명하는 서사 항목으로 확인. MVP에서 두 속성의 구현을 보류해도 세계관의 5속성 존재 및 사건 기록은 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/circuits": {
       "title": "마력회로",
@@ -1792,10 +1792,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9fb0151cd703c25eb321f6685b0ceb88eb00259a56f4d29cda523ec66dbbab1c",
+      "fingerprint": "08aa0e754f0688a8090ad63908fcd87f48fd376d2c53ad7e0bb12e42bed19f82",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "1부 초반 · 피카레스크식 사건과 새 동료: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "1부 초반 사건에 해리 언급 확인. MVP 범위는 사건의 인과·시점과 무관하므로 위키 내용·연대표 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/event-fourth-answer": {
       "title": "에테아의 개입 · 삼파전의 제4축",
@@ -1971,10 +1971,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "81f3cdc5e48a057a60d0c50d4a9d83e801fb69a7b5bd4aabd9e3a3fd4818defe",
+      "fingerprint": "544c61246f2bd1f71956402dc9a6f7e89a4558ff5ded1374122dc8d74cd341cc",
       "updatedAt": "2026-10-28T13:24:38.304Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "3부 · 설계된 마지막 해리와 신위 분리: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "3부 해리 신위 분리 설정을 확인. MVP의 해리 포함 결정이 사건 발생 순서와 서사의 확정 사실을 바꾸지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/event-meeting": {
       "title": "대화의 자리 · 삼파전",
@@ -2490,10 +2490,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "01fccb2f5be80c2656c3c941c294d9924cca24f9ef952aa261d2a77882151470",
+      "fingerprint": "b0091b6978055229ae314ff906b88aefa8e12f6aa58250733114e87d139a02dd",
       "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "이음새: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "이음새 인물·사건의 해리 관련 표현 확인. MVP 구현 속성 범위가 공동체 결성·구성·연대기에는 영향을 주지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/kanha": {
       "title": "칸하",
@@ -2594,10 +2594,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e9a659676cc5d8ea8cacfe0c564d62575fd85ef3f8c648769bc995db39a05a34",
+      "fingerprint": "85cf54d0cd84ada70ce835367bea4caec8d43d0bfc744b461181aba8ed2e13a7",
       "updatedAt": "2026-10-28T13:24:38.968Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "두 카르와 설계된 해리: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "두 카르와 설계된 해리 문서의 해리 설정을 확인. MVP 우선순위 변경은 3부 해리와 인물 정체성·시간 구조를 변경하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/kar": {
       "title": "카르",
@@ -2645,10 +2645,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a03af7c1e70197b544fe50b001ba82420d1188dd43e51e9f5deb94fe2613f74e",
+      "fingerprint": "97f1ba1373d2da59e86376278a18c7b23c0ad35ca297d704a9ec7d81076f2718",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "카르: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "카르 인물 문서에 해리 언급 확인. 게임 MVP 속성 제한을 인물 능력/서사의 확정 제한으로 오해하지 않도록 현행 텍스트 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/loss-jinx": {
       "title": "상실의 징크스",
@@ -2684,10 +2684,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "e6090e63d034b1e81a141cbc4869397f3014e4bdf3956ff56ca2b294c4374ac1",
+      "fingerprint": "23a8ae81dc21695344f80f162c9ef9cca40253c1292b44fc15d908a480297acb",
       "updatedAt": "2026-10-28T13:24:39.038Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "상실의 징크스: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "상실의 징크스 문서에서 해리 개념 참조 확인. MVP 설계/보류는 세계관 상실의 법칙이나 사건 연쇄에 영향 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/modern": {
       "title": "현대의 마법사",
@@ -2938,10 +2938,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "37f2ff22f9e079d95b1d2f34ddc4b306dd7643ee2a337d2dcc5721c84fec4e8c",
+      "fingerprint": "b302439e13cb0fd97df8e2f0894ad2f19bd01923ee36d3b8e8eab0eac7c0ed94",
       "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "개요의 구식 '선대 마법사 조직' 표현을 '파로스'로 명료화. 조라데인 계승과 모티프, 프레미아의 이음새 창립은 그대로 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "프레미아 위키의 소외 언급 확인. 소외가 MVP에 포함되지만 서사상의 작용 범위/사건은 그대로 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/rakir": {
       "title": "유마",
@@ -3200,10 +3200,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "fcdc842eee6f37af5dcc506f811430461dce2736422bb4f75d2813c6e24b2379",
+      "fingerprint": "abcc7d9c452475e9c278d787fa164b7160a554503f61846b18b94e7319e527ac",
       "updatedAt": "2026-10-28T13:24:39.582Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "3부: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "3부 문서의 해리 참조 확인. MVP 구현 범위 조정으로 세계관 결말/사건 배열을 수정하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/third-protagonist": {
       "title": "3부 주인공",
@@ -3444,10 +3444,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "d704d2fb8d100a93407f5c438a331fc6e2c2e5426c67d29e53832fd1016f624c",
+      "fingerprint": "c1bb29badf4a749b22db0a584e78d736d9485e0a0614c7fb9a9e4f1973b9d234",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "골목의 하산객들: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json, premia.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "골목의 하산객들 에피소드의 해리 참조 확인. 3속성 MVP 전환과 무관하므로 사건 문서 및 연대표 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/hyundan": {
       "title": "현단",
@@ -3481,10 +3481,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9156778eb8162da80bb782508b8a1006a345054d1e6bc03910d0a52657101edb",
+      "fingerprint": "cb4f508173703f4b3ed9dfffee3d44c92f9a6e204b605820b9f68fa09b67ca44",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "현단: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "현단의 해리/내공 활용 서술 확인. MVP의 시험 속성 3종 선택이 문파의 연혁·계승·능력 설정을 바꾸지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/martial-lineage": {
       "title": "천뢰율려문",
@@ -3518,10 +3518,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "271933eab6feb0237ab4d60d20adc13af20367a8bd75c084a5d6564766a6c30b",
+      "fingerprint": "871e4776f99bd090b5d64a4a892c9ada7f2a303c84948c134bba24fd40ddd3a9",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "천뢰율려문: 해당 표제어의 인물·사건 관계와 연결된 출처(project.json)를 재검토. 확정된 우르·데미우르고스 명칭, 조라데인·파로스 명칭, 사건 배열은 변동 없고 내용 변경 불필요."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "천뢰율려문 문서의 해리·개시 언급 확인. 문파·운공 규칙은 MVP 전개/각인 임시 가정과 별도이므로 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/pharos": {
       "title": "파로스",
@@ -3555,10 +3555,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a5910a6f2c4dea5aad14f8c7b31050d355d2a51b69d12c70b275f6082a3ecc52",
+      "fingerprint": "b6ea9ca4a37781bd0ba0a1f79296e47779f38fd99978fa79e3344f6a79c20c1c",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-10-31T14:39:00.275Z",
-      "reviewNote": "당대 최대 규모, 조라데인의 창립과 두 계승자의 해석이 이미 반영된 상태임을 재검토. 직접 문서 수정 없이 프레미아 개요·작명 근거 변경만 반영."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "파로스 문서의 소외 관련 언급 확인. 소외 MVP 포함과 마법사 조직 서사 사이에 설정 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/zoradein": {
       "title": "조라데인",

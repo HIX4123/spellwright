@@ -136,6 +136,15 @@ The **Story & World** area is now a topic wiki. Character documents own their na
 
 문화권은 명명의 모티프이며 신위 자체의 역사적 기원이나 화신의 출신을 뜻하지 않는다. 신위 문서의 영구 ID(`aion`, `topos`, `zero`, `ontos`, `phantasma`)는 링크 호환을 위해 유지하고, 옛 명칭은 검색 별칭으로 보존한다. 어원 설명의 유일한 상세 원본은 개별 위키 JSON의 `naming-origin` 절이다.
 
+## MVP scope and deferred attributes (2026-11-22)
+
+- **MVP:** 해리(4)·소외(6)·초조(6)의 확정 개시 연산 16종에서 최소 플레이 집합을 선별한다. 실제 구현 개수는 아직 미정이며, 목표는 서클 조립의 전투 재미를 검증하는 것이다.
+- **후속 설계:** 고착 14종·반추 13종은 MVP에서 제외한다. 두 속성의 기하학적 사영 클래스/전역 연번은 유지하고, 현재 가설을 확정하지 않는다.
+- **고착 방향성(검토):** 나-타자 관계를 하이퍼그래프 표현 이전에 인칭·격의 관계 문법으로 정의한다. 비핵심격에서 가져온 11개 개념 원형(속·부분·공동·결여·여·도구·수혜·분배·비교·동등·교환대가)은 잠정 채택했으나 14종 사영도에 배정하지 않았다. 남은 3종 후보는 위계·승계·동조·의존을 참고하며 미정이다. 핵심격은 필수 아닌 선택적 역할/기준 지정 각인 후보이다.
+- **고착 사례 구분(검토):** 비교격=성질 대소 강제, 동등격=성질 일치 강제; 교환대가격=한쪽 이행 실패 시 양쪽 관계 해지(여격 2회의 독립 실패와 다름). 비용·효과 소급·범위는 미정이다.
+- **반추 방향성(검토):** 확정된 기본 영역은 과거 마법 작용 이력의 현재 재발현이다. 감각·정신·기억 등을 포함하는 '표상' 확장 제안은 아직 미채택이다.
+- **정식 설계 게이트:** 전 속성에 통용되는 완성형 전개 각인/카르마 비용은 다섯 개시 속성의 정립 이후에 확정한다. MVP에서는 3속성에 한정한 시험용 전개·완결 규칙과 임시 비용을 먼저 검증할 수 있다.
+
 ## Page freshness and change propagation
 
 Every main section, Story wiki article and Attributes term page displays its page update time and related-content review time in KST. Historical review times remain unrecorded; a recent file update does not imply a complete semantic review. Local drafts are labelled separately.
