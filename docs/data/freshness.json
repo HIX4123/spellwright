@@ -5,7 +5,7 @@
     "docs/attributes-view.js": "d965826baefb4c21986ff36456adac02362903616c723c22800c61837869fa88",
     "docs/dashboard-routing.js": "41abea42bb51b5e25599effa6106b0f297c094b1ec0ab765f57f60bf3a5de817",
     "docs/data/classes.json": "ce7c33d41cd1ec674d22362d26bab1ca4b280649b8fbef871ed5281a8ef6b659",
-    "docs/data/project.json": "2fd8fcd69cbb31427a55dbbc22daa5a9170b860177c0667ef9783f6cd4236534",
+    "docs/data/project.json": "81676b73ac8e770d8a9a191b28eaca65d4b96b8292bbdb41be88db5cb8c9ca45",
     "docs/data/projection-views.json": "bcfd3decedd23e625a87af65b95b09a4bc3a47cc140a5d111d3cf51c3db89778",
     "docs/data/projections.json": "50fef9c7e8333102d84f70b191c595de74d1342927c785f1f2d4ca39761ad4f8",
     "docs/data/relationships.json": "5220e31d69d5a19e445f19f290c9f7a8be02a228a51bf108795d01c269e0eab0",
@@ -151,10 +151,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "eae1e7df4231b9558ceaa4f9b861133dd60d7bfe18ad0ab5954369099c103c57",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "MVP 범위를 해리·소외·초조 3속성으로 정정하고 우선순위·최근 결정·확정 16종 중 선별 방침을 확인함. 나머지 MVP 기능 항목은 기존의 검증 구상 유지."
+      "fingerprint": "892499149aee7fb406f8b46f1242ef56f116b8c39699d6838aed7a009e50a472",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "MVP 범위를 해리·소외·초조 3속성으로 정정하고 우선순위·최근 결정·확정 16종 중 선별 방침을 확인함. 나머지 MVP 기능 항목은 기존의 검증 구상 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story": {
       "title": "story",
@@ -279,10 +279,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "cc9cdbb84c46597e4698d99597dd9e42f78f6384f602141d274b86e00e90d484",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "이번 변경은 3속성 MVP의 게임 설계 우선순위로, Story & World 위키 명칭·사건·인물·스토리 대본은 변경하지 않았음을 확인. 기존 세계관 확정/미정 보존."
+      "fingerprint": "8d1946b981298db33d38056f1b03980d727a0b9c9c5eb08a9308a03fda5f6de0",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "이번 변경은 3속성 MVP의 게임 설계 우선순위로, Story & World 위키 명칭·사건·인물·스토리 대본은 변경하지 않았음을 확인. 기존 세계관 확정/미정 보존. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "systems": {
       "title": "systems",
@@ -338,10 +338,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "0ea6c56ad1b23a5dd50bc4bb78d7b9a92b2b8890b56cdd23245fe53a86ba08e1",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "개시·사영도 시스템 설명을 3속성 MVP 시험 예외와 정식 5속성 설계 게이트로 구분. 전개/완결 각인의 전체 정식 사전 및 최종 카르마 공식은 미정 유지."
+      "fingerprint": "a0698c0505053040124adce501bc9d897b39c57c6477be97c11da7c6aa94ae61",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "개시·사영도 시스템 설명을 3속성 MVP 시험 예외와 정식 5속성 설계 게이트로 구분. 전개/완결 각인의 전체 정식 사전 및 최종 카르마 공식은 미정 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "character": {
       "title": "character",
@@ -395,10 +395,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "cfc9aad2e412ab6b4d90541bb486417ccf1ff6a1231efb274207b7f77faa06c8",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "MVP 속성 범위를 3종으로 변경했으나 7스탯·클래스·정신력/각인력 수치와 캐릭터 데이터 소유 원본은 변경하지 않음."
+      "fingerprint": "e8086dc3d507e53030b8588e1a1957fede8539408fcf04aef86c30a912157713",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "MVP 속성 범위를 3종으로 변경했으나 7스탯·클래스·정신력/각인력 수치와 캐릭터 데이터 소유 원본은 변경하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes": {
       "title": "attributes",
@@ -452,10 +452,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "613b0d5ef2c366ad13348ae003b5b3384a605ec259c69245f1f7906f13d3e550",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "고착에 격 모티프 11종/4개 신규 후보의 미정 상태를 기록하고 반추를 유보. 해리·소외·초조 16개 확정 연산 유지, 정십이면체·정이십면체 27개 역할 미확정 확인."
+      "fingerprint": "fe69bbf130fb986402e3bcc1715a8a8fa8dd51d350f3dfaf85421496067e9405",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착에 격 모티프 11종/4개 신규 후보의 미정 상태를 기록하고 반추를 유보. 해리·소외·초조 16개 확정 연산 유지, 정십이면체·정이십면체 27개 역할 미확정 확인. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "projections": {
       "title": "projections",
@@ -509,10 +509,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "613b0d5ef2c366ad13348ae003b5b3384a605ec259c69245f1f7906f13d3e550",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "사영도 원본 projections.json과 43종 기하 클래스·전역 연번·MDS·그림 참조 변경 없음. MVP는 기존 16개 확정 연산의 부분집합만 선별하며 27개 가설의 승격 없음."
+      "fingerprint": "fe69bbf130fb986402e3bcc1715a8a8fa8dd51d350f3dfaf85421496067e9405",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "사영도 원본 projections.json과 43종 기하 클래스·전역 연번·MDS·그림 참조 변경 없음. MVP는 기존 16개 확정 연산의 부분집합만 선별하며 27개 가설의 승격 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "questions": {
       "title": "questions",
@@ -635,10 +635,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "44edb86e16a479fcde14f0cf6e1ede98f19516794bc09b9e1fe0395dc96a5865",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "고착 인칭·격, 11개 관계 원형 독립성, 나머지 3종 검증 질문을 추가. 기존 질문과 관련 오픈 이슈 미해결 유지, 세계관 질문 편집 없음."
+      "fingerprint": "67bfa277779c1858c5e281a6c5612ad334f390ef0e4d54da344fa34afa831d4b",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착 인칭·격, 11개 관계 원형 독립성, 나머지 3종 검증 질문을 추가. 기존 질문과 관련 오픈 이슈 미해결 유지, 세계관 질문 편집 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "archive": {
       "title": "archive",
@@ -688,10 +688,10 @@
         "docs/system-resolver.mjs",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "eae1e7df4231b9558ceaa4f9b861133dd60d7bfe18ad0ab5954369099c103c57",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "신규 MVP 범위와 검토 기획 기록 외에 폐기된 시스템·용어·기존 결정 및 아카이브 데이터 변경 없음."
+      "fingerprint": "892499149aee7fb406f8b46f1242ef56f116b8c39699d6838aed7a009e50a472",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "신규 MVP 범위와 검토 기획 기록 외에 폐기된 시스템·용어·기존 결정 및 아카이브 데이터 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/haeri": {
       "title": "해리",
@@ -727,10 +727,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "해리의 4종 개시 연산과 사분면/확정 상태는 유지. MVP에 포함됨; 5속성 정식 비용 게이트와 구분한 시험용 최소 규칙만 허용."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "해리의 4종 개시 연산과 사분면/확정 상태는 유지. MVP에 포함됨; 5속성 정식 비용 게이트와 구분한 시험용 최소 규칙만 허용. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/soeoe": {
       "title": "소외",
@@ -766,10 +766,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "소외의 A2 기반 6종 개시 연산 및 공간 점유 역할/상태는 유지. MVP에 포함되지만 미정 세부 판정과 비용 확정은 아님."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "소외의 A2 기반 6종 개시 연산 및 공간 점유 역할/상태는 유지. MVP에 포함되지만 미정 세부 판정과 비용 확정은 아님. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/chojo": {
       "title": "초조",
@@ -805,10 +805,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "초조의 3A1 기반 6종 개시 연산과 운동/변성/파급 경계 유지. MVP 포함; 고착의 상대 관계 조작과 구분되는 직접 변화 원칙 확인."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "초조의 3A1 기반 6종 개시 연산과 운동/변성/파급 경계 유지. MVP 포함; 고착의 상대 관계 조작과 구분되는 직접 변화 원칙 확인. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/gochak": {
       "title": "고착",
@@ -844,10 +844,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "인칭·비핵심 격 모티프 11종의 잠정 원형과 비교/동등/교환 차별화, 핵심격 선택 각인 및 남은 후보를 추가. 14종 사영도 대응/연산 수치는 전부 미정, 3속성 MVP에서 보류."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "고착 기존 '단순 교환=복수 전가'와 신규 '교환대가격=쌍방 실패 연동·관계 해지'를 독립적으로 명료화. 인칭·격 11종 잠정 연구 및 14개 사영도 미배정 유지; MVP 제외."
     },
     "attributes/wiki/banchu": {
       "title": "반추",
@@ -883,10 +883,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "기존 마법 작용 이력 재발현 정의 유지. 표상·감각·정신 확장은 미채택이며 13종 사영도/재귀 방지/비용 설계는 MVP 뒤로 보류."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "기존 마법 작용 이력 재발현 정의 유지. 표상·감각·정신 확장은 미채택이며 13종 사영도/재귀 방지/비용 설계는 MVP 뒤로 보류. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "attributes/wiki/rules": {
       "title": "개시 규칙",
@@ -922,10 +922,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "a6b5a222b7d8a260c55e88c5057f3ef9297dcb88f33178eae20cdaaaab342c74",
-      "updatedAt": "2026-11-22T14:32:13.653Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "5속성 자유 선택·연속 개시 보상 원칙 변경 없음. MVP는 확정된 세 속성만 선택적으로 시험하며 전체 개시/비용 정식 설계 완료를 주장하지 않음."
+      "fingerprint": "b294768c72a8c13ea1347a1df5537e763a4b87f13e6ac5f9540c96d981edf50d",
+      "updatedAt": "2026-11-22T14:34:15.733Z",
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "5속성 자유 선택·연속 개시 보상 원칙 변경 없음. MVP는 확정된 세 속성만 선택적으로 시험하며 전체 개시/비용 정식 설계 완료를 주장하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/aion": {
       "title": "아난타",
@@ -1141,10 +1141,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "3ca07da5364a2d2fc767b41892a7cbcaa4fbe86a8071e7243cd49a807cbc48e9",
+      "fingerprint": "314cde27e0bf84a5ff32ec4debfdeb15affb30100eee5d22b1d0c1c68155011e",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "연대표·사건도 내 해리 관련 서사 언급 3건을 확인. 이번 MVP 범위 조정은 사건 목록·세계시간·개인시간·flow 구성과 무관하므로 모두 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "연대표·사건도 내 해리 관련 서사 언급 3건을 확인. 이번 MVP 범위 조정은 사건 목록·세계시간·개인시간·flow 구성과 무관하므로 모두 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/chronos": {
       "title": "크로노스",
@@ -1210,10 +1210,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c315ebf77be8bf4a9e5a0a39327a2eec53748642a3fcbb9277e6468668882944",
+      "fingerprint": "11e62b948614f12c2d6e8c3a03e457659e6e7a63e00bee7d7e270abf2615f4b9",
       "updatedAt": "2026-10-28T13:24:37.362Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "마력회로 소실은 5속성 명칭을 설명하는 서사 항목으로 확인. MVP에서 두 속성의 구현을 보류해도 세계관의 5속성 존재 및 사건 기록은 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "마력회로 소실은 5속성 명칭을 설명하는 서사 항목으로 확인. MVP에서 두 속성의 구현을 보류해도 세계관의 5속성 존재 및 사건 기록은 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/circuits": {
       "title": "마력회로",
@@ -1792,10 +1792,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b37c1ca2f3bf904df11d965691673c33704f0c095954214480e2feb69b8fcbb6",
+      "fingerprint": "08aa0e754f0688a8090ad63908fcd87f48fd376d2c53ad7e0bb12e42bed19f82",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "1부 초반 사건에 해리 언급 확인. MVP 범위는 사건의 인과·시점과 무관하므로 위키 내용·연대표 변경 없음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "1부 초반 사건에 해리 언급 확인. MVP 범위는 사건의 인과·시점과 무관하므로 위키 내용·연대표 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/event-fourth-answer": {
       "title": "에테아의 개입 · 삼파전의 제4축",
@@ -1971,10 +1971,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "03f37401f1b3e2d9f01a54a595d6166c7fd642ca350058b14a23543c666ed79e",
+      "fingerprint": "544c61246f2bd1f71956402dc9a6f7e89a4558ff5ded1374122dc8d74cd341cc",
       "updatedAt": "2026-10-28T13:24:38.304Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "3부 해리 신위 분리 설정을 확인. MVP의 해리 포함 결정이 사건 발생 순서와 서사의 확정 사실을 바꾸지 않음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "3부 해리 신위 분리 설정을 확인. MVP의 해리 포함 결정이 사건 발생 순서와 서사의 확정 사실을 바꾸지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/event-meeting": {
       "title": "대화의 자리 · 삼파전",
@@ -2490,10 +2490,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "3ebb2afeb70a2fcd492eed540facb09af945d2b0ba4897513768889ab4d4a295",
+      "fingerprint": "b0091b6978055229ae314ff906b88aefa8e12f6aa58250733114e87d139a02dd",
       "updatedAt": "2026-10-29T14:51:29.292Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "이음새 인물·사건의 해리 관련 표현 확인. MVP 구현 속성 범위가 공동체 결성·구성·연대기에는 영향을 주지 않음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "이음새 인물·사건의 해리 관련 표현 확인. MVP 구현 속성 범위가 공동체 결성·구성·연대기에는 영향을 주지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/kanha": {
       "title": "칸하",
@@ -2594,10 +2594,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "b2be8192bd5568d03130afcf20da062c6f40f40799082a22a7c3ae7b8473b617",
+      "fingerprint": "85cf54d0cd84ada70ce835367bea4caec8d43d0bfc744b461181aba8ed2e13a7",
       "updatedAt": "2026-10-28T13:24:38.968Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "두 카르와 설계된 해리 문서의 해리 설정을 확인. MVP 우선순위 변경은 3부 해리와 인물 정체성·시간 구조를 변경하지 않음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "두 카르와 설계된 해리 문서의 해리 설정을 확인. MVP 우선순위 변경은 3부 해리와 인물 정체성·시간 구조를 변경하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/kar": {
       "title": "카르",
@@ -2645,10 +2645,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "9297306156f361d71e52ba9c9eb70db5f2e987b9e32e64268532d4c9b46657ca",
+      "fingerprint": "97f1ba1373d2da59e86376278a18c7b23c0ad35ca297d704a9ec7d81076f2718",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "카르 인물 문서에 해리 언급 확인. 게임 MVP 속성 제한을 인물 능력/서사의 확정 제한으로 오해하지 않도록 현행 텍스트 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "카르 인물 문서에 해리 언급 확인. 게임 MVP 속성 제한을 인물 능력/서사의 확정 제한으로 오해하지 않도록 현행 텍스트 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/loss-jinx": {
       "title": "상실의 징크스",
@@ -2684,10 +2684,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "c8ab1f165ba58a41a1d347fa85fc9e3e75c54820f0a108dba87c77fd554c5f5b",
+      "fingerprint": "23a8ae81dc21695344f80f162c9ef9cca40253c1292b44fc15d908a480297acb",
       "updatedAt": "2026-10-28T13:24:39.038Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "상실의 징크스 문서에서 해리 개념 참조 확인. MVP 설계/보류는 세계관 상실의 법칙이나 사건 연쇄에 영향 없음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "상실의 징크스 문서에서 해리 개념 참조 확인. MVP 설계/보류는 세계관 상실의 법칙이나 사건 연쇄에 영향 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/modern": {
       "title": "현대의 마법사",
@@ -2938,10 +2938,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "011ce499b52e2140b31f0a43cebcbf8b7656887376e5b21cecd618e0f90e7e13",
+      "fingerprint": "b302439e13cb0fd97df8e2f0894ad2f19bd01923ee36d3b8e8eab0eac7c0ed94",
       "updatedAt": "2026-10-31T14:39:00.275Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "프레미아 위키의 소외 언급 확인. 소외가 MVP에 포함되지만 서사상의 작용 범위/사건은 그대로 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "프레미아 위키의 소외 언급 확인. 소외가 MVP에 포함되지만 서사상의 작용 범위/사건은 그대로 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/rakir": {
       "title": "유마",
@@ -3200,10 +3200,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "072cb6ebe088d658847e1106dd78cbdfbc0a1fefba8edefe4c01557a1cc6785a",
+      "fingerprint": "abcc7d9c452475e9c278d787fa164b7160a554503f61846b18b94e7319e527ac",
       "updatedAt": "2026-10-28T13:24:39.582Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "3부 문서의 해리 참조 확인. MVP 구현 범위 조정으로 세계관 결말/사건 배열을 수정하지 않음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "3부 문서의 해리 참조 확인. MVP 구현 범위 조정으로 세계관 결말/사건 배열을 수정하지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/third-protagonist": {
       "title": "3부 주인공",
@@ -3444,10 +3444,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "f4bad5b2910ae3d522bde0d27955849bfb626c28cae71bbf614e143ddbeb38c9",
+      "fingerprint": "c1bb29badf4a749b22db0a584e78d736d9485e0a0614c7fb9a9e4f1973b9d234",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "골목의 하산객들 에피소드의 해리 참조 확인. 3속성 MVP 전환과 무관하므로 사건 문서 및 연대표 유지."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "골목의 하산객들 에피소드의 해리 참조 확인. 3속성 MVP 전환과 무관하므로 사건 문서 및 연대표 유지. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/hyundan": {
       "title": "현단",
@@ -3481,10 +3481,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "1506977a284337d36c1e8749705dc9db4f4757aa489998f2495ae3614bc602db",
+      "fingerprint": "cb4f508173703f4b3ed9dfffee3d44c92f9a6e204b605820b9f68fa09b67ca44",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "현단의 해리/내공 활용 서술 확인. MVP의 시험 속성 3종 선택이 문파의 연혁·계승·능력 설정을 바꾸지 않음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "현단의 해리/내공 활용 서술 확인. MVP의 시험 속성 3종 선택이 문파의 연혁·계승·능력 설정을 바꾸지 않음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/martial-lineage": {
       "title": "천뢰율려문",
@@ -3518,10 +3518,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "506deb732b5d2c84904788277d7845f0e17b32e884e0da4b007b03f1fe0e4f84",
+      "fingerprint": "871e4776f99bd090b5d64a4a892c9ada7f2a303c84948c134bba24fd40ddd3a9",
       "updatedAt": "2026-10-29T14:24:48.240Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "천뢰율려문 문서의 해리·개시 언급 확인. 문파·운공 규칙은 MVP 전개/각인 임시 가정과 별도이므로 변경 없음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "천뢰율려문 문서의 해리·개시 언급 확인. 문파·운공 규칙은 MVP 전개/각인 임시 가정과 별도이므로 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/pharos": {
       "title": "파로스",
@@ -3555,10 +3555,10 @@
         "docs/styles.css",
         "docs/typography-scale.css"
       ],
-      "fingerprint": "19cd5155c6abfc8f04c229c73d74b369348f11a6426cc218773cfc8178dc2e7c",
+      "fingerprint": "b6ea9ca4a37781bd0ba0a1f79296e47779f38fd99978fa79e3344f6a79c20c1c",
       "updatedAt": "2026-10-31T14:22:03.529Z",
-      "reviewedAt": "2026-11-22T14:32:13.653Z",
-      "reviewNote": "파로스 문서의 소외 관련 언급 확인. 소외 MVP 포함과 마법사 조직 서사 사이에 설정 변경 없음."
+      "reviewedAt": "2026-11-22T14:34:15.733Z",
+      "reviewNote": "파로스 문서의 소외 관련 언급 확인. 소외 MVP 포함과 마법사 조직 서사 사이에 설정 변경 없음. 이번 추가 변경은 고착의 일반 교환/조건부 교환 구별 문구만 명료화하므로 앞선 페이지별 검토 결론을 유지한다."
     },
     "story/wiki/zoradein": {
       "title": "조라데인",
